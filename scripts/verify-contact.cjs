@@ -46,7 +46,6 @@ const output = process.env.REVIEW_OUTPUT;
 				await page.locator("#form").screenshot({ path: `${output}/contact-${lang ? "en" : "zh"}-${width}.png` });
 				await page.locator("#time").screenshot({ path: `${output}/event-${lang ? "en" : "zh"}-${width}.png` });
 			}
-			if (width <= 720) await page.locator(".plan-comparison summary").click();
 			const customSubject = "SITCON 合作 & R&D + 2027? #洽詢";
 			await page.locator("#inquiry-subject").fill(customSubject);
 			await page.locator("#inquiry-text").fill((await page.locator("#inquiry-text").inputValue()) + "\n測試公司 & R&D + 50%\n期待合作！");

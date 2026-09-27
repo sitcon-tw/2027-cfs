@@ -118,29 +118,16 @@ const uniqueItemIds = new Set<string>();
 
 <section id="plans">
 	<h2 id="plans-title">{t.title}</h2>
-	<div class="mobile-plan-summary">
-		{
-			tiers.map(tier => (
-				<div>
-					<>
-						<strong>{tier.name}</strong>
-						<span>{tier.price}</span>
-					</>
-				</div>
-			))
-		}
-	</div>
-	<details class="plan-comparison" open>
-		<summary>{lang === "en" ? "Compare all plan benefits" : "展開／收合完整方案比較"}</summary>
+	<div class="plan-comparison">
 		<p class="scroll-hint">{t.scroll_hint}</p>
-		<div class="container">
-			<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
-				<div class="plans-content">
-					<div class="plan-row plans-header">
-						<div class="row-label header-label"></div>
+		<div class="container" role="table" aria-labelledby="plans-title">
+			<div class="plans-heading" role="rowgroup">
+				<div class="plans-header-scroll lenis-scroll">
+					<div class="plan-row plans-header" role="row">
+						<div class="row-label header-label" role="columnheader">{lang === "en" ? "Benefits" : "贊助品項"}</div>
 						{
 							tiers.map((tier: any) => (
-								<div class="tier-column">
+								<div class="tier-column" role="columnheader">
 									<div class="tier-name" style={`color: ${tier.textColor}`}>
 										{tier.name}
 									</div>
@@ -152,10 +139,16 @@ const uniqueItemIds = new Set<string>();
 							))
 						}
 					</div>
+				</div>
+			</div>
+			<div class="plans-table lenis-scroll" role="region" aria-labelledby="plans-title" tabindex="0">
+				<div class="plans-content" role="rowgroup">
 					{
 						rows.map((row: any) => (
-							<div class={`plan-row ${!row.isAvailable ? "disabled" : ""}`} data-row-id={row.id} data-is-available={row.isAvailable}>
-								<div class="row-label">{row.name}</div>
+							<div class={`plan-row ${!row.isAvailable ? "disabled" : ""}`} data-row-id={row.id} data-is-available={row.isAvailable} role="row">
+								<div class="row-label" role="rowheader">
+									{row.name}
+								</div>
 								{row.values.map((value: any) => {
 									const isAvailable = value.quantity && value.quantity !== "";
 									const isCheckmark = value.quantity === "O" || value.quantity === "o";
@@ -181,7 +174,7 @@ const uniqueItemIds = new Set<string>();
 									}
 
 									return (
-										<div class="plan-cell" data-item-id={value.itemId}>
+										<div class="plan-cell" data-item-id={value.itemId} role="cell">
 											{isCheckmark ? (
 												<div class="cell-main cell-check">
 													<Check />
@@ -206,12 +199,52 @@ const uniqueItemIds = new Set<string>();
 				</div>
 			</div>
 		</div>
-	</details>
+	</div>
 </section>
 
 <script>
 	import { isItemInterested, addInterestedItem, removeInterestedItem, isDeadlinePassed, type InterestedItem } from "../../utils/local-storage.ts";
 	import { openVenueDetails } from "../../utils/venue-linkify.ts";
+
+	const plans = document.getElementById("plans");
+	const headerScroll = plans?.querySelector<HTMLElement>(".plans-header-scroll");
+	const benefitScroll = plans?.querySelector<HTMLElement>(".plans-table");
+	if (headerScroll && benefitScroll) {
+		// Keep both horizontal viewports aligned, without changing vertical page scrolling.
+		for (const [source, target] of [
+			[headerScroll, benefitScroll],
+			[benefitScroll, headerScroll]
+		]) {
+			source.addEventListener(
+				"scroll",
+				() => {
+					if (Math.abs(target.scrollLeft - source.scrollLeft) > 0.5) target.scrollLeft = source.scrollLeft;
+				},
+				{ passive: true }
+			);
+		}
+		const container = plans?.querySelector<HTMLElement>(".container");
+		let previousWidth = benefitScroll.clientWidth;
+		let previousTierWidth = headerScroll.querySelector(".tier-column")!.getBoundingClientRect().width;
+		if (container) {
+			new ResizeObserver(() => {
+				if (Math.abs(benefitScroll.clientWidth - previousWidth) < 0.5) return;
+				const column = Math.round(benefitScroll.scrollLeft / previousTierWidth);
+				const tierWidth = headerScroll.querySelector(".tier-column")!.getBoundingClientRect().width;
+				// Keep complete plan columns visible when rotating the phone or resizing.
+				benefitScroll.scrollLeft = column * tierWidth;
+				headerScroll.scrollLeft = benefitScroll.scrollLeft;
+				previousWidth = benefitScroll.clientWidth;
+				previousTierWidth = tierWidth;
+			}).observe(container);
+		}
+	}
+	const navbar = document.querySelector<HTMLElement>(".navbar");
+	if (navbar && plans) {
+		const updateHeaderOffset = () => plans.style.setProperty("--plans-nav-offset", `${navbar.getBoundingClientRect().height}px`);
+		updateHeaderOffset();
+		new ResizeObserver(updateHeaderOffset).observe(navbar);
+	}
 
 	// Attach openVenueDetails to window for inline onclick handlers
 	window.openVenueDetails = openVenueDetails;
@@ -353,426 +386,264 @@ const uniqueItemIds = new Set<string>();
 <style>
 	section {
 		background-color: var(--items-bg);
-		padding: 5rem 2rem;
+		padding: 4rem 2rem;
 		break-inside: avoid;
 	}
+	#plans-title {
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		margin-bottom: 1.5rem;
+	}
 	.container {
-		max-width: min(1200px, 100%);
-		width: fit-content;
-		border-radius: 2rem;
-		background-color: var(--white);
+		container-type: inline-size;
+		width: 100%;
+		max-width: 1200px;
 		margin: 0 auto;
-		padding: 2rem;
-		flex: auto;
-		display: flex;
-		justify-content: center;
+		background: var(--white);
+		border-radius: 1rem;
+		--label-width: clamp(10rem, 24cqw, 15rem);
+		--tier-width: calc((100cqw - var(--label-width)) / 4);
 	}
-
+	.plans-table,
+	.plans-header-scroll {
+		width: 100%;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+	}
 	.plans-table {
-		background-color: var(--white);
-		border-radius: 2rem;
-		overflow: clip;
-		padding: 2rem;
+		border-radius: 0 0 1rem 1rem;
 	}
-
-	.plans-header {
-		padding-bottom: 1rem;
-		align-items: stretch;
+	.plans-heading {
 		position: sticky;
-		top: 4rem;
+		top: var(--plans-nav-offset, 4rem);
+		z-index: 3;
+		background: var(--white);
+		border-radius: 1rem 1rem 0 0;
+		box-shadow: 0 1px 0 var(--border-light);
+	}
+	.plans-header-scroll {
+		border-radius: inherit;
+		scrollbar-width: none;
+	}
+	.plans-header-scroll::-webkit-scrollbar {
+		display: none;
+	}
+
+	.plans-table:focus-visible {
+		outline: 2px solid #14693e;
+		outline-offset: 3px;
+	}
+	.plans-content,
+	.plans-header {
+		width: calc(var(--label-width) + 4 * var(--tier-width));
+	}
+	.plan-row {
+		display: grid;
+		grid-template-columns: var(--label-width) repeat(4, var(--tier-width));
+		align-items: stretch;
+		border-bottom: 1px solid #e8e8ec;
+	}
+	.plan-row:last-child {
+		border-bottom: 0;
+	}
+	.row-label {
+		position: sticky;
+		left: 0;
 		z-index: 2;
-		background-color: var(--white);
+		display: flex;
+		align-items: center;
+		padding: 0.875rem 1.25rem;
+		background: var(--white);
+		box-shadow: 1px 0 0 var(--border-light);
+		font-size: 0.9375rem;
+		font-weight: 500;
+		line-height: 1.5;
+		color: var(--black);
+		text-align: left;
+		overflow-wrap: anywhere;
 	}
-
-	.plans-header:hover {
-		background-color: var(--white) !important;
+	.header-label {
+		font-weight: 700;
+		align-items: flex-start;
+		padding-top: 1.25rem;
 	}
-
 	.tier-column {
-		text-align: center;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid var(--border-light);
 		gap: 0.5rem;
+		padding: 1.25rem 0.75rem;
+		text-align: center;
+		min-width: 0;
 	}
-
 	.tier-name {
-		font-size: 2.3rem;
+		font-size: 1.75rem;
 		font-weight: 700;
-		margin-bottom: 0.5rem;
-		line-height: 1.2;
-		flex-grow: 1;
+		line-height: 1.25;
+		flex: 1;
 		display: flex;
 		align-items: center;
+		overflow-wrap: anywhere;
 	}
-
 	.tier-price {
-		font-size: 1.5rem;
+		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--black);
-		margin-bottom: 1rem;
+		white-space: nowrap;
 	}
-
 	.tier-interest-button {
 		background: transparent;
 		border: 1px solid var(--black);
 		cursor: pointer;
-		padding: 0.5rem 1rem;
+		padding: 0.4rem 0.8rem;
+		min-height: 44px;
 		border-radius: 25px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: all 0.2s ease;
-		margin: 0 auto;
-		font-size: 0.9rem;
+		font: inherit;
+		font-size: 0.875rem;
 		color: var(--black);
-		white-space: nowrap;
 	}
-
 	.tier-interest-button:hover {
-		background-color: var(--gray-container);
-		transform: scale(1.02);
+		background: var(--gray-container);
 	}
-
 	.tier-interest-button.interested {
-		background-color: var(--items-green);
-		border-color: var(--items-green);
-		color: var(--white);
+		background: #14693e;
+		border-color: #14693e;
+		color: white;
 	}
-
-	.tier-interest-button.interested:hover {
-		background-color: var(--items-green);
-		opacity: 0.9;
-	}
-
-	.tier-interest-button:disabled,
-	.tier-interest-button.disabled {
-		background-color: var(--gray);
+	.tier-interest-button:disabled {
+		background: var(--gray);
 		border-color: var(--gray);
 		cursor: not-allowed;
 		opacity: 0.5;
-		color: var(--white);
+		color: white;
 	}
-
-	.tier-interest-button:disabled:hover,
-	.tier-interest-button.disabled:hover {
-		transform: none;
-		background-color: var(--gray);
-	}
-
-	.plans-content {
-		display: grid;
-		gap: 1rem;
-	}
-
-	.plan-row {
-		display: grid;
-		grid-template-columns: minmax(11rem, 1.6fr) repeat(4, 1fr);
-		gap: 1.5rem;
-		padding: 0.75rem 1.5rem;
-		align-items: center;
-	}
-
-	.row-label {
-		font-size: 1rem;
-		font-weight: 500;
-		line-height: 1.4;
-		color: var(--black);
-		text-align: left;
-	}
-
-	.plans-header .header-label {
-		border-bottom: 1px solid var(--border-light);
-		align-self: stretch;
-	}
-
-	.cell-check svg {
-		width: 1.5rem;
-		height: 1.5rem;
-		stroke-width: 3;
-	}
-
-	.cell-none {
-		color: var(--gray);
-	}
-
 	.plan-cell {
-		text-align: center;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
-		min-height: 2.5rem;
+		padding: 0.875rem 0.5rem;
+		min-height: 3.5rem;
+		min-width: 0;
+		text-align: center;
 	}
-
-	.plan-row:not(.disabled):hover .row-label {
-		color: var(--items-green);
+	.cell-main {
+		line-height: 1.4;
 	}
-
-	.plan-cell.highlighted .cell-main,
-	.plan-cell.highlighted .cell-sub,
-	.plan-cell.highlighted .cell-check,
-	.plan-cell.highlighted .cell-icon {
-		color: var(--items-green);
+	.cell-text {
+		font-size: 1.0625rem;
 		font-weight: 600;
+		overflow-wrap: anywhere;
 	}
-
+	.cell-check svg {
+		width: 1.25rem;
+		height: 1.25rem;
+		stroke-width: 3;
+	}
 	.cell-icon {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.25rem;
 		justify-content: center;
 	}
-
 	.cell-icon svg {
 		width: 1.25rem;
 		height: 1.25rem;
 	}
-
-	.cell-main {
-		line-height: 1.3;
+	.cell-none {
+		color: var(--gray);
 	}
-
-	.cell-number {
-		font-size: 2rem;
-		font-weight: bold;
-		color: var(--black);
-	}
-
-	.cell-text {
-		font-size: 1.25rem;
+	.plan-cell.highlighted {
+		color: #14693e;
 		font-weight: 600;
-		color: var(--black);
-		white-space: nowrap;
 	}
-
-	.cell-sub {
-		font-size: 1rem;
-		color: var(--black);
-		line-height: 1.5;
-		text-wrap: balance;
+	.plan-row[data-row-id]:not(.disabled):hover,
+	.plan-row[data-row-id]:not(.disabled):hover .row-label {
+		background: #eff6ee;
 	}
-
-	.scroll-hint {
-		display: none;
-	}
-
-	@media screen and (max-width: 1024px) {
-		.container {
-			width: 100%;
-			padding: 1rem;
-		}
-
-		.scroll-hint {
-			display: block;
-			margin: -1rem 0 1rem;
-			text-align: center;
-			font-size: 0.9rem;
-		}
-
-		.plans-table {
-			width: 100%;
-			min-width: 0;
-			overflow-x: auto;
-			padding: 1rem;
-		}
-
-		.plans-content {
-			min-width: 800px;
-		}
-
-		.plan-row {
-			grid-template-columns: 10rem repeat(4, minmax(0, 1fr));
-			gap: 1rem;
-			padding: 0.75rem 0.5rem;
-		}
-
-		.tier-name {
-			font-size: 1.5rem;
-		}
-
-		.tier-price {
-			font-size: 1.25rem;
-		}
-
-		.tier-interest-button {
-			min-height: 44px;
-			font-size: 0.9rem;
-			padding: 0.5rem 1rem;
-		}
-
-		/* Scroll the entire comparison together, including the item descriptions. */
-		.plans-header {
-			position: static;
-		}
-	}
-
-	@media screen and (max-width: 768px) {
-		section {
-			padding: 3rem 1rem;
-		}
-
-		.container {
-			padding: 0;
-		}
-
-		.plans-table {
-			border-radius: 1.25rem;
-		}
-	}
-
-	/* Plan row hover effect */
-	.plan-row:not(.disabled):hover {
-		background-color: var(--items-bg);
-		border-radius: 0.5rem;
-		transition: background-color 0.2s ease;
-	}
-
-	/* Disabled row styles */
 	.plan-row.disabled {
-		cursor: default !important;
+		cursor: default;
 	}
-
 	.plan-row.disabled .plan-cell {
 		pointer-events: none;
 	}
-
+	.scroll-hint {
+		display: none;
+		text-align: center;
+		font-size: 0.8125rem;
+		color: var(--gray);
+		margin-bottom: 0.75rem;
+	}
+	@media screen and (max-width: 900px) {
+		section {
+			padding: 3rem 1rem;
+		}
+		.container {
+			--label-width: clamp(6.25rem, 30cqw, 8rem);
+			--tier-width: calc((100cqw - var(--label-width)) / 2);
+		}
+		.scroll-hint {
+			display: block;
+		}
+		.row-label {
+			font-size: 0.875rem;
+			padding: 0.75rem 0.625rem 0.75rem 0.875rem;
+		}
+		:global(html[lang="en"]) .row-label {
+			font-size: 0.8125rem;
+			hyphens: auto;
+		}
+		.header-label {
+			padding-top: 1rem;
+		}
+		.tier-column {
+			padding: 0.875rem 0.375rem;
+			gap: 0.4rem;
+		}
+		.tier-name {
+			font-size: clamp(0.875rem, 4cqw, 1.125rem);
+		}
+		.tier-price {
+			font-size: 0.8125rem;
+		}
+		.tier-interest-button {
+			font-size: 0.8125rem;
+			padding: 0.25rem 0.625rem;
+		}
+		.plan-cell {
+			padding: 0.75rem 0.375rem;
+		}
+		.cell-text {
+			font-size: 0.9375rem;
+		}
+	}
 	@media print {
 		section {
 			padding: 2rem;
 		}
-
 		.container {
-			width: 100%;
-			padding: 16pt;
-			background-color: transparent;
+			--label-width: 24cqw;
+			--tier-width: 19cqw;
 		}
-		.plans-table {
-			max-width: unset;
-			padding: 24pt;
+		.plans-table,
+		.plans-header-scroll {
+			overflow: visible;
 		}
-
-		.tier-name {
-			font-size: 16pt;
-			margin-bottom: 0;
-			line-height: 1;
+		.plans-heading,
+		.row-label {
+			position: static;
+			box-shadow: none;
 		}
-
-		.tier-price {
-			font-size: 12pt;
-		}
-
-		.tier-interest-button {
+		.tier-interest-button,
+		.scroll-hint {
 			display: none;
 		}
-
-		.tier-column {
-			padding-bottom: 0;
+		.tier-name {
+			font-size: 16pt;
 		}
-
-		.plan-row {
-			padding: 0;
-		}
-
+		.tier-price,
 		.cell-text {
 			font-size: 12pt;
 		}
-
 		.row-label {
 			font-size: 10pt;
 		}
-		.cell-sub {
-			font-size: 10pt;
-		}
-
-		.plans-content {
-			gap: 8pt;
-		}
-	}
-
-	/* Venue link styles */
-	.venue-link {
-		color: #0171e3;
-		text-decoration: underline;
-		text-decoration-style: dotted;
-		text-underline-offset: 2px;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-weight: 600;
-	}
-
-	.venue-link:hover {
-		color: var(--items-green);
-		text-decoration-style: solid;
-	}
-
-	/* Venue highlight animation */
-	.venue-highlight {
-		animation: venue-pulse 2s ease-in-out;
-	}
-
-	@keyframes venue-pulse {
-		0%,
-		100% {
-			background-color: transparent;
-		}
-		50% {
-			background-color: var(--items-green);
-			color: var(--white);
-			padding: 0.25rem 0.5rem;
-			border-radius: 4px;
-		}
-	}
-
-	@media print {
-		.venue-link {
-			text-decoration: none;
-			font-weight: inherit;
-		}
-	}
-
-	.mobile-plan-summary {
-		display: none;
-	}
-	.plan-comparison summary {
-		display: none;
-		cursor: pointer;
-		padding: 1rem;
-		text-align: center;
-		font-weight: bold;
-	}
-	@media screen and (max-width: 45rem) {
-		.mobile-plan-summary {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 0.75rem;
-			margin-bottom: 1rem;
-		}
-		.mobile-plan-summary > div {
-			padding: 1rem;
-			border: 1px solid #ddd;
-			border-radius: 0.75rem;
-		}
-		.mobile-plan-summary strong,
-		.mobile-plan-summary span {
-			display: block;
-		}
-		.plan-comparison summary {
-			display: block;
-			border: 1px solid #ccc;
-			border-radius: 0.75rem;
-			margin-bottom: 1rem;
-		}
 	}
 </style>
-
-<script>
-	const comparison = document.querySelector<HTMLDetailsElement>(".plan-comparison");
-	const phone = window.matchMedia("(max-width: 45rem)");
-	if (comparison) comparison.open = !phone.matches;
-	phone.addEventListener("change", event => {
-		if (comparison) comparison.open = !event.matches;
-	});
-</script>

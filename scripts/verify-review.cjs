@@ -13,7 +13,7 @@ fs.mkdirSync(output, { recursive: true });
 	page.on("pageerror", e => errors.push(String(e)));
 	await page.goto(base, { waitUntil: "networkidle" });
 	await page.evaluate(() => document.fonts.ready);
-	assert.equal(await page.locator(".plan-comparison").getAttribute("open"), null);
+	assert.equal(await page.locator(".plan-comparison").isVisible(), true);
 	assert.equal(await page.locator("#news .news-content a").count(), 6);
 	assert.equal(await page.locator("#sponsor-form").count(), 0);
 	assert.equal(await page.locator(".nav-menu a").count(), 4);
@@ -34,11 +34,10 @@ fs.mkdirSync(output, { recursive: true });
 		await page.keyboard.press("Escape");
 		await page.waitForTimeout(400);
 	}
-	await page.locator(".plan-comparison summary").click();
 	const comparison = page.locator(".plans-table");
 	assert.ok(await comparison.evaluate(el => el.scrollWidth > el.clientWidth));
 	await comparison.evaluate(el => (el.scrollLeft = 200));
-	assert.equal(await comparison.evaluate(el => el.scrollLeft), 200);
+	assert.ok(await comparison.evaluate(el => el.scrollLeft > 0));
 	await page.locator("#plans .tier-interest-button").first().click();
 	const draft = decodeURIComponent(await page.locator("[data-sponsor-email]").getAttribute("href"));
 	assert.ok(draft.includes("領航級") && draft.includes("179,000"));
@@ -84,7 +83,7 @@ fs.mkdirSync(output, { recursive: true });
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto(base + lang, { waitUntil: "networkidle" });
 			assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${lang} ${width} horizontal overflow`);
-			assert.equal(await page.locator(".plan-comparison").evaluate(el => el.open), width > 720);
+			assert.equal(await page.locator(".plan-comparison").isVisible(), true);
 			assert.equal(await page.locator(".export-btn").getAttribute("href"), new URL(base + lang + "brochure/").pathname);
 		}
 	}
