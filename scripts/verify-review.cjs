@@ -57,7 +57,7 @@ fs.mkdirSync(output, { recursive: true });
 	await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
 	await page.waitForTimeout(500);
 	assert.ok(page.url().includes("/item/1/"), "diagonal gesture should scroll, not navigate");
-	assert.ok(await page.locator(".popup-bg.show").evaluate(el => el.scrollTop > 0));
+	assert.ok(await page.locator(".popup-bg.show .popup-content").evaluate(el => el.scrollTop > 0));
 	await page.screenshot({ path: output + "/mobile-item-scroll.png" });
 	await page.keyboard.press("Escape");
 	await page.waitForTimeout(400);

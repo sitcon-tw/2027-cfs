@@ -58,10 +58,10 @@ const tierBenefits = tiers.map(tier => {
 const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 ---
 
-<Popup id={popupId || `plan-popup-${item.id}`} button={false} hero={false}>
+<Popup id={popupId || `plan-popup-${item.id}`} button={false} hero={false} variant="item" lang={lang}>
 	<nav class="item-navigation" aria-label={lang === "en" ? "Browse sponsorship items" : "瀏覽贊助品項"}>
-		<button type="button" data-item-nav="prev"><ChevronLeft size={20} />{lang === "en" ? "Previous" : "上一項"}</button>
-		<button type="button" data-item-nav="next">{lang === "en" ? "Next" : "下一項"}<ChevronRight size={20} /></button>
+		<button type="button" data-item-nav="prev" aria-label={lang === "en" ? "Previous item" : "上一項"}><ChevronLeft size={22} /></button>
+		<button type="button" data-item-nav="next" aria-label={lang === "en" ? "Next item" : "下一項"}><ChevronRight size={22} /></button>
 	</nav>
 	<div class="popup-content" data-item-id={item.id}>
 		<div class="item-image">
@@ -248,17 +248,20 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 <style is:global>
 	.popup-content {
 		display: grid;
-		grid-template-columns: 2fr 3fr;
-		height: calc(100dvh - 9rem);
-		min-height: 600px;
+		grid-template-columns: 5fr 7fr;
+		height: 100%;
+		min-height: 0;
 	}
 
 	.item-details {
-		padding: 3rem;
+		padding: 1.5rem 2rem;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		gap: 1rem;
+		gap: 0.75rem;
+		font-size: 1rem;
+		line-height: 1.6;
 		overflow-y: auto;
 		height: 100%;
 		break-inside: avoid;
@@ -272,7 +275,8 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	}
 
 	.item-details h3 {
-		font-size: 2.5rem;
+		font-size: 1.75rem;
+		line-height: 1.3;
 		color: var(--black);
 		flex: 1;
 	}
@@ -285,7 +289,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	}
 
 	.price-value {
-		font-size: 1.4rem;
+		font-size: 1.125rem;
 		color: var(--black);
 		font-weight: 700;
 		font-family: FiraCode, monospace;
@@ -336,6 +340,8 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	}
 
 	.item-meta {
+		padding-right: 1.5rem;
+		min-height: 1.75rem;
 		display: flex;
 		gap: 0.8rem;
 		align-items: center;
@@ -496,25 +502,25 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	.tier-item {
 		display: flex;
 		align-items: center;
-		font-size: 1.3rem;
+		font-size: 1rem;
 		font-weight: 600;
 	}
 
 	.tier-name {
 		font-weight: 700;
-		font-size: 1.4rem;
+		font-size: 1.125rem;
 	}
 
 	.tier-arrow {
-		margin: 0 1.5rem;
+		margin: 0 0.75rem;
 		font-weight: 700;
 		opacity: 0.7;
-		font-size: 1.3rem;
+		font-size: 1rem;
 	}
 
 	.tier-value {
 		font-weight: 700;
-		font-size: 1.5rem;
+		font-size: 1.125rem;
 		display: flex;
 		align-items: center;
 	}
@@ -548,7 +554,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	}
 
 	.sub-item-name {
-		font-size: 1.3rem;
+		font-size: 1rem;
 		font-weight: 700;
 		color: var(--black);
 		flex: 1;
@@ -634,13 +640,13 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	}
 
 	.structured-descriptions {
-		margin-top: 1rem;
+		margin-top: 0.25rem;
 	}
 
 	.structured-descriptions h2 {
-		font-size: 1.5rem;
+		font-size: 1.125rem;
 		margin-bottom: 0.3rem;
-		margin-top: 1.2rem;
+		margin-top: 1rem;
 		text-align: left;
 	}
 
@@ -723,36 +729,77 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		}
 	}
 
-	.item-navigation {
-		position: sticky;
-		top: 0;
-		z-index: 4;
-		display: flex;
-		justify-content: space-between;
-		gap: 1rem;
-		padding: 0.7rem 5.5rem 0.7rem 1rem;
-		background: #f5f5f7f5;
-		border-radius: 25px 25px 0 0;
-		border-bottom: 1px solid #ddd;
+	@media screen {
+		.popup-bg.item-popup-bg {
+			padding: 2rem 4.75rem;
+			transition: none;
+		}
+		.popup-bg.item-popup-bg .popup {
+			max-width: 1100px;
+			height: min(640px, calc(100dvh - 4rem));
+			min-height: 0;
+			transform: none;
+			transition: none;
+		}
+		.popup-bg.item-popup-bg .popup-content {
+			border-radius: 25px;
+			overflow: hidden;
+		}
+		.popup-bg.item-popup-bg .item-details {
+			overscroll-behavior: contain;
+		}
+		.item-navigation {
+			position: fixed;
+			inset: 0;
+			z-index: 12;
+			pointer-events: none;
+		}
+		.item-navigation button {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 44px;
+			height: 44px;
+			display: grid;
+			place-items: center;
+			border: 1px solid #d2d2d7;
+			border-radius: 50%;
+			background: #fff;
+			color: #404044;
+			box-shadow: 0 2px 8px #00000012;
+			cursor: pointer;
+			pointer-events: auto;
+		}
+		.item-navigation [data-item-nav="prev"] {
+			left: max(1rem, calc((100% - 1100px) / 2 - 60px));
+		}
+		.item-navigation [data-item-nav="next"] {
+			right: max(1rem, calc((100% - 1100px) / 2 - 60px));
+		}
+		.item-navigation button:disabled {
+			opacity: 0.35;
+			cursor: default;
+		}
+		.popup-bg.item-popup-bg .popup > .close-btn {
+			top: 0.35rem;
+			right: 0.35rem;
+			width: 44px;
+			height: 44px;
+			border: 0;
+			color: #55555a;
+			background: #f5f5f7e6;
+		}
+		.item-navigation button:hover:not(:disabled),
+		.popup-bg.item-popup-bg .close-btn:hover {
+			background: #e8e8ec;
+		}
+		.item-navigation button:focus-visible,
+		.popup-bg.item-popup-bg .close-btn:focus-visible {
+			outline: 2px solid #14693e;
+			outline-offset: 3px;
+		}
 	}
-	.item-navigation button {
-		display: flex;
-		align-items: center;
-		gap: 0.3rem;
-		padding: 0.5rem;
-		border: 0;
-		border-radius: 0.5rem;
-		background: white;
-		cursor: pointer;
-	}
-	.item-navigation button:disabled {
-		opacity: 0.4;
-		cursor: default;
-	}
-	.popup:has(.item-navigation) > .close-btn {
-		top: 0.6rem;
-		right: 1rem;
-	}
+
 	.venue-summary {
 		padding: 1rem;
 		background: #e4efe5;
@@ -766,16 +813,46 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		color: #12663c;
 		cursor: pointer;
 	}
-	@media (max-width: 900px) {
+	@media screen and (max-width: 900px) {
+		.popup-bg.item-popup-bg {
+			padding: 1rem 1.75rem;
+		}
+		.popup-bg.item-popup-bg .popup {
+			height: calc(100dvh - 2rem);
+		}
+		.popup-bg.item-popup-bg .popup-content {
+			display: block;
+			height: 100%;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+		}
+		.popup-bg.item-popup-bg .item-image {
+			height: clamp(10rem, 28dvh, 16rem);
+		}
 		.item-details {
 			height: auto;
 			overflow: visible;
-			padding: 1.5rem 1.5rem 3rem;
+			padding: 1.25rem;
 		}
-		.popup-content {
-			min-height: 0;
+		.item-details h3 {
+			font-size: 1.5rem;
+		}
+		.item-meta {
+			padding-right: 0;
+			gap: 0.5rem;
+		}
+		.item-navigation button {
+			width: 40px;
+			height: 40px;
+		}
+		.item-navigation [data-item-nav="prev"] {
+			left: 4px;
+		}
+		.item-navigation [data-item-nav="next"] {
+			right: 4px;
 		}
 	}
+
 	@media print {
 		.item-navigation {
 			display: none;

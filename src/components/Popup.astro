@@ -1,6 +1,6 @@
 ---
 import { X, Plus } from "@lucide/astro";
-const { title, background, btnText, hero = true, id = Math.random().toString(36).slice(2, 9), button = true } = Astro.props;
+const { title, background, btnText, hero = true, id = Math.random().toString(36).slice(2, 9), button = true, variant = "default", lang = "zh-Hant" } = Astro.props;
 ---
 
 {
@@ -16,7 +16,7 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	)
 }
 
-<div class="popup-bg lenis-scroll">
+<div class:list={["popup-bg lenis-scroll", { "item-popup-bg": variant === "item" }]}>
 	<div class={"popup " + (hero ? "" : "no-hero")}>
 		{
 			hero && (
@@ -27,7 +27,17 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 			)
 		}
 		<slot />
-		<div class="close-btn"><X stroke-width={3.5} /></div>
+		{
+			variant === "item" ? (
+				<button class="close-btn" type="button" aria-label={lang === "en" ? "Close" : "關閉"}>
+					<X size={20} stroke-width={1.8} />
+				</button>
+			) : (
+				<div class="close-btn">
+					<X stroke-width={3.5} />
+				</div>
+			)
+		}
 	</div>
 </div>
 <style is:global>
@@ -128,6 +138,12 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	.show .popup {
 		opacity: 1;
 		transform: translateY(0rem);
+	}
+
+	.item-popup-bg,
+	.item-popup-bg .popup {
+		transition: none;
+		transform: none;
 	}
 
 	.popup-hero {

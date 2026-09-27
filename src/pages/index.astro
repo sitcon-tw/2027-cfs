@@ -140,16 +140,30 @@ const defaultSchema = {
 			window.popupCtrl = (id = "", action = "open", updateUrl = true, find = null) => {
 				const popupBg = find || (document.querySelector(`#${id} + .popup-bg`) as HTMLElement | null);
 				if (!popupBg || !(popupBg instanceof HTMLElement)) return;
+				const isItem = popupBg.classList.contains("item-popup-bg");
 				if (action === "open") {
+					const focusDirection = document.activeElement?.getAttribute("data-item-nav");
+					if (isItem) {
+						document.querySelectorAll<HTMLElement>(".item-popup-bg.show").forEach(previous => {
+							if (previous !== popupBg) window.popupCtrl("", "close", false, previous);
+						});
+					}
 					popupBg.style.overflow = "hidden";
 					popupBg.style.display = "flex";
-					setTimeout(() => {
-						popupBg.scrollTo({
-							top: 0
-						});
+					const reveal = () => {
+						popupBg.scrollTo({ top: 0, behavior: "instant" });
+						popupBg.querySelectorAll(".popup-content, .item-details").forEach(content => content.scrollTo({ top: 0, behavior: "instant" }));
 						popupBg.classList.add("show");
 						document.dispatchEvent(new CustomEvent("popupOpened", { detail: { id } }));
-					}, 0);
+					};
+					if (isItem) {
+						// Swap item panels in the same frame, without closing/opening animations.
+						reveal();
+						const nextControl = focusDirection ? popupBg.querySelector<HTMLButtonElement>(`[data-item-nav="${focusDirection}"]:not(:disabled)`) : null;
+						(nextControl || popupBg.querySelector<HTMLButtonElement>(".close-btn"))?.focus({ preventScroll: true });
+					} else {
+						setTimeout(reveal, 0);
+					}
 					if (updateUrl) {
 						if (id.startsWith("item-popup-")) {
 							const itemId = id.replace("item-popup-", "");
@@ -173,13 +187,15 @@ const defaultSchema = {
 					popupBg.style.overflow = "auto";
 				} else {
 					popupBg.classList.remove("show");
-					setTimeout(() => {
+					const hide = () => {
 						popupBg.style.display = "none";
 						// dispatch popupClosed after it's hidden
 						const closingPopup = popupBg.previousElementSibling as HTMLElement | null;
 						const closingId = closingPopup ? closingPopup.id : id;
 						document.dispatchEvent(new CustomEvent("popupClosed", { detail: { id: closingId } }));
-					}, 300);
+					};
+					if (isItem) hide();
+					else setTimeout(hide, 300);
 					if (updateUrl) {
 						history.pushState(null, "", window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${document.documentElement.lang === "en" ? "en/" : ""}`);
 						document.title = originalTitle;
@@ -221,17 +237,10 @@ const defaultSchema = {
 				const idx = ids.indexOf(activePopupId);
 				if (idx === -1) return;
 				let nextIdx = direction === "next" ? idx + 1 : idx - 1;
-				const currentBg = document.getElementById(activePopupId)?.nextElementSibling as HTMLElement | null;
-				if (nextIdx < 0 || nextIdx >= ids.length) {
-					if (!currentBg) return;
-					currentBg.classList.add("shake");
-					setTimeout(() => currentBg.classList.remove("shake"), 300);
-					return;
-				} // no wrap
+				if (nextIdx < 0 || nextIdx >= ids.length) return; // no wrap
 				const nextId = ids[nextIdx];
 				const nextEl = document.getElementById(nextId);
 				if (nextEl) window.popupCtrl(nextId, "open", true);
-				if (currentBg) window.popupCtrl(activePopupId, "close", false, currentBg);
 			}
 
 			function onKeyDown(e: KeyboardEvent) {
