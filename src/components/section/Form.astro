@@ -5,74 +5,61 @@ const en = lang === "en";
 
 <section id="form" data-contact-lang={lang}>
 	<h2>{en ? "Let’s build SITCON 2027 together" : "一起成就 SITCON 2027"}</h2>
-	<p>
-		{
-			en
-				? "Tell us about your sponsorship goals. The button opens your email app with your selected plans and items in a draft."
-				: "告訴我們你的合作想法。點擊下方按鈕會開啟郵件程式，並帶入已選方案與品項。"
-		}
-	</p>
-	<a class="email-action" data-sponsor-email target="_self" href="mailto:contact@sitcon.org">{en ? "Open email to discuss sponsorship" : "開啟郵件洽談"}</a>
-	<p class="email-help">{en ? "If your email app does not open or a blank tab appears, return here to use Gmail or copy your inquiry." : "若郵件程式未開啟或出現空白分頁，請回到此處使用 Gmail，或複製洽詢內容寄出。"}</p>
-	<div class="email-options">
-		<a data-sponsor-gmail href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=contact%40sitcon.org" target="_blank" rel="noopener noreferrer">{en ? "Compose in Gmail" : "使用 Gmail 撰寫"}</a>
-		<button id="copy-inquiry" type="button">{en ? "Copy inquiry" : "複製洽詢內容"}</button>
+	<div class="email-draft">
+		<p class="recipient">{en ? "To" : "收件人"} <span>contact@sitcon.org</span></p>
+		<label for="inquiry-subject">{en ? "Subject" : "主旨"}</label>
+		<input id="inquiry-subject" type="text" value={en ? "SITCON 2027 Sponsorship inquiry" : "SITCON 2027 贊助洽詢"} />
+		<label for="inquiry-text">{en ? "Message" : "內文"}</label>
+		<textarea id="inquiry-text" rows="11"></textarea>
+		<div class="email-actions">
+			<a class="email-action" data-sponsor-email href="mailto:contact@sitcon.org">{en ? "Open email app" : "開啟郵件程式"}</a>
+			<a class="email-action gmail" data-sponsor-gmail href="https://mail.google.com/mail/?view=cm&fs=1&to=contact%40sitcon.org" target="_blank" rel="noopener noreferrer">
+				{en ? "Open Gmail" : "開啟 Gmail"}
+			</a>
+		</div>
 	</div>
-	<details id="inquiry-preview">
-		<summary>{en ? "View inquiry text" : "查看洽詢內容"}</summary>
-		<textarea id="inquiry-text" readonly aria-label={en ? "Inquiry text" : "洽詢內容"}></textarea>
-	</details>
-	<div class="address"><a href="mailto:contact@sitcon.org">contact@sitcon.org</a><button id="copy-email" type="button">{en ? "Copy email" : "複製信箱"}</button></div>
-	<p id="copy-status" role="status"></p>
 	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
 </section>
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
-	function updateEmail() {
-		const en = document.documentElement.lang === "en";
-		const selected = getInterestedItems()
+
+	const subject = document.querySelector<HTMLInputElement>("#inquiry-subject");
+	const draft = document.querySelector<HTMLTextAreaElement>("#inquiry-text");
+	const email = document.querySelector<HTMLAnchorElement>("[data-sponsor-email]");
+	const gmail = document.querySelector<HTMLAnchorElement>("[data-sponsor-gmail]");
+	const en = document.documentElement.lang === "en";
+	let previousSelection = "";
+
+	function updateLinks() {
+		if (!subject || !draft) return;
+		if (email) email.href = `mailto:contact@sitcon.org?subject=${encodeURIComponent(subject.value)}&body=${encodeURIComponent(draft.value)}`;
+		if (gmail) gmail.href = `https://mail.google.com/mail/?${new URLSearchParams({ view: "cm", fs: "1", to: "contact@sitcon.org", su: subject.value, body: draft.value })}`;
+	}
+
+	function updateSelection() {
+		if (!draft) return;
+		const items = getInterestedItems()
 			.map(item => `• ${item.title}${item.price ? ` — ${item.price}` : ""}`)
 			.join("\n");
-		const body = en
-			? `Hello SITCON,\n\nWe are interested in sponsoring SITCON 2027.\n\n${selected}\n\nOrganization:\nContact person:\nQuestions or goals:\n`
-			: `SITCON 團隊好：\n\n我們有意贊助 SITCON 2027。\n\n${selected}\n\n單位名稱：\n聯絡人：\n合作想法／問題：\n`;
-		const subject = en ? "SITCON 2027 Sponsorship inquiry" : "SITCON 2027 贊助洽詢";
-		const draft = document.querySelector<HTMLTextAreaElement>("#inquiry-text");
-		if (draft) draft.value = `${en ? "To" : "收件人"}: contact@sitcon.org\n${en ? "Subject" : "主旨"}: ${subject}\n\n${body}`;
-		const gmail = document.querySelector<HTMLAnchorElement>("[data-sponsor-gmail]");
-		if (gmail) gmail.href = `https://mail.google.com/mail/?${new URLSearchParams({ view: "cm", fs: "1", to: "contact@sitcon.org", su: subject, body })}`;
-		document
-			.querySelectorAll<HTMLAnchorElement>("[data-sponsor-email]")
-			.forEach(link => (link.href = `mailto:contact@sitcon.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`));
+		const selection = `\n\n${en ? "Plans / items of interest:" : "感興趣的方案／品項："}\n${items || (en ? "(Not selected)" : "（尚未選擇）")}\n\n`;
+		if (!previousSelection) {
+			draft.value = en
+				? `Hello SITCON,\n\nWe are interested in sponsoring SITCON 2027.${selection}Organization:\nContact person:\nQuestions or goals:\n`
+				: `SITCON 團隊好：\n\n我們有意贊助 SITCON 2027。${selection}單位名稱：\n聯絡人：\n合作想法／問題：\n`;
+		} else {
+			// Only refresh the generated selection block; preserve edits to the message.
+			// If the selection block itself was edited, keep the author's version too.
+			draft.value = draft.value.replace(previousSelection, () => selection);
+		}
+		previousSelection = selection;
+		updateLinks();
 	}
-	updateEmail();
-	window.addEventListener("itemsChange", updateEmail);
-	document.getElementById("copy-inquiry")?.addEventListener("click", async () => {
-		updateEmail();
-		const draft = document.querySelector<HTMLTextAreaElement>("#inquiry-text");
-		const status = document.getElementById("copy-status");
-		const en = document.documentElement.lang === "en";
-		if (!draft) return;
-		try {
-			await navigator.clipboard.writeText(draft.value);
-			if (status) status.textContent = en ? "Inquiry copied. Paste it into your email app to send." : "已複製洽詢內容，請貼到郵件中寄出。";
-		} catch {
-			const preview = document.querySelector<HTMLDetailsElement>("#inquiry-preview");
-			if (preview) preview.open = true;
-			draft.focus();
-			draft.select();
-			if (status) status.textContent = en ? "Please copy the selected inquiry text." : "請手動複製已選取的洽詢內容。";
-		}
-	});
-	document.getElementById("copy-email")?.addEventListener("click", async () => {
-		const status = document.getElementById("copy-status");
-		try {
-			await navigator.clipboard.writeText("contact@sitcon.org");
-			if (status) status.textContent = document.documentElement.lang === "en" ? "Email copied." : "已複製信箱。";
-		} catch {
-			if (status) status.textContent = document.documentElement.lang === "en" ? "Please select and copy contact@sitcon.org." : "請選取並複製 contact@sitcon.org。";
-		}
-	});
+	updateSelection();
+	window.addEventListener("itemsChange", updateSelection);
+	subject?.addEventListener("input", updateLinks);
+	draft?.addEventListener("input", updateLinks);
+	email?.addEventListener("click", updateLinks);
+	gmail?.addEventListener("click", updateLinks);
 </script>
 <style>
 	section {
@@ -82,74 +69,76 @@ const en = lang === "en";
 	}
 	h2 {
 		font-size: clamp(1.8rem, 5vw, 3rem);
-		margin-bottom: 1rem;
-	}
-	p {
-		max-width: 42rem;
-		margin: 0 auto 1.5rem;
-		line-height: 1.7;
+		margin-bottom: 2rem;
 	}
 	a {
 		color: #12663c;
 		text-underline-offset: 0.2em;
 	}
+	.email-draft {
+		max-width: 42rem;
+		margin: 0 auto 1.5rem;
+		text-align: left;
+	}
+	.recipient {
+		margin-bottom: 1.25rem;
+		font-size: 0.95rem;
+	}
+	.recipient span {
+		margin-left: 0.5rem;
+	}
+	label {
+		display: block;
+		margin-bottom: 0.4rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+	input,
+	textarea {
+		box-sizing: border-box;
+		width: 100%;
+		padding: 0.75rem;
+		margin-bottom: 1.25rem;
+		font: inherit;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #1d1d1f;
+		background: white;
+		border: 1px solid #8ba693;
+		border-radius: 0.5rem;
+	}
+	textarea {
+		resize: vertical;
+		min-height: 12rem;
+	}
+	input:focus-visible,
+	textarea:focus-visible,
+	.email-action:focus-visible {
+		outline: 2px solid #14693e;
+		outline-offset: 3px;
+	}
+	.email-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
 	.email-action {
-		display: inline-block;
-		padding: 0.8rem 1.8rem;
+		flex: 1;
+		padding: 0.8rem 1rem;
+		border: 1px solid #14693e;
 		border-radius: 2rem;
 		background: #14693e;
 		color: white;
 		text-decoration: none;
-		margin-bottom: 1.5rem;
+		text-align: center;
 	}
-	.email-help {
-		font-size: 0.9rem;
-	}
-	.email-options {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin-bottom: 1rem;
-	}
-	#inquiry-preview {
-		max-width: 42rem;
-		margin: 0 auto 1.5rem;
-	}
-	summary { cursor: pointer; }
-	textarea {
-		width: 100%;
-		min-height: 16rem;
-		margin-top: 0.75rem;
-		padding: 0.75rem;
-		font: inherit;
-		font-size: 1rem;
-		line-height: 1.6;
-		border: 1px solid #14693e;
-		border-radius: 0.5rem;
-		resize: vertical;
-	}
-	.address {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
-	button {
-		padding: 0.5rem 0.8rem;
-		border: 1px solid #14693e;
-		border-radius: 0.5rem;
+	.gmail {
 		background: white;
-		cursor: pointer;
-	}
-	#copy-status {
-		min-height: 1.7em;
-		margin: 0.5rem auto;
+		color: #12663c;
 	}
 	.personal {
 		font-size: 0.9rem;
-		margin-bottom: 0;
+		line-height: 1.7;
+		margin: 0 auto;
 	}
 </style>
