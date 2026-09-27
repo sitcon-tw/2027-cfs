@@ -12,8 +12,16 @@ const en = lang === "en";
 				: "告訴我們你的合作想法。點擊下方按鈕會開啟郵件程式，並帶入已選方案與品項。"
 		}
 	</p>
-	<a class="email-action" data-sponsor-email href="mailto:contact@sitcon.org">{en ? "Open email to discuss sponsorship" : "開啟郵件洽談"}</a>
-	<p class="email-help">{en ? "If no email app opens, copy the address below and email us directly." : "若沒有開啟郵件程式，可複製下方信箱，自行寄信聯絡。"}</p>
+	<a class="email-action" data-sponsor-email target="_self" href="mailto:contact@sitcon.org">{en ? "Open email to discuss sponsorship" : "開啟郵件洽談"}</a>
+	<p class="email-help">{en ? "If your email app does not open or a blank tab appears, return here to use Gmail or copy your inquiry." : "若郵件程式未開啟或出現空白分頁，請回到此處使用 Gmail，或複製洽詢內容寄出。"}</p>
+	<div class="email-options">
+		<a data-sponsor-gmail href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=contact%40sitcon.org" target="_blank" rel="noopener noreferrer">{en ? "Compose in Gmail" : "使用 Gmail 撰寫"}</a>
+		<button id="copy-inquiry" type="button">{en ? "Copy inquiry" : "複製洽詢內容"}</button>
+	</div>
+	<details id="inquiry-preview">
+		<summary>{en ? "View inquiry text" : "查看洽詢內容"}</summary>
+		<textarea id="inquiry-text" readonly aria-label={en ? "Inquiry text" : "洽詢內容"}></textarea>
+	</details>
 	<div class="address"><a href="mailto:contact@sitcon.org">contact@sitcon.org</a><button id="copy-email" type="button">{en ? "Copy email" : "複製信箱"}</button></div>
 	<p id="copy-status" role="status"></p>
 	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
@@ -28,12 +36,34 @@ const en = lang === "en";
 		const body = en
 			? `Hello SITCON,\n\nWe are interested in sponsoring SITCON 2027.\n\n${selected}\n\nOrganization:\nContact person:\nQuestions or goals:\n`
 			: `SITCON 團隊好：\n\n我們有意贊助 SITCON 2027。\n\n${selected}\n\n單位名稱：\n聯絡人：\n合作想法／問題：\n`;
+		const subject = en ? "SITCON 2027 Sponsorship inquiry" : "SITCON 2027 贊助洽詢";
+		const draft = document.querySelector<HTMLTextAreaElement>("#inquiry-text");
+		if (draft) draft.value = `${en ? "To" : "收件人"}: contact@sitcon.org\n${en ? "Subject" : "主旨"}: ${subject}\n\n${body}`;
+		const gmail = document.querySelector<HTMLAnchorElement>("[data-sponsor-gmail]");
+		if (gmail) gmail.href = `https://mail.google.com/mail/?${new URLSearchParams({ view: "cm", fs: "1", to: "contact@sitcon.org", su: subject, body })}`;
 		document
 			.querySelectorAll<HTMLAnchorElement>("[data-sponsor-email]")
-			.forEach(link => (link.href = `mailto:contact@sitcon.org?subject=${encodeURIComponent(en ? "SITCON 2027 Sponsorship inquiry" : "SITCON 2027 贊助洽詢")}&body=${encodeURIComponent(body)}`));
+			.forEach(link => (link.href = `mailto:contact@sitcon.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`));
 	}
 	updateEmail();
 	window.addEventListener("itemsChange", updateEmail);
+	document.getElementById("copy-inquiry")?.addEventListener("click", async () => {
+		updateEmail();
+		const draft = document.querySelector<HTMLTextAreaElement>("#inquiry-text");
+		const status = document.getElementById("copy-status");
+		const en = document.documentElement.lang === "en";
+		if (!draft) return;
+		try {
+			await navigator.clipboard.writeText(draft.value);
+			if (status) status.textContent = en ? "Inquiry copied. Paste it into your email app to send." : "已複製洽詢內容，請貼到郵件中寄出。";
+		} catch {
+			const preview = document.querySelector<HTMLDetailsElement>("#inquiry-preview");
+			if (preview) preview.open = true;
+			draft.focus();
+			draft.select();
+			if (status) status.textContent = en ? "Please copy the selected inquiry text." : "請手動複製已選取的洽詢內容。";
+		}
+	});
 	document.getElementById("copy-email")?.addEventListener("click", async () => {
 		const status = document.getElementById("copy-status");
 		try {
@@ -74,6 +104,31 @@ const en = lang === "en";
 	}
 	.email-help {
 		font-size: 0.9rem;
+	}
+	.email-options {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+	#inquiry-preview {
+		max-width: 42rem;
+		margin: 0 auto 1.5rem;
+	}
+	summary { cursor: pointer; }
+	textarea {
+		width: 100%;
+		min-height: 16rem;
+		margin-top: 0.75rem;
+		padding: 0.75rem;
+		font: inherit;
+		font-size: 1rem;
+		line-height: 1.6;
+		border: 1px solid #14693e;
+		border-radius: 0.5rem;
+		resize: vertical;
 	}
 	.address {
 		display: flex;
