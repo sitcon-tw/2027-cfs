@@ -74,7 +74,7 @@ const items = itemsUnsorted.sort((a, b) => {
 			applyExpandState();
 		});
 
-	const getVisibleCards = (cards: HTMLElement[]): HTMLElement[] => cards.filter(card => !card.classList.contains("package-exclusive-item"));
+	const getVisibleCards = (cards: HTMLElement[]): HTMLElement[] => cards.filter(card => !card.hidden);
 
 	const isCardInactive = (card: HTMLElement) => {
 		const soldOut = card.getAttribute("data-is-sold-out") === "true";
@@ -87,7 +87,7 @@ const items = itemsUnsorted.sort((a, b) => {
 		if (!cardsGrid) return;
 
 		const cards = Array.from(cardsGrid.querySelectorAll(".card")) as HTMLElement[];
-		// Count only visible cards (exclude package-exclusive-item)
+		// Count every card displayed in the catalog.
 		let visibleCount = getVisibleCards(cards).length;
 
 		let orderAttr = "data-order";
@@ -182,6 +182,15 @@ const items = itemsUnsorted.sort((a, b) => {
 			sortCards(category);
 		});
 	});
+
+	document.querySelectorAll<HTMLAnchorElement>("[data-item-category]").forEach(link => {
+		link.addEventListener("click", () => {
+			const category = link.dataset.itemCategory;
+			document.querySelector<HTMLButtonElement>(`.tab[data-category="${category}"]`)?.click();
+		});
+	});
+	// Match the initial all-category order to the cards, including availability.
+	sortCards("all");
 
 	const totalCards = getVisibleCards(Array.from(document.querySelectorAll(".card")) as HTMLElement[]).length;
 	updateExpandButtonVisibility(totalCards);
@@ -408,7 +417,7 @@ const items = itemsUnsorted.sort((a, b) => {
 
 	// Store text constants for JavaScript access
 	const viewPlanDetailsText = document.getElementById("viewPlanBtnText")?.textContent || "檢視方案詳情";
-	const contactUsText = "聯絡我們";
+	const contactUsText = document.documentElement.lang === "en" ? "Contact us" : "聯絡我們";
 
 	const updateViewPlanButtonText = () => {
 		const viewPlanBtnText = document.getElementById("viewPlanBtnText");

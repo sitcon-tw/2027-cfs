@@ -5,7 +5,6 @@ import Intro from "@components/section/Intro.astro";
 import About from "@components/section/About.astro";
 import News from "@components/section/News.astro";
 import Sponsors from "@components/section/Sponsors.astro";
-import Cycle from "@components/section/Cycle.astro";
 import Time from "@components/section/Time.astro";
 import Items from "@components/section/Items.astro";
 import Plans from "@components/section/Plans.astro";
@@ -20,7 +19,7 @@ import ItemsPopup from "@components/section/ItemsPopup.astro";
 const { lang = "zh-Hant" } = Astro.props;
 const ogImage = lang === "zh-Hant" ? ogImageZH : ogImageEN;
 const t = await import(`../i18n/${lang}.json`).then(m => m.default);
-const sections = [Nav, Hero, Intro, News, Highlights, About, Plans, Items, OpenDream, ItemsPopup, Form, Sponsors, Cycle, Time, FAQ, Footer];
+const sections = [Nav, Hero, Intro, Time, Highlights, About, News, Plans, Items, OpenDream, ItemsPopup, Form, Sponsors, FAQ, Footer];
 const { title = t.meta.title, description = t.meta.description } = Astro.props;
 
 // Default schema for homepage (Organization + WebSite)
@@ -156,7 +155,7 @@ const defaultSchema = {
 							const itemId = id.replace("item-popup-", "");
 							const itemName = popupBg.querySelector(".title-row h3")?.textContent || "";
 							document.title = itemName + originalSite;
-							history.pushState({ popupId: id, type: "item" }, "", `${import.meta.env.BASE_URL.replace(/\/$/, "")}/item/${itemId}/`);
+							history.pushState({ popupId: id, type: "item" }, "", `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${document.documentElement.lang === "en" ? "en/" : ""}item/${itemId}/`);
 							const price = parseInt(popupBg.querySelector(".sub-item-price")?.textContent || "0");
 							window.dataLayer.push({
 								event: "view_item",
@@ -182,20 +181,39 @@ const defaultSchema = {
 						document.dispatchEvent(new CustomEvent("popupClosed", { detail: { id: closingId } }));
 					}, 300);
 					if (updateUrl) {
-						history.pushState(null, "", window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`);
+						history.pushState(null, "", window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${document.documentElement.lang === "en" ? "en/" : ""}`);
 						document.title = originalTitle;
 					}
 				}
 			};
 
 			let touchStartX = 0;
-			let touchEndX = 0;
+			let touchStartY = 0;
+			let swipeAllowed = false;
 			let activePopupId = "";
 			const SWIPE_THRESHOLD = 50; // px
 
 			function getItemPopupIds() {
-				return Array.from(document.querySelectorAll("[id^=item-popup-]")).map(el => el.id);
+				const cards = Array.from(document.querySelectorAll<HTMLElement>("#items .cards-grid .card"));
+				const ids = cards.map(card => `item-popup-${card.dataset.cardId}`);
+				// Plan-exclusive items can still be opened directly; fall back to the complete catalog.
+				return ids.includes(activePopupId) ? ids : Array.from(document.querySelectorAll("[id^=item-popup-]")).map(el => el.id);
 			}
+
+			function updateNavigationButtons() {
+				const ids = getItemPopupIds();
+				const index = ids.indexOf(activePopupId);
+				const bg = document.getElementById(activePopupId)?.nextElementSibling;
+				bg?.querySelectorAll<HTMLButtonElement>("[data-item-nav]").forEach(button => {
+					button.disabled = index < 0 || (button.dataset.itemNav === "prev" ? index === 0 : index === ids.length - 1);
+				});
+			}
+
+			document.addEventListener("click", event => {
+				const target = event.target as Element;
+				const button = target.closest<HTMLButtonElement>("[data-item-nav]");
+				if (button && !button.disabled) navigateToAdjacent(button.dataset.itemNav as "next" | "prev");
+			});
 
 			function navigateToAdjacent(direction: "next" | "prev") {
 				const ids = getItemPopupIds();
@@ -217,31 +235,34 @@ const defaultSchema = {
 			}
 
 			function onKeyDown(e: KeyboardEvent) {
-				if (!activePopupId) return;
+				if (!activePopupId || !(e.target instanceof Element) || e.target.closest("input, textarea, select, [contenteditable], .image-carousel")) return;
 				if (e.key === "ArrowRight") {
+					e.preventDefault();
 					navigateToAdjacent("next");
 				} else if (e.key === "ArrowLeft") {
+					e.preventDefault();
 					navigateToAdjacent("prev");
 				}
 			}
 
 			function onTouchStart(e: TouchEvent) {
-				const t = e.touches && e.touches[0];
-				if (t) touchStartX = t.clientX;
+				const target = e.target as Element;
+				swipeAllowed = e.touches.length === 1 && !target.closest(".image-carousel, input, textarea, select, button, a");
+				const touch = e.touches[0];
+				if (touch) {
+					touchStartX = touch.clientX;
+					touchStartY = touch.clientY;
+				}
 			}
 
 			function onTouchEnd(e: TouchEvent) {
-				const t = e.changedTouches && e.changedTouches[0];
-				if (t) touchEndX = t.clientX;
-				const dx = touchEndX - touchStartX;
-				if (Math.abs(dx) > SWIPE_THRESHOLD) {
-					if (dx < 0) {
-						// swipe left -> next
-						navigateToAdjacent("next");
-					} else {
-						// swipe right -> prev
-						navigateToAdjacent("prev");
-					}
+				const touch = e.changedTouches[0];
+				if (!swipeAllowed || !touch) return;
+				swipeAllowed = false;
+				const dx = touch.clientX - touchStartX;
+				const dy = touch.clientY - touchStartY;
+				if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.5) {
+					navigateToAdjacent(dx < 0 ? "next" : "prev");
 				}
 			}
 
@@ -263,6 +284,9 @@ const defaultSchema = {
 				// Only attach for item popups
 				if (activePopupId && activePopupId.startsWith("item-popup-")) {
 					attachHandlers();
+					updateNavigationButtons();
+				} else {
+					detachHandlers();
 				}
 			});
 

@@ -4,6 +4,7 @@ import { ArrowRight } from "@lucide/astro";
 
 interface HighlightCard {
 	badge?: string;
+	category?: string;
 	title: string;
 	description: string;
 	link: string;
@@ -13,11 +14,11 @@ interface HighlightCard {
 
 <section id="highlights">
 	<h2>{t.title}</h2>
-	<p class="subtitle">{t.subtitle}</p>
+	{t.subtitle && <p class="subtitle">{t.subtitle}</p>}
 	<div class="cards">
 		{
 			t.cards.map((card: HighlightCard) => (
-				<a class="card aos aos-fadeInBottom" href={card.link}>
+				<a class="card aos aos-fadeInBottom" href={card.link} data-item-category={card.category}>
 					<div class="title-row">
 						<h3>{card.title}</h3>
 						{card.badge && <span class="badge">{card.badge}</span>}

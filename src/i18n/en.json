@@ -26,25 +26,28 @@
 	},
 	"highlights": {
 		"title": "What can SITCON offer?",
-		"subtitle": "Saturday, March 13, 2027 · Academia Sinica, Humanities and Social Sciences Building",
+		"subtitle": "",
 		"cards": [
 			{
 				"title": "Talent Recruitment",
 				"description": "Over a thousand CS students in one day. Booths, exclusive sessions and complimentary tickets put you face to face with future engineers.",
-				"link": "#plans",
-				"cta": "See sponsorship plans"
+				"link": "#items",
+				"cta": "Explore sponsorship items",
+				"category": "talent_recruitment"
 			},
 			{
 				"title": "Brand Exposure",
 				"description": "From venue backdrops and the R0 video loop to social media and email pushes, keep your brand in the most active student community.",
-				"link": "#plans",
-				"cta": "See sponsorship plans"
+				"link": "#items",
+				"cta": "Explore sponsorship items",
+				"category": "brand_exposure"
 			},
 			{
 				"title": "Product Promotion",
 				"description": "Co-branded tickets, welcome-bag inserts and booth demos let students try your product on site.",
-				"link": "#plans",
-				"cta": "See sponsorship plans"
+				"link": "#items",
+				"cta": "Explore sponsorship items",
+				"category": "product_promotion"
 			},
 			{
 				"badge": "New in 2027",
@@ -146,7 +149,9 @@
 				"title": "SITCON Summer Camp",
 				"description": "Since 2014, every July we run a summer camp to help students get started with CS and ignite passion for open source. Students serve as both campers and volunteers. Beyond the core curriculum, we host open-source talks, a community expo, and the Vision Café—so learning is paired with rich opportunities to connect and exchange ideas."
 			}
-		]
+		],
+		"coverage_title": "Media coverage",
+		"swipe_hint": "Swipe to browse all 6 stories →"
 	},
 	"plans": {
 		"scroll_hint": "Swipe horizontally to compare all plans →",
@@ -273,7 +278,8 @@
 			"copy": "copies",
 			"second": "seconds",
 			"time": "times",
-			"type": "types"
+			"type": "types",
+			"件": "copies"
 		},
 		"item_categories": {
 			"all": "All",

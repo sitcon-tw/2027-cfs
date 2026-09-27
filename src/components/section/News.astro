@@ -1,15 +1,9 @@
 ---
 import Popup from "@components/Popup.astro";
-import youratorNews from "@assets/img/news/youratorNews.webp";
-import ettodayNews from "@assets/img/news/ettodayNews.webp";
-import yahooNews from "@assets/img/news/yahooNews.webp";
-import moneyUdnNews from "@assets/img/news/moneyUdnNews.webp";
-import newstaiwan from "@assets/img/news/newstaiwan.webp";
 import president2026 from "@assets/img/news/president2026.webp";
 import cna2026 from "@assets/img/news/cna2026.webp";
 import udn2026 from "@assets/img/news/udn2026.webp";
 import ocac2026 from "@assets/img/news/ocac2026.webp";
-import taiwanhot2026 from "@assets/img/news/taiwanhot2026.webp";
 import line2026 from "@assets/img/news/line2026.webp";
 import muchtv2026 from "@assets/img/news/muchtv2026.webp";
 import hk from "@assets/img/sitcon_hk.webp";
@@ -56,25 +50,17 @@ const news: News[] = [
 ---
 
 <section id="news">
+	<h2>SITCON 2026 {t.coverage_title || "媒體報導"}</h2>
+	<p class="news-hint">{t.swipe_hint}</p>
 	<div class="news-content">
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://www.ettoday.net/news/20200813/1784111.htm"><img src={ettodayNews.src} alt="news.owlting.com" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://www.president.gov.tw/News/39930"><img src={president2026.src} alt="president.gov.tw" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://money.udn.com/money/story/5723/9018057"><img src={moneyUdnNews.src} alt="money.udn.com" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://www.yourator.co/articles/215"><img src={youratorNews.src} alt="yourator.co" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://www.youtube.com/watch?v=zplk0zALtOM"><img src={muchtv2026.src} alt="youtube.com" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://ocacnews.net/article/423192"><img src={ocac2026.src} alt="ocacnews.net" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://newstaiwan.net/2024/03/09/155739/"><img src={newstaiwan.src} alt="newstaiwan.net" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://techblog.lycorp.co.jp/zh-hant/sitcon2026-sponsorship"><img src={line2026.src} alt="techblog.lycorp.co.jp" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://money.udn.com/money/story/7307/9408273"><img src={udn2026.src} alt="money.udn.com" class="news-img" /></a>
-		<a
-			target="_blank"
-			class="aos aos-fadeInBottom"
-			href="https://tw.news.yahoo.com/1300-%E9%9D%92%E5%B9%B4%E5%BC%95%E7%88%86ai-%E5%89%B5%E6%96%B0%E8%88%87%E8%B7%A8%E7%95%8C%E5%A4%A7%E9%9D%A9%E5%91%BD-020635586.html"
-		>
-			<img src={yahooNews.src} alt="yahoo.com" class="news-img" />
+		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930"><img src={president2026.src} alt="總統府 · SITCON 2026" class="news-img" loading="lazy" /></a>
+		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx"><img src={cna2026.src} alt="中央社 · SITCON 2026" class="news-img" loading="lazy" /></a>
+		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273"><img src={udn2026.src} alt="經濟日報 · SITCON 2026" class="news-img" loading="lazy" /></a>
+		<a target="_blank" rel="noopener noreferrer" href="https://ocacnews.net/article/423192"><img src={ocac2026.src} alt="僑務電子報 · SITCON 2026" class="news-img" loading="lazy" /></a>
+		<a target="_blank" rel="noopener noreferrer" href="https://techblog.lycorp.co.jp/zh-hant/sitcon2026-sponsorship">
+			<img src={line2026.src} alt="LY Corporation Tech Blog · SITCON 2026" class="news-img" loading="lazy" />
 		</a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://www.cna.com.tw/news/aipl/202603280032.aspx"><img src={cna2026.src} alt="cna.com.tw" class="news-img" /></a>
-		<a target="_blank" class="aos aos-fadeInBottom" href="https://www.taiwanhot.net/news/1131936"><img src={taiwanhot2026.src} alt="taiwanhot.net" class="news-img" /></a>
+		<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=zplk0zALtOM"><img src={muchtv2026.src} alt="年代新聞 · SITCON 2026" class="news-img" loading="lazy" /></a>
 	</div>
 	<Popup hero={false} btnText={t.title} id="news-popup">
 		<h3>{t.title}</h3>
@@ -108,140 +94,63 @@ const news: News[] = [
 		padding: 3rem 3rem 1rem;
 	}
 
-	/* One interleaved collage: three lanes, rows step down and overlap only the bottom of the row above.
-	   Middle lane (every 3n+2 item) carries the 2026 coverage and is the only lane shown on phones. */
+	.news-hint {
+		display: none;
+		text-align: center;
+		color: var(--gray);
+		margin: 1rem;
+	}
+	#news {
+		padding: 3rem 0;
+	}
 	.news-content {
-		max-width: 1400px;
+		max-width: 1100px;
 		margin: auto;
-		padding: 2rem 2rem 4rem;
+		padding: 1rem 2rem 3rem;
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		column-gap: 0;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.5rem;
 		align-items: start;
 	}
-
-	/* lanes are wider than their column so neighbours overlap sideways as well */
-	.news-content a:nth-child(3n + 1) {
-		width: 108%;
-	}
-
-	.news-content a:nth-child(3n + 2) {
-		width: 118%;
-		margin-left: -9%;
-	}
-
-	.news-content a:nth-child(3n + 3) {
-		width: 108%;
-		margin-left: -8%;
-	}
-
 	.news-content a {
 		display: block;
-		position: relative;
+		min-width: 0;
 	}
-
 	.news-content a:nth-child(3n + 2) {
-		transform: translateY(9rem);
+		transform: translateY(1rem);
 	}
-
-	/* each row paints above the row before it; the middle item paints above its own row */
-	.news-content a:nth-child(-n + 3) {
-		z-index: 2;
-	}
-	.news-content a:nth-child(n + 4):nth-child(-n + 6) {
-		z-index: 4;
-	}
-	.news-content a:nth-child(n + 7):nth-child(-n + 9) {
-		z-index: 6;
-	}
-	.news-content a:nth-child(n + 10) {
-		z-index: 8;
-	}
-	.news-content a:nth-child(2):nth-child(3n + 2) {
-		z-index: 3;
-	}
-	.news-content a:nth-child(5):nth-child(3n + 2) {
-		z-index: 5;
-	}
-	.news-content a:nth-child(8):nth-child(3n + 2) {
-		z-index: 7;
-	}
-	.news-content a:nth-child(11):nth-child(3n + 2) {
-		z-index: 9;
-	}
-
-	/* rows after the first overlap the previous row by roughly a fifth of an image */
-	.news-content a:nth-child(n + 4) {
-		margin-top: -21%;
-	}
-
 	.news-img {
-		width: 100%;
 		display: block;
-		box-shadow: rgba(100, 100, 111, 0.25) 0px 7px 29px 0px;
-		transition: transform 0.3s;
+		width: 100%;
+		max-height: 22rem;
+		object-fit: cover;
+		object-position: top;
+		box-shadow: 0 5px 20px #0002;
+		border-radius: 0.4rem;
 	}
-
-	.news-content a:hover {
-		z-index: 20;
-	}
-
-	.news-img:hover {
-		transform: scale(1.05);
-	}
-
-	@media screen and (max-width: 60rem) {
-		.news-content {
-			display: block;
-			max-width: 900px;
-			padding: 1.5rem 1rem 2rem;
-		}
-
-		/* phones: only the middle lane, each screenshot nearly full width so headlines stay legible */
-		.news-content a:nth-child(3n + 1),
-		.news-content a:nth-child(3n + 3) {
-			display: none;
-		}
-
-		.news-content a:nth-child(3n + 2) {
-			transform: none;
-			width: 100%;
-			margin: 0;
-		}
-
-		.news-content a:nth-child(3n + 2) .news-img {
-			width: 90%;
-			margin-inline: auto 0;
-		}
-
-		.news-content a:nth-child(6n + 2) .news-img {
-			margin-inline: 0 auto;
-		}
-
-		.news-content a:nth-child(3n + 2):not(:nth-child(2)) {
-			margin-top: -1.25rem;
-		}
-	}
-
-	/* Popup button stays in normal flow under the grid instead of floating over it */
 	#news :global(.detail-btn) {
 		position: static;
-		margin: 1.5rem auto 0;
 	}
-
-	@media screen and (max-width: 60rem) {
+	@media (max-width: 60rem) {
+		.news-hint {
+			display: block;
+		}
 		.news-content {
-			grid-template-columns: repeat(2, 1fr);
+			display: flex;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			padding: 1rem 1.5rem 2rem;
 			gap: 1rem;
-			padding: 1.5rem 1rem;
 		}
-
-		.news-col-outer {
-			display: none;
+		.news-content a {
+			flex: 0 0 min(85vw, 28rem);
+			scroll-snap-align: center;
 		}
-
-		.news-col {
-			gap: 1rem;
+		.news-content a:nth-child(3n + 2) {
+			transform: none;
+		}
+		.news-img {
+			max-height: 22rem;
 		}
 	}
 

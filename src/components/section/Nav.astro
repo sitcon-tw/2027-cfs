@@ -1,5 +1,5 @@
 ---
-const { t } = Astro.props;
+const { t, lang } = Astro.props;
 ---
 
 <nav aria-label="Main Navigation" class="navbar">
@@ -11,13 +11,10 @@ const { t } = Astro.props;
 			<span class="hamburger-line"></span>
 		</button>
 		<div class="nav-menu" id="nav-menu">
-			<a href="#about" class="nav-link">{t.data}</a>
-			<a href="#time" class="nav-link">{t.info}</a>
 			<a href="#plans" class="nav-link">{t.plan}</a>
-			<a href="#opendream" class="nav-link">{t.opendream}</a>
 			<a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/` + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
-			<a href="#form" class="nav-link contact-btn">{t.contact}</a>
-			<button class="nav-link export-btn">{t.export}</button>
+			<a href="mailto:contact@sitcon.org" class="nav-link contact-btn">{t.contact}</a>
+			<a class="nav-link export-btn" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/${lang === "en" ? "en/" : ""}brochure/`} target="_blank" rel="noopener">{t.export}</a>
 		</div>
 	</div>
 </nav>
@@ -202,8 +199,11 @@ const { t } = Astro.props;
 		navMenu.classList.toggle("active");
 	});
 
-	const printButton = document.querySelector(".export-btn") as HTMLButtonElement;
-	printButton.addEventListener("click", () => {
-		window.print();
-	});
+	navMenu.querySelectorAll("a").forEach(link =>
+		link.addEventListener("click", () => {
+			hamburger.setAttribute("aria-expanded", "false");
+			hamburger.classList.remove("active");
+			navMenu.classList.remove("active");
+		})
+	);
 </script>

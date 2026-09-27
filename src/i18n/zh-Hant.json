@@ -26,25 +26,28 @@
 	},
 	"highlights": {
 		"title": "SITCON 能提供什麼？",
-		"subtitle": "2027 年 3 月 13 日（六）・中央研究院人文社會科學館",
+		"subtitle": "",
 		"cards": [
 			{
 				"title": "人才招募",
 				"description": "上千名資訊領域學生齊聚一天。攤位、獨家議程與贈票，讓你直接和未來的工程師面對面。",
-				"link": "#plans",
-				"cta": "查看贊助方案"
+				"link": "#items",
+				"cta": "查看贊助品項",
+				"category": "talent_recruitment"
 			},
 			{
 				"title": "品牌曝光",
 				"description": "從會場背板、R0 影片輪播到社群與 Email 推播，把品牌留在最活躍的學生社群裡。",
-				"link": "#plans",
-				"cta": "查看贊助方案"
+				"link": "#items",
+				"cta": "查看贊助品項",
+				"category": "brand_exposure"
 			},
 			{
 				"title": "產品推廣",
 				"description": "聯名票種、迎賓袋文宣與攤位體驗，讓學生在年會現場直接試用你的產品。",
-				"link": "#plans",
-				"cta": "查看贊助方案"
+				"link": "#items",
+				"cta": "查看贊助品項",
+				"category": "product_promotion"
 			},
 			{
 				"badge": "2027 新增",
@@ -146,7 +149,9 @@
 				"title": "SITCON 夏令營",
 				"description": "自 2014 年開始，SITCON 每年 7 月皆會舉辦夏令營，讓有志於資訊領域的學生能夠輕鬆入門並激發對開源精神的熱情。學員與志工皆由學生組成，不僅僅是主線課程，還有開源演講、社群博覽會以及視界咖啡館，讓學生不只是學習，更有許多交流、激盪想法的機會。"
 			}
-		]
+		],
+		"coverage_title": "媒體報導",
+		"swipe_hint": "左右滑動，瀏覽 6 篇報導 →"
 	},
 	"plans": {
 		"scroll_hint": "左右滑動查看完整方案比較 →",

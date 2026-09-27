@@ -28,13 +28,13 @@ interface TeamItem {
 <section id="time">
 	<div class="time-container">
 		<div>
-			<h2>{t.title1}<br />{t.title2}</h2>
+			<h2>{lang === "en" ? "Meet at SITCON 2027" : "相約 SITCON 2027"}</h2>
 			<p>{t.date}</p>
 			<p>{t.location}</p>
 		</div>
 		<img src={volunteer.src} alt={t.volunteer_alt || "志工"} class="volunteer-img" />
 	</div>
-	<div class="aos spacer"></div>
+
 	<Popup btnText={t.popup_label} title={t.popup_label} hero={true} id="place-staff-popup" background={r0.src}>
 		<div class="info-container">
 			<h3>{t.activity_schedule}</h3>
@@ -356,6 +356,82 @@ interface TeamItem {
 
 		.venue-container {
 			padding-top: 30pt;
+		}
+	}
+
+	#time {
+		min-height: unset;
+		padding: 3rem 1.5rem;
+		background: #eff6ee;
+		gap: 1.5rem;
+	}
+	.time-container {
+		color: var(--black);
+		display: flex;
+		gap: 2rem;
+		align-items: center;
+	}
+	.time-container > div {
+		flex: 1;
+	}
+	.time-container h2 {
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		margin-bottom: 1rem;
+	}
+	.time-container p {
+		line-height: 1.8;
+	}
+	.volunteer-img {
+		display: block;
+		width: 40%;
+		aspect-ratio: 16/9;
+		object-fit: cover;
+		border-radius: 1rem;
+	}
+	#time :global(.detail-btn) {
+		position: static;
+	}
+	.timeline {
+		white-space: normal;
+		overflow: visible;
+		gap: 1rem;
+		width: 100%;
+	}
+	.timeline > div:not(.line) {
+		display: grid;
+		grid-template-columns: 12ch 1fr;
+		gap: 1rem;
+	}
+	.timeline span.date,
+	.timeline.zh-hant span.date {
+		width: auto;
+	}
+	@media (max-width: 600px) {
+		.time-container {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.volunteer-img {
+			width: 100%;
+			max-height: 12rem;
+		}
+		.info-container {
+			padding: 1.5rem;
+		}
+		.info-container h3 {
+			font-size: 1.6rem;
+		}
+		.timeline {
+			--left: 1.5rem;
+			font-size: 1rem;
+			line-height: 1.6;
+		}
+		.timeline > div:not(.line) {
+			grid-template-columns: 1fr;
+			gap: 0.1rem;
+		}
+		.location {
+			padding: 1.5rem;
 		}
 	}
 </style>

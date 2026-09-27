@@ -1,301 +1,90 @@
 ---
-const { t } = Astro.props;
-import FormInput from "../FormInput.astro";
-import CorporateQR from "@assets/img/qrcode-form.webp";
-import PersonalQR from "@assets/img/qrcode-personal.webp";
+const { t, lang } = Astro.props;
+const en = lang === "en";
 ---
 
-<section id="form">
-	<h2>
-		{t.titleLine1}
-		<br class="rwd-hidden" />
-		{t.titleLine2}
-	</h2>
-	<div class="qrcodes">
-		<div>
-			<img src={CorporateQR.src} alt={t.qrAlt} />
-			<p>{t.corporateTitle}</p>
-		</div>
-		<div>
-			<img src={PersonalQR.src} alt={t.qrAlt} />
-			<p>{t.personal.qrcode}</p>
-		</div>
-	</div>
-	<div class="container">
-		<form id="sponsor-form" data-required-message={t.messages.required} data-leading-equal-message={t.messages.leadingEqual} data-error-message={t.messages.error}>
-			<h3>{t.corporateTitle}</h3>
-			<FormInput title={t.fields.organization.title} name="organization" description={t.fields.organization.description} placeholder={t.fields.organization.placeholder} required />
-			<FormInput title={t.fields.department.title} name="department" description={t.fields.department.description} placeholder={t.fields.department.placeholder} />
-			<FormInput title={t.fields.name.title} name="name" description={t.fields.name.description} placeholder={t.fields.name.placeholder} required />
-			<FormInput title={t.fields.contact.title} name="contact" description={t.fields.contact.description} placeholder={t.fields.contact.placeholder} required />
-			<FormInput title={t.fields.message.title} name="message" description={t.fields.message.description} placeholder={t.fields.message.placeholder} type="textarea" />
-			<div id="submit-section">
-				<button id="submit" type="submit" data-default-text={t.button.default} data-loading-text={t.button.loading}>
-					{t.button.default}
-				</button>
-				<span id="form-message" aria-live="polite"></span>
-			</div>
-		</form>
-		<div class="divider"></div>
-		<div class="personal">
-			<h3>{t.personal.title}</h3>
-			<a class="personal-button" href="https://sitcon.org/donate" target="_blank">{t.personal.cta}</a>
-		</div>
-	</div>
+<section id="form" data-contact-lang={lang}>
+	<h2>{en ? "Let’s build SITCON 2027 together" : "一起成就 SITCON 2027"}</h2>
+	<p>{en ? "Tell us about your sponsorship goals. Your selected items will be included in the email draft." : "告訴我們你的合作想法，已選方案與品項會帶入郵件草稿。"}</p>
+	<a class="email-action" data-sponsor-email href="mailto:contact@sitcon.org">{en ? "Discuss sponsorship" : "洽談贊助合作"}</a>
+	<div class="address"><a href="mailto:contact@sitcon.org">contact@sitcon.org</a><button id="copy-email" type="button">{en ? "Copy email" : "複製信箱"}</button></div>
+	<p id="copy-status" role="status"></p>
+	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
 </section>
-
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
-
-	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse";
-
-	const form = document.getElementById("sponsor-form") as HTMLFormElement | null;
-	const submitButton = document.getElementById("submit") as HTMLButtonElement | null;
-	const messageElement = document.getElementById("form-message") as HTMLSpanElement | null;
-
-	if (!form || !submitButton || !messageElement) {
-		console.warn("Sponsor form elements are missing.");
-	} else {
-		const requiredMessage = form.dataset.requiredMessage ?? "請確認必填欄位";
-		const leadingEqualMessage = form.dataset.leadingEqualMessage ?? "回答的第一個字不可是=";
-		const successMessage = form.dataset.successMessage ?? "已送出成功！感謝您的填寫";
-		const errorMessage = form.dataset.errorMessage ?? "發生錯誤，請稍後再試";
-		const defaultButtonText = submitButton.dataset.defaultText ?? submitButton.textContent ?? "";
-		const loadingButtonText = submitButton.dataset.loadingText ?? "送出中…";
-
-		const entryMap = {
-			organization: "entry.1867519928",
-			department: "entry.363990418",
-			name: "entry.1660888396",
-			contact: "entry.1209239304",
-			message: "entry.65159086"
-		} as const;
-
-		const messageTextarea = form.querySelector('[name="message"]') as HTMLTextAreaElement | null;
-		let userMessage = "";
-
-		function getCartItemsString() {
-			const interestedItems = getInterestedItems();
-			if (interestedItems.length === 0) return "";
-
-			const itemsList = interestedItems.map(item => item.title).join("、");
-
-			return `感興趣的項目：${itemsList}`;
-		}
-
-		function updateMessageField() {
-			if (!messageTextarea) return;
-
-			const cartItems = getCartItemsString();
-			if (cartItems) {
-				messageTextarea.value = userMessage.trim() ? `${userMessage}\n\n${cartItems}` : cartItems;
-			} else {
-				messageTextarea.value = userMessage;
-			}
-		}
-
-		if (messageTextarea) {
-			messageTextarea.addEventListener("input", () => {
-				const currentValue = messageTextarea.value;
-				const cartItems = getCartItemsString();
-
-				if (cartItems && currentValue.includes(cartItems)) {
-					userMessage = currentValue.replace(`\n\n${cartItems}`, "").replace(cartItems, "").trim();
-				} else {
-					userMessage = currentValue;
-				}
-			});
-
-			updateMessageField();
-
-			window.addEventListener("itemsChange", () => {
-				updateMessageField();
-			});
-		}
-
-		const checkForm = () => {
-			const formData = new FormData(form);
-			if (!formData.get("organization") || !formData.get("name") || !formData.get("contact")) {
-				messageElement.textContent = requiredMessage;
-				return false;
-			}
-			for (const [, value] of formData.entries()) {
-				if (typeof value === "string" && value.startsWith("=")) {
-					messageElement.textContent = leadingEqualMessage;
-					return false;
-				}
-			}
-			messageElement.textContent = "";
-			return true;
-		};
-
-		form.addEventListener("submit", event => {
-			event.preventDefault();
-			if (!checkForm()) return;
-
-			submitButton.disabled = true;
-			submitButton.textContent = loadingButtonText;
-
-			const formData = new FormData();
-			Object.entries(entryMap).forEach(([localKey, entryKey]) => {
-				const value = (form.querySelector(`[name="${localKey}"]`) as HTMLInputElement | null)?.value ?? "";
-				formData.append(entryKey, value);
-			});
-
-			fetch(apiUrl, {
-				method: "POST",
-				mode: "no-cors",
-				body: formData
-			})
-				.then(() => {
-					form.reset();
-					userMessage = "";
-					updateMessageField();
-					messageElement.textContent = successMessage;
-				})
-				.catch(e => {
-					console.error("Form submit error:", e);
-					messageElement.textContent = errorMessage;
-				})
-				.finally(() => {
-					submitButton.disabled = false;
-					submitButton.textContent = defaultButtonText;
-				});
-		});
+	function updateEmail() {
+		const en = document.documentElement.lang === "en";
+		const selected = getInterestedItems()
+			.map(item => `• ${item.title}${item.price ? ` — ${item.price}` : ""}`)
+			.join("\n");
+		const body = en
+			? `Hello SITCON,\n\nWe are interested in sponsoring SITCON 2027.\n\n${selected}\n\nOrganization:\nContact person:\nQuestions or goals:\n`
+			: `SITCON 團隊好：\n\n我們有意贊助 SITCON 2027。\n\n${selected}\n\n單位名稱：\n聯絡人：\n合作想法／問題：\n`;
+		document
+			.querySelectorAll<HTMLAnchorElement>("[data-sponsor-email]")
+			.forEach(link => (link.href = `mailto:contact@sitcon.org?subject=${encodeURIComponent(en ? "SITCON 2027 Sponsorship inquiry" : "SITCON 2027 贊助洽詢")}&body=${encodeURIComponent(body)}`));
 	}
+	updateEmail();
+	window.addEventListener("itemsChange", updateEmail);
+	document.getElementById("copy-email")?.addEventListener("click", async () => {
+		const status = document.getElementById("copy-status");
+		try {
+			await navigator.clipboard.writeText("contact@sitcon.org");
+			if (status) status.textContent = document.documentElement.lang === "en" ? "Email copied." : "已複製信箱。";
+		} catch {
+			if (status) status.textContent = document.documentElement.lang === "en" ? "Please select and copy contact@sitcon.org." : "請選取並複製 contact@sitcon.org。";
+		}
+	});
 </script>
-
 <style>
 	section {
-		background: linear-gradient(#f1f3fb, #fff 8rem);
-		padding: 2rem;
+		padding: 4rem 1.5rem;
+		text-align: center;
+		background: #eff6ee;
 	}
 	h2 {
-		padding-block: 2rem;
+		font-size: clamp(1.8rem, 5vw, 3rem);
+		margin-bottom: 1rem;
 	}
-	h3 {
-		font-size: 2.5rem;
+	p {
+		max-width: 42rem;
+		margin: 0 auto 1.5rem;
+		line-height: 1.7;
 	}
-
-	.container {
+	a {
+		color: #12663c;
+		text-underline-offset: 0.2em;
+	}
+	.email-action {
+		display: inline-block;
+		padding: 0.8rem 1.8rem;
+		border-radius: 2rem;
+		background: #14693e;
+		color: white;
+		text-decoration: none;
+		margin-bottom: 1.5rem;
+	}
+	.address {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 4rem;
-		margin: auto;
+		flex-wrap: wrap;
+		gap: 1rem;
 	}
-
-	#sponsor-form,
-	.personal {
-		flex: 1;
-		max-width: 23rem;
-	}
-
-	#sponsor-form h3 {
-		margin-bottom: 1.5rem;
-	}
-
-	#form-message {
-		margin-top: 0.5rem;
-		color: #0171e3;
-	}
-
-	.form-title {
-		font-size: 2.5rem;
-		font-weight: 700;
-		line-height: 120%; /* 3rem */
-	}
-
-	.personal {
-		text-align: center;
-	}
-	.personal-button {
-		padding: 0.75rem 1.5rem;
-		text-decoration: none;
-		border-radius: 100px;
-		margin-top: 1rem;
-		display: inline-block;
-	}
-
-	.divider {
-		background: var(--black);
-		width: 1px;
-		height: 39rem;
-	}
-
-	.rwd-hidden {
-		display: none;
-	}
-
-	#submit {
-		padding: 0.5rem 1.5rem;
-		border-radius: 0.25rem;
-		margin: 0.25rem 1rem 1rem 0rem;
-	}
-
-	.personal-button,
-	#submit {
-		border: none;
+	button {
+		padding: 0.5rem 0.8rem;
+		border: 1px solid #14693e;
+		border-radius: 0.5rem;
+		background: white;
 		cursor: pointer;
-		background-color: #0171e3;
-		color: var(--white);
-		transition: background-color 0.3s ease;
 	}
-
-	.personal-button:hover,
-	#submit:hover {
-		background-color: #0a7bec;
+	#copy-status {
+		min-height: 1.7em;
+		margin: 0.5rem auto;
 	}
-
-	.personal-button:active,
-	#submit:active {
-		background-color: #0056b3;
-	}
-
-	@media screen and (max-width: 65rem) {
-		.rwd-hidden {
-			display: inline;
-		}
-	}
-
-	@media screen and (max-width: 60rem) {
-		.divider {
-			display: none;
-		}
-
-		.container {
-			flex-direction: column;
-			gap: 5rem;
-		}
-	}
-
-	@media screen {
-		.qrcodes {
-			display: none;
-		}
-	}
-
-	@media print {
-		.container {
-			display: none;
-		}
-
-		h2 {
-			margin: 0;
-			padding: 0;
-			margin-top: 32pt;
-		}
-
-		.qrcodes {
-			display: flex;
-			justify-content: center;
-			gap: 4rem;
-			margin-top: 2rem;
-			text-align: center;
-		}
-
-		.qrcodes img {
-			width: 80pt;
-		}
+	.personal {
+		font-size: 0.9rem;
+		margin-bottom: 0;
 	}
 </style>

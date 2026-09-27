@@ -118,80 +118,95 @@ const uniqueItemIds = new Set<string>();
 
 <section id="plans">
 	<h2 id="plans-title">{t.title}</h2>
-	<p class="scroll-hint">{t.scroll_hint}</p>
-	<div class="container">
-		<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
-			<div class="plans-content">
-				<div class="plan-row plans-header">
-					<div class="row-label header-label"></div>
-					{
-						tiers.map((tier: any) => (
-							<div class="tier-column">
-								<div class="tier-name" style={`color: ${tier.textColor}`}>
-									{tier.name}
+	<div class="mobile-plan-summary">
+		{
+			tiers.map(tier => (
+				<div>
+					<>
+						<strong>{tier.name}</strong>
+						<span>{tier.price}</span>
+					</>
+				</div>
+			))
+		}
+	</div>
+	<details class="plan-comparison" open>
+		<summary>{lang === "en" ? "Compare all plan benefits" : "展開／收合完整方案比較"}</summary>
+		<p class="scroll-hint">{t.scroll_hint}</p>
+		<div class="container">
+			<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
+				<div class="plans-content">
+					<div class="plan-row plans-header">
+						<div class="row-label header-label"></div>
+						{
+							tiers.map((tier: any) => (
+								<div class="tier-column">
+									<div class="tier-name" style={`color: ${tier.textColor}`}>
+										{tier.name}
+									</div>
+									<div class="tier-price">{tier.price}</div>
+									<button class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
+										{t.interested}
+									</button>
 								</div>
-								<div class="tier-price">{tier.price}</div>
-								<button class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
-									{t.interested}
-								</button>
+							))
+						}
+					</div>
+					{
+						rows.map((row: any) => (
+							<div class={`plan-row ${!row.isAvailable ? "disabled" : ""}`} data-row-id={row.id} data-is-available={row.isAvailable}>
+								<div class="row-label">{row.name}</div>
+								{row.values.map((value: any) => {
+									const isAvailable = value.quantity && value.quantity !== "";
+									const isCheckmark = value.quantity === "O" || value.quantity === "o";
+
+									// Check if quantity is a pure number
+									const isNumeric = isAvailable && !isNaN(Number(value.quantity));
+
+									// Get item data for unit and name
+									const itemData = value.itemId ? itemsMap.get(value.itemId) : null;
+									const itemUnit = itemData?.unit ? t.unit[itemData.unit] || itemData.unit : "";
+
+									// Special handling for item ID 28 (booth)
+									const isBoothItem = value.itemId === "28";
+									const shouldShowIcons = isBoothItem && isNumeric;
+									const iconCount = shouldShowIcons ? parseInt(value.quantity, 10) : 0;
+
+									// Build display text with unit
+									let displayText = value.quantity;
+									if (isNumeric && itemUnit) {
+										displayText = `${value.quantity} ${itemUnit}`;
+									} else if (!isAvailable) {
+										displayText = "—";
+									}
+
+									return (
+										<div class="plan-cell" data-item-id={value.itemId}>
+											{isCheckmark ? (
+												<div class="cell-main cell-check">
+													<Check />
+												</div>
+											) : shouldShowIcons ? (
+												<div class="cell-icon cell-main">
+													{Array.from({ length: iconCount }).map((_, i) => (
+														<Container key={i} />
+													))}
+												</div>
+											) : isAvailable ? (
+												<div class="cell-main cell-text">{displayText}</div>
+											) : (
+												<div class="cell-sub cell-none">{displayText}</div>
+											)}
+										</div>
+									);
+								})}
 							</div>
 						))
 					}
 				</div>
-				{
-					rows.map((row: any) => (
-						<div class={`plan-row ${!row.isAvailable ? "disabled" : ""}`} data-row-id={row.id} data-is-available={row.isAvailable}>
-							<div class="row-label">{row.name}</div>
-							{row.values.map((value: any) => {
-								const isAvailable = value.quantity && value.quantity !== "";
-								const isCheckmark = value.quantity === "O" || value.quantity === "o";
-
-								// Check if quantity is a pure number
-								const isNumeric = isAvailable && !isNaN(Number(value.quantity));
-
-								// Get item data for unit and name
-								const itemData = value.itemId ? itemsMap.get(value.itemId) : null;
-								const itemUnit = itemData?.unit ? t.unit[itemData.unit] || itemData.unit : "";
-
-								// Special handling for item ID 28 (booth)
-								const isBoothItem = value.itemId === "28";
-								const shouldShowIcons = isBoothItem && isNumeric;
-								const iconCount = shouldShowIcons ? parseInt(value.quantity, 10) : 0;
-
-								// Build display text with unit
-								let displayText = value.quantity;
-								if (isNumeric && itemUnit) {
-									displayText = `${value.quantity} ${itemUnit}`;
-								} else if (!isAvailable) {
-									displayText = "—";
-								}
-
-								return (
-									<div class="plan-cell" data-item-id={value.itemId}>
-										{isCheckmark ? (
-											<div class="cell-main cell-check">
-												<Check />
-											</div>
-										) : shouldShowIcons ? (
-											<div class="cell-icon cell-main">
-												{Array.from({ length: iconCount }).map((_, i) => (
-													<Container key={i} />
-												))}
-											</div>
-										) : isAvailable ? (
-											<div class="cell-main cell-text">{displayText}</div>
-										) : (
-											<div class="cell-sub cell-none">{displayText}</div>
-										)}
-									</div>
-								);
-							})}
-						</div>
-					))
-				}
 			</div>
 		</div>
-	</div>
+	</details>
 </section>
 
 <script>
@@ -676,9 +691,7 @@ const uniqueItemIds = new Set<string>();
 			gap: 8pt;
 		}
 	}
-</style>
 
-<style is:global>
 	/* Venue link styles */
 	.venue-link {
 		color: #0171e3;
@@ -719,4 +732,47 @@ const uniqueItemIds = new Set<string>();
 			font-weight: inherit;
 		}
 	}
+
+	.mobile-plan-summary {
+		display: none;
+	}
+	.plan-comparison summary {
+		display: none;
+		cursor: pointer;
+		padding: 1rem;
+		text-align: center;
+		font-weight: bold;
+	}
+	@media screen and (max-width: 45rem) {
+		.mobile-plan-summary {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.75rem;
+			margin-bottom: 1rem;
+		}
+		.mobile-plan-summary > div {
+			padding: 1rem;
+			border: 1px solid #ddd;
+			border-radius: 0.75rem;
+		}
+		.mobile-plan-summary strong,
+		.mobile-plan-summary span {
+			display: block;
+		}
+		.plan-comparison summary {
+			display: block;
+			border: 1px solid #ccc;
+			border-radius: 0.75rem;
+			margin-bottom: 1rem;
+		}
+	}
 </style>
+
+<script>
+	const comparison = document.querySelector<HTMLDetailsElement>(".plan-comparison");
+	const phone = window.matchMedia("(max-width: 45rem)");
+	if (comparison) comparison.open = !phone.matches;
+	phone.addEventListener("change", event => {
+		if (comparison) comparison.open = !event.matches;
+	});
+</script>

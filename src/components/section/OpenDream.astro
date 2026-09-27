@@ -1,5 +1,6 @@
 ---
-const { t } = Astro.props;
+import Cycle from "./Cycle.astro";
+const { t, lang } = Astro.props;
 import Popup from "@components/Popup.astro";
 import { Check } from "@lucide/astro";
 import volunteer from "@assets/img/opendream-2026.webp";
@@ -16,6 +17,7 @@ interface PopupSection {
 }
 
 const colors = ["#77B55A", "#537FF1"];
+const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 ---
 
 <section id="opendream">
@@ -78,6 +80,7 @@ const colors = ["#77B55A", "#537FF1"];
 			}
 		</div>
 	</Popup>
+	<details class="impact-details"><summary>{lang === "en" ? "How your support makes an impact" : "了解贊助如何支持資訊教育"}</summary><Cycle t={cycleText} lang={lang} /></details>
 </section>
 
 <script>
@@ -290,5 +293,14 @@ const colors = ["#77B55A", "#537FF1"];
 		.tier-interest-button {
 			display: none;
 		}
+	}
+	.impact-details {
+		max-width: 70rem;
+		margin: 2rem auto;
+	}
+	summary {
+		cursor: pointer;
+		padding: 1rem;
+		text-align: center;
 	}
 </style>

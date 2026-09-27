@@ -1,5 +1,6 @@
 ---
-const { t } = Astro.props;
+type NumericData = Record<string, number>;
+const { t, lang } = Astro.props;
 import Popup from "@components/Popup.astro";
 import Volunteer from "@assets/img/about-popup-2026.webp";
 import SchoolsText from "@assets/img/schools-text-2025.svg";
@@ -65,9 +66,9 @@ const chartData = JSON.stringify({
 		{
 			t.review.stats.map((stat: { label: string; number: string; note: string }) => (
 				<div class="review-item aos aos-fadeIn">
-					{stat.label && <span>{stat.label}</span>}
+					{stat.label && <span class="review-label">{stat.label}</span>}
 					<span class="review-number">{stat.number}</span>
-					{stat.note && <span>{stat.note}</span>}
+					{stat.note && <span class="review-text">{stat.note}</span>}
 				</div>
 			))
 		}
@@ -87,6 +88,49 @@ const chartData = JSON.stringify({
 	</div>
 	<Popup btnText={t.detail} title={t.detail} background={Volunteer.src} id="stat-popup" class="popup">
 		<div class="container">
+			<div class="mobile-stat-tables">
+				<p class="data-note">{t.popup.chart.source_note}</p>
+				{
+					[
+						{ title: t.popup.chart.attender_role_title, data: t.popup.chart.attender_role },
+						{ title: t.popup.chart.programming_level_title, data: t.popup.chart.programming_level }
+					].map(group => (
+						<table>
+							<>
+								<caption>{group.title}</caption>
+								<thead>
+									<tr>
+										<>
+											<th>{lang === "en" ? "Category" : "分類"}</th>
+											<th>{t.popup.chart.unit}</th>
+											<th>%</th>
+										</>
+									</tr>
+								</thead>
+								<tbody>
+									{Object.entries(group.data as NumericData).map(([label, value]) => (
+										<tr>
+											<th scope="row">{label}</th>
+											<td>{value}</td>
+											<td>{((value / Object.values(group.data as NumericData).reduce((a, b) => a + b, 0)) * 100).toFixed(1)}%</td>
+										</tr>
+									))}
+								</tbody>
+							</>
+						</table>
+					))
+				}
+			</div>
+			<details class="mobile-level-info">
+				<summary>{lang === "en" ? "About development levels" : "軟體開發程度的定義"}</summary>{
+					Object.entries(t.popup.chart.level_info).map(([key, value]) => (
+						<p>
+							<strong>{key}</strong>：{String(value)}
+						</p>
+					))
+				}
+			</details>
+			<p class="data-note desktop-stat-note">{t.popup.chart.source_note}</p>
 			<div class="chart-area">
 				<div id="role-chart" class="chart-container"></div>
 				<div class="level">
@@ -102,13 +146,14 @@ const chartData = JSON.stringify({
 					</div>
 				</div>
 			</div>
-			<div id="schools-text-container">
-				{t.popup.chart.source_note && <p class="data-note">{t.popup.chart.source_note}</p>}
-				<h3>{t.popup.chart.schools_text_title}</h3>
+			<details id="schools-text-container">
+				<summary>{t.popup.chart.schools_text_title}</summary>
+
 				<img src={SchoolsText.src} alt="Schools" id="schools-text" />
-			</div>
-			<div class="social-media-section">
-				<h3>{t.popup.chart.social_media.title}</h3>
+			</details>
+			<details class="social-media-section">
+				<summary>{t.popup.chart.social_media.title}</summary>
+
 				{t.popup.chart.social_media.note && <p class="data-note">{t.popup.chart.social_media.note}</p>}
 				<div class="social-platforms">
 					<div class="platform-section">
@@ -131,7 +176,25 @@ const chartData = JSON.stringify({
 								</div>
 							</div>
 							<div class="charts-container">
-								<div id="fb-age-chart" class="chart-container"></div>
+								<div class="mobile-stat-tables">
+									{
+										["age", "gender"].map(kind => (
+											<table>
+												<>
+													<caption>{t.popup.chart.social_media.facebook.labels[kind === "age" ? "age_distribution" : "gender_ratio"]}</caption>
+													<tbody>
+														{Object.entries(t.popup.chart.social_media.facebook[kind] as NumericData).map(([label, value]) => (
+															<tr>
+																<th scope="row">{label}</th>
+																<td>{value}%</td>
+															</tr>
+														))}
+													</tbody>
+												</>
+											</table>
+										))
+									}
+								</div><div id="fb-age-chart" class="chart-container"></div>
 								<div id="fb-gender-chart" class="chart-container"></div>
 							</div>
 						</div>
@@ -156,13 +219,31 @@ const chartData = JSON.stringify({
 								</div>
 							</div>
 							<div class="charts-container">
-								<div id="ig-age-chart" class="chart-container"></div>
+								<div class="mobile-stat-tables">
+									{
+										["age", "gender"].map(kind => (
+											<table>
+												<>
+													<caption>{t.popup.chart.social_media.instagram.labels[kind === "age" ? "age_distribution" : "gender_ratio"]}</caption>
+													<tbody>
+														{Object.entries(t.popup.chart.social_media.instagram[kind] as NumericData).map(([label, value]) => (
+															<tr>
+																<th scope="row">{label}</th>
+																<td>{value}%</td>
+															</tr>
+														))}
+													</tbody>
+												</>
+											</table>
+										))
+									}
+								</div><div id="ig-age-chart" class="chart-container"></div>
 								<div id="ig-gender-chart" class="chart-container"></div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			</details>
 		</div>
 	</Popup>
 	<div style="display:none" id="chart-data">{chartData}</div>
@@ -788,6 +869,98 @@ const chartData = JSON.stringify({
 
 		.chart-area {
 			gap: 0;
+		}
+	}
+
+	summary {
+		cursor: pointer;
+		padding: 1rem;
+		font-weight: bold;
+		font-size: 1.15rem;
+	}
+	.mobile-stat-tables,
+	.mobile-level-info {
+		display: none;
+	}
+	@media screen and (max-width: 768px) {
+		.review-item {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0.25rem;
+			padding: 1rem;
+			margin: 0.6rem 0;
+			border-radius: 0.75rem;
+			background: #f5f5f7;
+			font-size: 1.1rem;
+			line-height: 1.5;
+		}
+		.review-number {
+			font-size: 2rem;
+			white-space: nowrap;
+		}
+		.review-label {
+			font-size: 1rem;
+		}
+		.review-title {
+			margin-top: 2.5rem;
+		}
+		.mobile-stat-tables,
+		.mobile-level-info {
+			display: block;
+			width: 100%;
+		}
+		.chart-container,
+		#level-info,
+		.desktop-stat-note {
+			display: none;
+		}
+		.chart-area {
+			display: none;
+		}
+		.mobile-stat-tables table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 1rem 0 2rem;
+			font-size: 0.95rem;
+			color: var(--black);
+		}
+		caption {
+			text-align: left;
+			font-size: 1.1rem;
+			font-weight: bold;
+			padding: 0.5rem 0;
+		}
+		th,
+		td {
+			padding: 0.65rem 0.35rem;
+			border-bottom: 1px solid #ddd;
+			text-align: right;
+		}
+		th:first-child {
+			text-align: left;
+			font-weight: normal;
+		}
+		#schools-text-container,
+		.social-media-section {
+			margin-top: 1rem;
+			padding: 0;
+		}
+		.stats-cards-wrapper {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.4rem;
+		}
+		.stats-card-item p {
+			font-size: 0.8rem;
+		}
+		.stats-card-item p.stats-value {
+			font-size: 1rem;
+		}
+		#about :global(.popup-hero) {
+			height: 10rem;
+			padding: 3.5rem 1.5rem 1rem;
+		}
+		#about :global(.popup-hero h2) {
+			font-size: 1.7rem;
 		}
 	}
 </style>
