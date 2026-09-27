@@ -5,8 +5,15 @@ const en = lang === "en";
 
 <section id="form" data-contact-lang={lang}>
 	<h2>{en ? "Let’s build SITCON 2027 together" : "一起成就 SITCON 2027"}</h2>
-	<p>{en ? "Tell us about your sponsorship goals. Your selected items will be included in the email draft." : "告訴我們你的合作想法，已選方案與品項會帶入郵件草稿。"}</p>
-	<a class="email-action" data-sponsor-email href="mailto:contact@sitcon.org">{en ? "Discuss sponsorship" : "洽談贊助合作"}</a>
+	<p>
+		{
+			en
+				? "Tell us about your sponsorship goals. The button opens your email app with your selected plans and items in a draft."
+				: "告訴我們你的合作想法。點擊下方按鈕會開啟郵件程式，並帶入已選方案與品項。"
+		}
+	</p>
+	<a class="email-action" data-sponsor-email href="mailto:contact@sitcon.org">{en ? "Open email to discuss sponsorship" : "開啟郵件洽談"}</a>
+	<p class="email-help">{en ? "If no email app opens, copy the address below and email us directly." : "若沒有開啟郵件程式，可複製下方信箱，自行寄信聯絡。"}</p>
 	<div class="address"><a href="mailto:contact@sitcon.org">contact@sitcon.org</a><button id="copy-email" type="button">{en ? "Copy email" : "複製信箱"}</button></div>
 	<p id="copy-status" role="status"></p>
 	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
@@ -64,6 +71,9 @@ const en = lang === "en";
 		color: white;
 		text-decoration: none;
 		margin-bottom: 1.5rem;
+	}
+	.email-help {
+		font-size: 0.9rem;
 	}
 	.address {
 		display: flex;

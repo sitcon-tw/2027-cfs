@@ -193,7 +193,7 @@
 		"showLess": "Show Less",
 		"interestedItems": "Interested Items",
 		"noInterestedItems": "No items saved yet",
-		"shareInterestedItemsText": "You can share your items of interest with us via the form below",
+		"shareInterestedItemsText": "You can share your selected items by email from the contact section.",
 		"introduction": "Introduction",
 		"downloadQuote": "Download Quote",
 		"viewPlanDetails": "View Plan Details",
@@ -553,7 +553,7 @@
 			},
 			{
 				"question": "Can we customize a sponsorship package beyond the standard plans?",
-				"answer": "Absolutely! Feel free to [fill out the form](#form) or [email us](mailto:contact@sitcon.org) to discuss your needs."
+				"answer": "Absolutely! [Email contact@sitcon.org](mailto:contact@sitcon.org) with your goals and ideas, and we can discuss a package that suits your needs."
 			},
 			{
 				"question": "Can we get an invoice or receipt?",
@@ -569,14 +569,14 @@
 			},
 			{
 				"question": "What is the collaboration process with SITCON sponsors?",
-				"answer": "The typical flow is: Initial contact → Discuss needs → Confirm package → Finalize memorandum of cooperation → Provide materials (logo, ad copy, etc.) → Pre-event exposure → Event day execution → Post-event report."
+				"answer": "The typical flow is: Email inquiry → Discuss needs → Confirm package → Finalize memorandum of cooperation → Provide materials (logo, ad copy, etc.) → Pre-event exposure → Event day execution → Post-event report."
 			}
 		]
 	},
 	"footer": {
 		"collaboration": "Future Collaboration",
 		"description": "We welcome various forms of event or media collaboration—co-hosting workshops, hackathons, podcasts, and more. Reach out with your ideas.",
-		"scan_qrcode": "You can scan the QR code (sitcon.org/cfs) to fill out the form in our online sponsorship prospectus.",
+		"scan_qrcode": "Scan the QR code (sitcon.org/cfs) to view the online sponsorship prospectus. For collaboration, email contact@sitcon.org.",
 		"contact": "Marketing & Media Contacts",
 		"email": "contact@sitcon.org",
 		"contact_list": [],
