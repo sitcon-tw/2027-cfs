@@ -441,12 +441,19 @@ const config = shopConfig;
 		}
 
 		.tabs {
-			flex-wrap: wrap;
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-auto-rows: 1fr;
 			gap: 0.5rem;
+			max-width: 25rem;
+			margin-inline: auto;
 		}
 
 		.tab {
-			padding: 0.5rem 1rem;
+			margin: 0;
+			min-width: 0;
+			min-height: 44px;
+			padding: 0.5rem 0.75rem;
 			font-size: 0.9rem;
 		}
 

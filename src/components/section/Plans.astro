@@ -119,7 +119,6 @@ const uniqueItemIds = new Set<string>();
 <section id="plans">
 	<h2 id="plans-title">{t.title}</h2>
 	<div class="plan-comparison">
-		<p class="scroll-hint">{t.scroll_hint}</p>
 		<div class="container" role="table" aria-labelledby="plans-title">
 			<div class="plans-heading" role="rowgroup">
 				<div class="plans-header-scroll lenis-scroll">
@@ -564,13 +563,6 @@ const uniqueItemIds = new Set<string>();
 	.plan-row.disabled .plan-cell {
 		pointer-events: none;
 	}
-	.scroll-hint {
-		display: none;
-		text-align: center;
-		font-size: 0.8125rem;
-		color: var(--gray);
-		margin-bottom: 0.75rem;
-	}
 	@media screen and (max-width: 900px) {
 		section {
 			padding: 3rem 1rem;
@@ -578,9 +570,6 @@ const uniqueItemIds = new Set<string>();
 		.container {
 			--label-width: clamp(6.25rem, 30cqw, 8rem);
 			--tier-width: calc((100cqw - var(--label-width)) / 2);
-		}
-		.scroll-hint {
-			display: block;
 		}
 		.row-label {
 			font-size: 0.875rem;
@@ -631,8 +620,7 @@ const uniqueItemIds = new Set<string>();
 			position: static;
 			box-shadow: none;
 		}
-		.tier-interest-button,
-		.scroll-hint {
+		.tier-interest-button {
 			display: none;
 		}
 		.tier-name {

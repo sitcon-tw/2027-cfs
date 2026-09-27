@@ -51,8 +51,7 @@ const news: News[] = [
 
 <section id="news">
 	<h2>SITCON 2026 {t.coverage_title || "媒體報導"}</h2>
-	<p class="news-hint">{t.swipe_hint}</p>
-	<div class="news-content">
+	<div class="news-content lenis-scroll" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
 		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930"><img src={president2026.src} alt="總統府 · SITCON 2026" class="news-img" loading="lazy" /></a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx"><img src={cna2026.src} alt="中央社 · SITCON 2026" class="news-img" loading="lazy" /></a>
 		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273"><img src={udn2026.src} alt="經濟日報 · SITCON 2026" class="news-img" loading="lazy" /></a>
@@ -94,12 +93,6 @@ const news: News[] = [
 		padding: 3rem 3rem 1rem;
 	}
 
-	.news-hint {
-		display: none;
-		text-align: center;
-		color: var(--gray);
-		margin: 1rem;
-	}
 	#news {
 		padding: 3rem 0;
 	}
@@ -131,20 +124,15 @@ const news: News[] = [
 	#news :global(.detail-btn) {
 		position: static;
 	}
-	@media (max-width: 60rem) {
-		.news-hint {
-			display: block;
-		}
+	@media screen and (max-width: 60rem) {
 		.news-content {
 			display: flex;
 			overflow-x: auto;
-			scroll-snap-type: x mandatory;
 			padding: 1rem 1.5rem 2rem;
 			gap: 1rem;
 		}
 		.news-content a {
 			flex: 0 0 min(85vw, 28rem);
-			scroll-snap-align: center;
 		}
 		.news-content a:nth-child(3n + 2) {
 			transform: none;
@@ -300,6 +288,58 @@ const news: News[] = [
 </style>
 
 <script>
+	const newsTrack = document.querySelector<HTMLElement>("#news .news-content");
+	if (newsTrack) {
+		const mobile = window.matchMedia("(max-width: 60rem)");
+		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+		let visible = false;
+		let userControlled = false;
+		let frame = 0;
+		let previousTime = 0;
+		let position = 0;
+
+		function stop() {
+			cancelAnimationFrame(frame);
+			frame = 0;
+			previousTime = 0;
+		}
+		function advance(time: number) {
+			if (!newsTrack) return;
+			const limit = newsTrack.scrollWidth - newsTrack.clientWidth;
+			if (previousTime) position += Math.min(time - previousTime, 64) * 0.02;
+			previousTime = time;
+			newsTrack.scrollLeft = Math.min(position, limit);
+			if (position >= limit) stop();
+			else frame = requestAnimationFrame(advance);
+		}
+		function updatePlayback() {
+			stop();
+			if (!newsTrack || !visible || userControlled || !mobile.matches || reducedMotion.matches || document.hidden || document.querySelector(".popup-bg.show")) return;
+			position = newsTrack.scrollLeft;
+			if (position < newsTrack.scrollWidth - newsTrack.clientWidth) frame = requestAnimationFrame(advance);
+		}
+		function takeControl() {
+			// Once someone starts reading or swiping, leave the position in their hands.
+			userControlled = true;
+			stop();
+		}
+		for (const event of ["pointerdown", "wheel", "keydown", "focusin"]) {
+			newsTrack.addEventListener(event, takeControl, { passive: true });
+		}
+		new IntersectionObserver(
+			([entry]) => {
+				visible = entry.intersectionRatio >= 0.1;
+				updatePlayback();
+			},
+			{ threshold: [0, 0.1] }
+		).observe(newsTrack);
+		mobile.addEventListener("change", updatePlayback);
+		reducedMotion.addEventListener("change", updatePlayback);
+		document.addEventListener("visibilitychange", updatePlayback);
+		document.addEventListener("popupOpened", stop);
+		document.addEventListener("popupClosed", updatePlayback);
+	}
+
 	const scrollLeft = document.querySelector("#news-popup + .popup-bg .scroll-left") as HTMLButtonElement;
 	const scrollRight = document.querySelector("#news-popup + .popup-bg .scroll-right") as HTMLButtonElement;
 	const thingsArea = document.querySelector("#news-popup + .popup-bg .things-area") as HTMLElement;

@@ -526,26 +526,8 @@
   },
   {
    "slot": "venue_R0",
-   "photo_id": "55247039552",
-   "file": "public/venue/R0.webp",
-   "photo_url": "https://www.flickr.com/photos/sitcon/55247039552",
-   "album": "SITCON 2026",
-   "date_taken": "2026-03-28 11:02:36",
-   "photographer": "夏川",
-   "license": "CC BY 4.0",
-   "license_urls": [
-    "https://creativecommons.org/licenses/by/4.0"
-   ],
-   "alt_zh": "SITCON 2026 國際會議廳內坐滿聽眾",
-   "alt_en": "The international conference hall during SITCON 2026",
-   "curation_status": "ai_labeled",
-   "public_use_status": "",
-   "raw_photographer_field": "夏川"
-  },
-  {
-   "slot": "venue_R1R2",
    "photo_id": "55250303556",
-   "file": "public/venue/R1 R2.webp",
+   "file": "public/venue/R0.webp",
    "photo_url": "https://www.flickr.com/photos/sitcon/55250303556",
    "album": "SITCON 2026",
    "date_taken": "2026-03-27 17:13:49",
@@ -554,8 +536,26 @@
    "license_urls": [
     "https://creativecommons.org/licenses/by/4.0"
    ],
-   "alt_zh": "SITCON 2026 會議室舞台與大型螢幕",
-   "alt_en": "A SITCON 2026 session room with stage and large screen",
+   "alt_zh": "SITCON 2026 R0 國際會議廳舞台與座席",
+   "alt_en": "The stage and seating in the R0 main hall at SITCON 2026",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "venue_R1R2",
+   "photo_id": "55247039552",
+   "file": "public/venue/R1 R2.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55247039552",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:02:36",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 R1／R2 會議室與聽眾",
+   "alt_en": "Audience seating in an R1/R2 session room at SITCON 2026",
    "curation_status": "ai_labeled",
    "public_use_status": "",
    "raw_photographer_field": "夏川"

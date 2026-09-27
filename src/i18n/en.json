@@ -150,11 +150,9 @@
 				"description": "Since 2014, every July we run a summer camp to help students get started with CS and ignite passion for open source. Students serve as both campers and volunteers. Beyond the core curriculum, we host open-source talks, a community expo, and the Vision Café—so learning is paired with rich opportunities to connect and exchange ideas."
 			}
 		],
-		"coverage_title": "Media coverage",
-		"swipe_hint": "Swipe to browse all 6 stories →"
+		"coverage_title": "Media coverage"
 	},
 	"plans": {
-		"scroll_hint": "Swipe horizontally to compare all plans →",
 		"title": "Choose the Plan That Fits You",
 		"plan_comparison": "Plan Comparison",
 		"interested": "Interested",

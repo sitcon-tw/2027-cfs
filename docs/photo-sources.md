@@ -38,8 +38,8 @@
 | time_volunteer | [55245885083](https://www.flickr.com/photos/sitcon/55245885083) | SITCON 2026 | 2026-03-28 | pU | CC BY 4.0 | `src/assets/img/sitcon-volunteer.webp` |
 | (舊) time_volunteer | [55244926657](https://www.flickr.com/photos/sitcon/55244926657) | SITCON 2026 | 2026-03-28 | 未標示 | CC BY 4.0 | `src/assets/img/sitcon-volunteer.webp` |
 | time_popup_bg | [55250303861](https://www.flickr.com/photos/sitcon/55250303861) | SITCON 2026 | 2026-03-27 | 夏川 | CC BY 4.0 | `src/assets/img/r0.webp` |
-| venue_R0 | [55247039552](https://www.flickr.com/photos/sitcon/55247039552) | SITCON 2026 | 2026-03-28 | 夏川 | CC BY 4.0 | `public/venue/R0.webp` |
-| venue_R1R2 | [55250303556](https://www.flickr.com/photos/sitcon/55250303556) | SITCON 2026 | 2026-03-27 | 夏川 | CC BY 4.0 | `public/venue/R1 R2.webp` |
+| venue_R0 | [55250303556](https://www.flickr.com/photos/sitcon/55250303556) | SITCON 2026 | 2026-03-27 | 夏川 | CC BY 4.0 | `public/venue/R0.webp` |
+| venue_R1R2 | [55247039552](https://www.flickr.com/photos/sitcon/55247039552) | SITCON 2026 | 2026-03-28 | 夏川 | CC BY 4.0 | `public/venue/R1 R2.webp` |
 | venue_lounge | [55247034862](https://www.flickr.com/photos/sitcon/55247034862) | SITCON 2026 | 2026-03-28 | 夏川 | CC BY 4.0 | `public/venue/lounge.webp` |
 
 ## 還原為原始圖片的位置（0dbbf3e）
@@ -56,3 +56,5 @@
 - 台灣好新聞 2026/03/28 https://www.taiwanhot.net/news/1131936
 - MUCH《台灣新驕點》第 56 集「開放文化基金會 - 2026 SITCON 學生計算機年會」，嵌入於 https://sitcon.camp/2026/about/ （未放上頁面）
 - LINE Taiwan 技術部落格「SITCON 2026 贊助與攤位資訊」 https://techblog.lycorp.co.jp/zh-hant/sitcon2026-sponsorship （合作夥伴會前文章，未放上頁面）
+
+- 2026-09-28：依使用者指出的場地辨識修正，對調 R0 與 R1／R2 的照片，並同步修正來源與替代文字紀錄。
