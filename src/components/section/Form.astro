@@ -5,61 +5,80 @@ const en = lang === "en";
 
 <section id="form" data-contact-lang={lang}>
 	<h2>{en ? "Let’s build SITCON 2027 together" : "一起成就 SITCON 2027"}</h2>
-	<div class="email-draft">
-		<p class="recipient">{en ? "To" : "收件人"} <span>contact@sitcon.org</span></p>
-		<label for="inquiry-subject">{en ? "Subject" : "主旨"}</label>
-		<input id="inquiry-subject" type="text" value={en ? "SITCON 2027 Sponsorship inquiry" : "SITCON 2027 贊助洽詢"} />
-		<label for="inquiry-text">{en ? "Message" : "內文"}</label>
-		<textarea id="inquiry-text" rows="11"></textarea>
-		<div class="email-actions">
-			<a class="email-action" data-sponsor-email href="mailto:contact@sitcon.org">{en ? "Open email app" : "開啟郵件程式"}</a>
-			<a class="email-action gmail" data-sponsor-gmail href="https://mail.google.com/mail/?view=cm&fs=1&to=contact%40sitcon.org" target="_blank" rel="noopener noreferrer">
-				{en ? "Open Gmail" : "開啟 Gmail"}
-			</a>
+	<p class="intro">{en ? "Leave a way to reach you and we’ll discuss a suitable partnership together." : "留下方便聯絡您的方式，我們會與您一起討論適合的合作方式。"}</p>
+	<form id="sponsor-form" data-error={t.messages.error}>
+		<div class="identity">
+			<div><label for="organization">{t.fields.organization.title} <span aria-hidden="true">*</span></label><input id="organization" name="organization" autocomplete="organization" required /></div>
+			<div><label for="contact-name">{t.fields.name.title} <span aria-hidden="true">*</span></label><input id="contact-name" name="name" autocomplete="name" required /></div>
 		</div>
-	</div>
+		<label for="contact">{t.fields.contact.title} <span aria-hidden="true">*</span></label>
+		<p id="contact-help" class="help">{t.fields.contact.description}</p>
+		<input id="contact" name="contact" type="text" aria-describedby="contact-help" placeholder={t.fields.contact.placeholder} required />
+		<label for="inquiry-text">{en ? "Ideas or questions (optional)" : "合作想法或問題（選填）"}</label>
+		<textarea
+			id="inquiry-text"
+			name="message"
+			rows="4"
+			placeholder={en ? "For example: recruiting, brand exposure, budget, or a good time to call." : "例如：徵才、品牌曝光、預算，或方便聯絡的時段。"}
+		>
+		</textarea>
+		<div class="selection"><p>{en ? "Plans / items of interest" : "感興趣的方案／品項"}</p><p id="inquiry-selection"></p></div>
+		<button type="submit" id="submit">{en ? "Let’s talk" : "送出合作洽詢"}</button>
+		<p id="form-message" role="status" aria-live="polite"></p>
+	</form>
+	<p class="alternative">{en ? "You can also email us at" : "也歡迎直接來信"} <a href="mailto:contact@sitcon.org">contact@sitcon.org</a></p>
 	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
 </section>
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
 
-	const subject = document.querySelector<HTMLInputElement>("#inquiry-subject");
-	const draft = document.querySelector<HTMLTextAreaElement>("#inquiry-text");
-	const email = document.querySelector<HTMLAnchorElement>("[data-sponsor-email]");
-	const gmail = document.querySelector<HTMLAnchorElement>("[data-sponsor-gmail]");
+	// Legacy endpoint: the development team must confirm the 2027 recipient/form before launch.
+	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse";
+	const form = document.querySelector<HTMLFormElement>("#sponsor-form");
+	const button = document.querySelector<HTMLButtonElement>("#submit");
+	const status = document.querySelector<HTMLElement>("#form-message");
+	const selection = document.querySelector<HTMLElement>("#inquiry-selection");
 	const en = document.documentElement.lang === "en";
-	let previousSelection = "";
-
-	function updateLinks() {
-		if (!subject || !draft) return;
-		if (email) email.href = `mailto:contact@sitcon.org?subject=${encodeURIComponent(subject.value)}&body=${encodeURIComponent(draft.value)}`;
-		if (gmail) gmail.href = `https://mail.google.com/mail/?${new URLSearchParams({ view: "cm", fs: "1", to: "contact@sitcon.org", su: subject.value, body: draft.value })}`;
-	}
-
-	function updateSelection() {
-		if (!draft) return;
-		const items = getInterestedItems()
+	const selectionText = () =>
+		getInterestedItems()
 			.map(item => `• ${item.title}${item.price ? ` — ${item.price}` : ""}`)
 			.join("\n");
-		const selection = `\n\n${en ? "Plans / items of interest:" : "感興趣的方案／品項："}\n${items || (en ? "(Not selected)" : "（尚未選擇）")}\n\n`;
-		if (!previousSelection) {
-			draft.value = en
-				? `Hello SITCON,\n\nWe are interested in sponsoring SITCON 2027.${selection}Organization:\nContact person:\nQuestions or goals:\n`
-				: `SITCON 團隊好：\n\n我們有意贊助 SITCON 2027。${selection}單位名稱：\n聯絡人：\n合作想法／問題：\n`;
-		} else {
-			// Only refresh the generated selection block; preserve edits to the message.
-			// If the selection block itself was edited, keep the author's version too.
-			draft.value = draft.value.replace(previousSelection, () => selection);
-		}
-		previousSelection = selection;
-		updateLinks();
+	function updateSelection() {
+		if (selection) selection.textContent = selectionText() || (en ? "Not selected yet — we can discuss this together." : "尚未選擇也沒關係，可以一起討論。");
 	}
 	updateSelection();
 	window.addEventListener("itemsChange", updateSelection);
-	subject?.addEventListener("input", updateLinks);
-	draft?.addEventListener("input", updateLinks);
-	email?.addEventListener("click", updateLinks);
-	gmail?.addEventListener("click", updateLinks);
+	form?.addEventListener("submit", async event => {
+		event.preventDefault();
+		if (!button || !status || button.disabled) return;
+		const values = new FormData(form);
+		for (const name of ["organization", "name", "contact"]) {
+			if (!String(values.get(name) || "").trim()) {
+				status.textContent = en ? "Please fill in the required fields." : "請填寫必填欄位。";
+				form.querySelector<HTMLInputElement>(`[name="${name}"]`)?.focus();
+				return;
+			}
+		}
+		const body = new FormData();
+		const entries = { organization: "entry.1867519928", name: "entry.1660888396", contact: "entry.1209239304" };
+		for (const [name, entry] of Object.entries(entries)) body.set(entry, String(values.get(name) || "").trim());
+		const items = selectionText();
+		body.set("entry.65159086", [String(values.get("message") || "").trim(), items ? `${en ? "Plans / items of interest:" : "感興趣的方案／品項："}\n${items}` : ""].filter(Boolean).join("\n\n"));
+		const label = button.textContent;
+		button.disabled = true;
+		button.textContent = en ? "Sending…" : "送出中…";
+		status.textContent = "";
+		try {
+			await fetch(apiUrl, { method: "POST", mode: "no-cors", body, signal: AbortSignal.timeout(20000) });
+			// An opaque response cannot confirm acceptance. Keep the entered data for follow-up.
+			status.textContent = en ? "Request sent. To confirm receipt, please contact contact@sitcon.org." : "已傳送請求；若需確認收件，歡迎聯絡 contact@sitcon.org。";
+		} catch {
+			status.textContent = form.dataset.error || "Please try again.";
+		} finally {
+			button.disabled = false;
+			button.textContent = label;
+		}
+	});
 </script>
 <style>
 	section {
@@ -69,29 +88,38 @@ const en = lang === "en";
 	}
 	h2 {
 		font-size: clamp(1.8rem, 5vw, 3rem);
-		margin-bottom: 2rem;
+		margin-bottom: 1rem;
 	}
-	a {
-		color: #12663c;
-		text-underline-offset: 0.2em;
+	.intro {
+		margin: 0 auto 2rem;
+		max-width: 42rem;
+		line-height: 1.7;
 	}
-	.email-draft {
+	form {
 		max-width: 42rem;
 		margin: 0 auto 1.5rem;
 		text-align: left;
 	}
-	.recipient {
-		margin-bottom: 1.25rem;
-		font-size: 0.95rem;
+	.identity {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
 	}
-	.recipient span {
-		margin-left: 0.5rem;
+	.identity > div {
+		min-width: 0;
 	}
 	label {
 		display: block;
 		margin-bottom: 0.4rem;
-		font-size: 0.95rem;
 		font-weight: 600;
+	}
+	label span {
+		color: #a12b23;
+	}
+	.help {
+		font-size: 0.9rem;
+		line-height: 1.6;
+		margin-bottom: 0.5rem;
 	}
 	input,
 	textarea {
@@ -109,36 +137,62 @@ const en = lang === "en";
 	}
 	textarea {
 		resize: vertical;
-		min-height: 12rem;
+		min-height: 7rem;
 	}
-	input:focus-visible,
-	textarea:focus-visible,
-	.email-action:focus-visible {
-		outline: 2px solid #14693e;
-		outline-offset: 3px;
+	.selection {
+		background: #fff9;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.95rem;
+		line-height: 1.6;
 	}
-	.email-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
+	#inquiry-selection {
+		white-space: pre-line;
+		overflow-wrap: anywhere;
+		margin-top: 0.4rem;
 	}
-	.email-action {
-		flex: 1;
-		padding: 0.8rem 1rem;
-		border: 1px solid #14693e;
+	button {
+		padding: 0.8rem 2rem;
+		border: none;
 		border-radius: 2rem;
 		background: #14693e;
 		color: white;
-		text-decoration: none;
-		text-align: center;
+		font: inherit;
+		cursor: pointer;
 	}
-	.gmail {
-		background: white;
+	button:disabled {
+		opacity: 0.6;
+		cursor: wait;
+	}
+	input:focus-visible,
+	textarea:focus-visible,
+	button:focus-visible {
+		outline: 2px solid #14693e;
+		outline-offset: 3px;
+	}
+	#form-message {
+		margin-top: 0.75rem;
+		line-height: 1.6;
+		overflow-wrap: anywhere;
+	}
+	a {
 		color: #12663c;
+		text-underline-offset: 0.2em;
 	}
+	.alternative,
 	.personal {
 		font-size: 0.9rem;
 		line-height: 1.7;
-		margin: 0 auto;
+		margin: 0.5rem auto;
+	}
+	@media (max-width: 35rem) {
+		.identity {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+		button {
+			width: 100%;
+		}
 	}
 </style>

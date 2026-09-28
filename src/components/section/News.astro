@@ -52,14 +52,24 @@ const news: News[] = [
 <section id="news">
 	<h2>SITCON 2026 {t.coverage_title || "媒體報導"}</h2>
 	<div class="news-content lenis-scroll" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
-		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930"><img src={president2026.src} alt="總統府 · SITCON 2026" class="news-img" loading="lazy" /></a>
-		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx"><img src={cna2026.src} alt="中央社 · SITCON 2026" class="news-img" loading="lazy" /></a>
-		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273"><img src={udn2026.src} alt="經濟日報 · SITCON 2026" class="news-img" loading="lazy" /></a>
-		<a target="_blank" rel="noopener noreferrer" href="https://ocacnews.net/article/423192"><img src={ocac2026.src} alt="僑務電子報 · SITCON 2026" class="news-img" loading="lazy" /></a>
-		<a target="_blank" rel="noopener noreferrer" href="https://techblog.lycorp.co.jp/zh-hant/sitcon2026-sponsorship">
-			<img src={line2026.src} alt="LY Corporation Tech Blog · SITCON 2026" class="news-img" loading="lazy" />
+		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930">
+			<span class="news-source">總統府</span><img src={president2026.src} alt="總統府 · SITCON 2026" class="news-img" loading="lazy" />
 		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=zplk0zALtOM"><img src={muchtv2026.src} alt="年代新聞 · SITCON 2026" class="news-img" loading="lazy" /></a>
+		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx">
+			<span class="news-source">中央社 CNA</span><img src={cna2026.src} alt="中央社 · SITCON 2026" class="news-img" loading="lazy" />
+		</a>
+		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273">
+			<span class="news-source">經濟日報</span><img src={udn2026.src} alt="經濟日報 · SITCON 2026" class="news-img" loading="lazy" />
+		</a>
+		<a target="_blank" rel="noopener noreferrer" href="https://ocacnews.net/article/423192">
+			<span class="news-source">僑務電子報</span><img src={ocac2026.src} alt="僑務電子報 · SITCON 2026" class="news-img" loading="lazy" />
+		</a>
+		<a target="_blank" rel="noopener noreferrer" href="https://techblog.lycorp.co.jp/zh-hant/sitcon2026-sponsorship">
+			<span class="news-source">LY Corporation Tech Blog</span><img src={line2026.src} alt="LY Corporation Tech Blog · SITCON 2026" class="news-img" loading="lazy" />
+		</a>
+		<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=zplk0zALtOM">
+			<span class="news-source">年代 MUCH｜台灣新驕點</span><img src={muchtv2026.src} alt="年代新聞 · SITCON 2026" class="news-img" loading="lazy" />
+		</a>
 	</div>
 	<Popup hero={false} btnText={t.title} id="news-popup">
 		<h3>{t.title}</h3>
@@ -112,10 +122,17 @@ const news: News[] = [
 	.news-content a:nth-child(3n + 2) {
 		transform: translateY(1rem);
 	}
+	.news-source {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: #333;
+	}
 	.news-img {
 		display: block;
 		width: 100%;
-		max-height: 22rem;
+		height: auto;
 		object-fit: cover;
 		object-position: top;
 		box-shadow: 0 5px 20px #0002;
@@ -138,7 +155,7 @@ const news: News[] = [
 			transform: none;
 		}
 		.news-img {
-			max-height: 22rem;
+			height: auto;
 		}
 	}
 

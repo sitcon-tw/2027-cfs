@@ -191,7 +191,7 @@
 		"showLess": "收起",
 		"interestedItems": "感興趣的項目",
 		"noInterestedItems": "尚未收藏任何項目",
-		"shareInterestedItemsText": "你可以在聯絡區透過電子郵件，和我們分享已選品項。",
+		"shareInterestedItemsText": "已選品項會自動附在合作洽詢表單中。",
 		"introduction": "介紹",
 		"downloadQuote": "下載報價單",
 		"viewPlanDetails": "檢視方案詳情",
@@ -317,8 +317,8 @@
 			},
 			"contact": {
 				"title": "聯絡方式",
-				"description": "Email、FB、LINE ID 或 Telegram ... 等，各式我們能聯絡到您的方式。",
-				"placeholder": "Email / contact@sitcon.org"
+				"description": "Email、電話、LINE ID、Facebook、Telegram 等，留下任何一種方便聯絡您的方式即可。",
+				"placeholder": "例如：LINE ID／電話／Email"
 			},
 			"message": {
 				"title": "還有什麼想和我們說的嗎？",
@@ -546,7 +546,7 @@
 			},
 			{
 				"question": "除了徵求書裡的標準方案，是否可以客製化？",
-				"answer": "可以，歡迎[寄信至 contact@sitcon.org](mailto:contact@sitcon.org)，告訴我們你的合作目標與想法，一起討論適合的方案。"
+				"answer": "可以，歡迎[填寫合作洽詢](#form)，告訴我們你的合作目標與想法，一起討論適合的方案。"
 			},
 			{
 				"question": "可以拿到發票或收據嗎？",
@@ -562,7 +562,7 @@
 			},
 			{
 				"question": "SITCON 與贊助商的合作流程是什麼？",
-				"answer": "流程通常為：來信洽詢 → 討論需求 → 確認方案 → 確認合作備忘錄 → 提供素材（Logo、廣告文案等） → 活動前曝光 → 活動當日執行 → 活動後成果報告。"
+				"answer": "流程通常為：留下合作洽詢 → 討論需求 → 確認方案 → 確認合作備忘錄 → 提供素材（Logo、廣告文案等） → 活動前曝光 → 活動當日執行 → 活動後成果報告。"
 			}
 		]
 	},

@@ -39,7 +39,7 @@ fs.mkdirSync(output, { recursive: true });
 	await comparison.evaluate(el => (el.scrollLeft = 200));
 	assert.ok(await comparison.evaluate(el => el.scrollLeft > 0));
 	await page.locator("#plans .tier-interest-button").first().click();
-	const draft = decodeURIComponent(await page.locator("[data-sponsor-email]").getAttribute("href"));
+	const draft = await page.locator("#inquiry-selection").innerText();
 	assert.ok(draft.includes("領航級") && draft.includes("179,000"));
 	await page.locator("#plans").screenshot({ path: output + "/mobile-plans.png" });
 	await page.evaluate(() => window.popupCtrl("place-staff-popup", "open"));

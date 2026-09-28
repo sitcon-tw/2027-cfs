@@ -191,7 +191,7 @@
 		"showLess": "Show Less",
 		"interestedItems": "Interested Items",
 		"noInterestedItems": "No items saved yet",
-		"shareInterestedItemsText": "You can share your selected items by email from the contact section.",
+		"shareInterestedItemsText": "You can send your selected items with the contact form.",
 		"introduction": "Introduction",
 		"downloadQuote": "Download Quote",
 		"viewPlanDetails": "View Plan Details",
@@ -318,8 +318,8 @@
 			},
 			"contact": {
 				"title": "Ways to reach you",
-				"description": "Email, Facebook, LINE ID, Telegram, or any channel we can contact you through.",
-				"placeholder": "Email / contact@sitcon.org"
+				"description": "Email, phone, LINE ID, Facebook, Telegram, or any other way we can reach you. One is enough.",
+				"placeholder": "For example: LINE ID / phone / email"
 			},
 			"message": {
 				"title": "Anything else you'd like to tell us?",
@@ -551,7 +551,7 @@
 			},
 			{
 				"question": "Can we customize a sponsorship package beyond the standard plans?",
-				"answer": "Absolutely! [Email contact@sitcon.org](mailto:contact@sitcon.org) with your goals and ideas, and we can discuss a package that suits your needs."
+				"answer": "Absolutely! [Leave an inquiry](#form) with your goals and ideas, and we can discuss a package that suits your needs."
 			},
 			{
 				"question": "Can we get an invoice or receipt?",
@@ -567,7 +567,7 @@
 			},
 			{
 				"question": "What is the collaboration process with SITCON sponsors?",
-				"answer": "The typical flow is: Email inquiry → Discuss needs → Confirm package → Finalize memorandum of cooperation → Provide materials (logo, ad copy, etc.) → Pre-event exposure → Event day execution → Post-event report."
+				"answer": "The typical flow is: Submit an inquiry → Discuss needs → Confirm package → Finalize memorandum of cooperation → Provide materials (logo, ad copy, etc.) → Pre-event exposure → Event day execution → Post-event report."
 			}
 		]
 	},
