@@ -36,11 +36,11 @@ const items = itemsUnsorted.sort((a, b) => {
 	const arrow = expandButton ? expandButton.querySelector(".arrow") : null;
 
 	let isExpanded = false,
-		canExpand = true,
-		isInitialLoad = true;
+		canExpand = true;
 
 	const applyExpandState = () => {
 		const shouldShowExpandedUI = !canExpand || isExpanded;
+		expandButton?.setAttribute("aria-expanded", String(shouldShowExpandedUI));
 
 		if (shouldShowExpandedUI) {
 			cardsContainer!.classList.remove("fade-active");
@@ -54,24 +54,22 @@ const items = itemsUnsorted.sort((a, b) => {
 			(showText as HTMLElement).style.display = "inline";
 			(hideText as HTMLElement).style.display = "none";
 			(arrow as HTMLElement).style.transform = "rotate(0deg)";
-
-			// Only scroll when collapsing via button click, not on initial page load
-			if (!isInitialLoad) {
-				const itemsSection = document.getElementById("items");
-				if (itemsSection) {
-					const yOffset = -20;
-					const y = itemsSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-					window.scrollTo({ top: y, behavior: "smooth" });
-				}
-			}
 		}
 	};
 
 	if (expandButton)
 		expandButton.addEventListener("click", () => {
+			const collapsing = isExpanded;
+			const buttonTop = expandButton.getBoundingClientRect().top;
+			// Collapse in one layout update so the control stays under the pointer.
+			if (collapsing) cardsContainer!.classList.add("is-collapsing");
 			isExpanded = !isExpanded;
-			isInitialLoad = false; // Mark that user has interacted
 			applyExpandState();
+			if (collapsing) {
+				const target = window.scrollY + expandButton.getBoundingClientRect().top - buttonTop;
+				window.scrollPageTo(target);
+				requestAnimationFrame(() => cardsContainer!.classList.remove("is-collapsing"));
+			}
 		});
 
 	const getVisibleCards = (cards: HTMLElement[]): HTMLElement[] => cards.filter(card => !card.hidden);

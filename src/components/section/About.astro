@@ -146,13 +146,13 @@ const chartData = JSON.stringify({
 					</div>
 				</div>
 			</div>
-			<details id="schools-text-container">
-				<summary>{t.popup.chart.schools_text_title}</summary>
+			<section id="schools-text-container" aria-labelledby="schools-title">
+				<h3 id="schools-title">{t.popup.chart.schools_text_title}</h3>
 
 				<img src={SchoolsText.src} alt="Schools" id="schools-text" />
-			</details>
-			<details class="social-media-section">
-				<summary>{t.popup.chart.social_media.title}</summary>
+			</section>
+			<section class="social-media-section" aria-labelledby="social-media-title">
+				<h3 id="social-media-title">{t.popup.chart.social_media.title}</h3>
 
 				{t.popup.chart.social_media.note && <p class="data-note">{t.popup.chart.social_media.note}</p>}
 				<div class="social-platforms">
@@ -243,7 +243,7 @@ const chartData = JSON.stringify({
 						</div>
 					</div>
 				</div>
-			</details>
+			</section>
 		</div>
 	</Popup>
 	<div style="display:none" id="chart-data">{chartData}</div>

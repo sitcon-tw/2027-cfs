@@ -40,14 +40,14 @@ const config = shopConfig;
 			}
 		</div>
 
-		<div class="cards-container fade-active">
+		<div class="cards-container fade-active" id="item-catalog">
 			<div class="cards-grid">
 				{items.map(card => <ItemCard t={t} card={card} lang={lang} shopConfig={config} selectedCategory="all" />)}
 			</div>
 			<div class="fade-overlay"></div>
 		</div>
 
-		<button class="expand-button" id="expandButton">
+		<button class="expand-button" id="expandButton" aria-expanded="false" aria-controls="item-catalog">
 			<span class="show-text">{t.expandAll}</span>
 			<span class="hide-text" style="display: none;">{t.showLess}</span>
 			<span class="arrow">▼</span>
@@ -138,6 +138,10 @@ const config = shopConfig;
 		margin-bottom: 3rem;
 		transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 		overflow: hidden;
+	}
+
+	.cards-container.is-collapsing {
+		transition: none;
 	}
 
 	.cards-container.fade-active {

@@ -102,16 +102,23 @@ const defaultSchema = {
 				interface Window {
 					popupCtrl: (id?: string, action?: "open" | "close", updateUrl?: boolean, find?: Element | null) => void;
 					dataLayer: any[];
+					scrollPageTo: (top: number) => void;
 				}
 			}
 
 			window.dataLayer = window.dataLayer || [];
 
 			// Initialize Lenis for smooth scrolling (runs automatically with autoRaf: true)
-			const _lenis = new Lenis({
+			const lenis = new Lenis({
 				autoRaf: true,
 				prevent: node => node.classList.contains("lenis-scroll")
 			});
+
+			// Keep the smooth-scroll target in sync when layout changes require an immediate jump.
+			window.scrollPageTo = top => {
+				lenis.resize();
+				lenis.scrollTo(top, { immediate: true, force: true });
+			};
 
 			const observer = new IntersectionObserver(
 				entries => {
