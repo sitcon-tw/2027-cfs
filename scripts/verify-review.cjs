@@ -62,7 +62,7 @@ fs.mkdirSync(output, { recursive: true });
 	await page.waitForTimeout(400);
 	await page.evaluate(() => window.popupCtrl("stat-popup", "open"));
 	await page.waitForTimeout(400);
-	assert.equal(await page.locator("#stat-popup + .popup-bg .mobile-stat-tables").first().isVisible(), true);
+	assert.equal(await page.locator("#stat-popup + .popup-bg .distribution-chart svg").first().isVisible(), true);
 	await page.screenshot({ path: output + "/mobile-statistics.png" });
 	await page.keyboard.press("Escape");
 	await page.waitForTimeout(400);

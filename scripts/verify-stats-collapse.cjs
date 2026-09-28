@@ -25,8 +25,7 @@ const output = process.env.REVIEW_OUTPUT;
 				assert.ok(await popup.locator(selector).first().isVisible(), `${selector} visible without expanding`);
 			}
 			assert.ok(await popup.evaluate(el => el.scrollWidth <= el.clientWidth + 1), "Stats fit the popup");
-			if (width <= 768) assert.ok(await popup.locator(".social-media-section .mobile-stat-tables").first().isVisible());
-			else assert.ok(await popup.locator("#fb-age-chart canvas").isVisible());
+			assert.ok(await popup.locator("#fb-age-chart svg").isVisible());
 			if (output && width === 390) {
 				for (const selector of ["#schools-text-container", ".social-media-section"]) {
 					await popup.locator(selector).evaluate(el => {
