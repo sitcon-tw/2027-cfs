@@ -2,7 +2,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "2027-cfs-preview",
 	"account_id": "f5b0b9cb8ccf6b85f44d31473a478387",
-	"compatibility_date": "2026-09-29",
+	"compatibility_date": "2026-09-28",
 	"workers_dev": true,
 	"preview_urls": true,
 	"assets": {
