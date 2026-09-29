@@ -11,9 +11,21 @@ interface OpenDreamPlan {
 	price: string;
 }
 
-interface PopupSection {
+interface PopupPlan {
+	id: string;
+	count: string;
+	description: string;
+}
+
+interface PopupBenefit {
+	icon: string;
 	title: string;
-	content: string;
+	description: string;
+	image?: {
+		src: string;
+		alt: string;
+		caption: string;
+	};
 }
 
 const colors = ["#77B55A", "#537FF1"];
@@ -54,30 +66,158 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		<p class="note">{t.price_note}</p>
 	</div>
 	<div class="aos spacer"></div>
-	<Popup btnText={t.popup_label} title={t.popup.title} hero={true} id="opendream-popup" background={volunteer.src}>
+	<Popup btnText={t.popup_label} title={t.popup.title} hero={true} id="opendream-popup" background={volunteer.src} lang={lang} variant="opendream">
+		<div slot="hero-message" class="dream-hero-message">
+			<p class="eyebrow">{t.popup.hero.eyebrow}</p>
+			<p class="hero-headline">{t.popup.hero.headline}</p>
+			<p class="hero-description">{t.popup.hero.description}</p>
+		</div>
 		<div class="popup-body">
-			{
-				t.popup.sections.map((section: PopupSection) => (
-					<div class="popup-section">
-						<h3>{section.title}</h3>
-						<p set:html={section.content.replace(/\n/g, "<br />")} />
-					</div>
-				))
-			}
-			{
-				t.popup.links && (
-					<div class="popup-section">
-						<h3>{t.popup.links_title}</h3>
-						<p class="popup-links">
-							{t.popup.links.map((link: { name: string; url: string }) => (
-								<a href={link.url} target="_blank" rel="noopener noreferrer">
-									{link.name}
-								</a>
-							))}
-						</p>
-					</div>
-				)
-			}
+			<section class="dream-section impact-section" aria-labelledby="dream-impact-title">
+				<div class="section-heading">
+					<p class="eyebrow">01 / IMPACT</p>
+					<h3 id="dream-impact-title">{t.popup.impact.title}</h3>
+				</div>
+				<div class="impact-grid">
+					{
+						t.popup.impact.plans.map((impact: PopupPlan) => {
+							const plan = t.plans.find((item: OpenDreamPlan) => item.id === impact.id);
+							return (
+								plan && (
+									<article class="impact-card">
+										<p class="impact-count">{impact.count}</p>
+										<p class="impact-price">{plan.price}</p>
+										<p class="impact-description">{impact.description}</p>
+										<button
+											type="button"
+											class="tier-interest-button popup-interest-button"
+											data-tier-name={plan.id}
+											data-tier-title={`${t.title}｜${plan.name}`}
+											data-tier-price={plan.price}
+											data-default-label={t.popup.cta.add}
+											data-selected-label={t.popup.cta.selected}
+											aria-pressed="false"
+										>
+											{t.popup.cta.add}
+										</button>
+									</article>
+								)
+							);
+						})
+					}
+				</div>
+				<p class="section-note">{t.popup.impact.note}</p>
+			</section>
+
+			<section class="dream-section fund-section" aria-labelledby="dream-plan-title">
+				<div class="section-heading"><p class="eyebrow">02 / PLAN</p><h3 id="dream-plan-title">{t.popup.plan_value.title}</h3></div>
+				<p class="plan-value-statement">{t.popup.plan_value.value_statement}</p>
+				<div class="fund-highlight"><strong>{t.popup.plan_value.direct_value}</strong><span>{t.popup.plan_value.direct_label}</span></div>
+				<div class="fund-groups">
+					{
+						t.popup.plan_value.groups.map((group: { title: string; items: string[] }) => (
+							<div class="fund-group">
+								<>
+									<h4>{group.title}</h4>
+									<ul>
+										{group.items.map(item => (
+											<li>{item}</li>
+										))}
+									</ul>
+								</>
+							</div>
+						))
+					}
+				</div>
+				<p class="section-note">{t.popup.plan_value.note}</p>
+			</section>
+
+			<section class="dream-section" aria-labelledby="dream-benefits-title">
+				<div class="section-heading"><p class="eyebrow">03 / PARTNERSHIP</p><h3 id="dream-benefits-title">{t.popup.sponsor_benefits.title}</h3></div>
+				<p class="section-intro">{t.popup.sponsor_benefits.description}</p>
+				<div class="benefit-grid">
+					{
+						t.popup.sponsor_benefits.items.map((benefit: PopupBenefit) => (
+							<article class:list={["benefit-card", { "benefit-card-featured": !!benefit.image }]} data-icon={benefit.icon}>
+								<div class="benefit-copy">
+									<Check size={26} stroke-width={1.8} />
+									<h4>{benefit.title}</h4>
+									<p>{benefit.description}</p>
+								</div>
+								{benefit.image && (
+									<figure class="benefit-image">
+										<img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/${benefit.image.src}`} alt={benefit.image.alt} width="800" height="450" loading="lazy" />
+										<figcaption>{benefit.image.caption}</figcaption>
+									</figure>
+								)}
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<section class="dream-section review-section" aria-labelledby="dream-eligibility-title">
+				<div class="section-heading"><p class="eyebrow">04 / REVIEW</p><h3 id="dream-eligibility-title">{t.popup.eligibility.title}</h3></div>
+				<p class="section-intro">{t.popup.eligibility.description}</p>
+				<ol class="review-steps">{t.popup.eligibility.steps.map((step: string) => <li>{step}</li>)}</ol>
+				<p class="section-note">{t.popup.eligibility.note}</p>
+			</section>
+
+			<section class="dream-section comparison-section" aria-labelledby="dream-comparison-title">
+				<div class="section-heading"><p class="eyebrow">05 / COMPARISON</p><h3 id="dream-comparison-title">{t.popup.comparison.title}</h3></div>
+				<div class="comparison-grid">
+					{
+						t.popup.comparison.items.map((item: { title: string; points: string[] }) => (
+							<article class="comparison-card">
+								<>
+									<h4>{item.title}</h4>
+									<ul>
+										{item.points.map(point => (
+											<li>{point}</li>
+										))}
+									</ul>
+								</>
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<section class="dream-section links-section" aria-labelledby="dream-links-title">
+				<h3 id="dream-links-title">{t.popup.links_title}</h3>
+				<p>{t.popup.links_description}</p>
+				<div class="popup-links">
+					{
+						t.popup.links.map((link: { name: string; url: string }) => (
+							<a href={link.url} target="_blank" rel="noopener noreferrer">
+								{link.name} ↗
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			<div class="dream-cta">
+				<div><h3>{t.popup.cta.title}</h3><p>{t.popup.cta.description}</p></div>
+				<div class="dream-cta-actions">
+					{
+						t.plans.map((plan: OpenDreamPlan) => (
+							<button
+								type="button"
+								class="tier-interest-button popup-interest-button"
+								data-tier-name={plan.id}
+								data-tier-title={`${t.title}｜${plan.name}`}
+								data-tier-price={plan.price}
+								data-default-label={`${t.popup.cta.add} · ${plan.name}`}
+								data-selected-label={t.popup.cta.selected}
+								aria-pressed="false"
+							>
+								{t.popup.cta.add} · {plan.name}
+							</button>
+						))
+					}
+				</div>
+			</div>
 		</div>
 	</Popup>
 	<details class="impact-details"><summary>{lang === "en" ? "How your support makes an impact" : "了解贊助如何支持資訊教育"}</summary><Cycle t={cycleText} lang={lang} /></details>
@@ -91,7 +231,10 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	function updateButtonStates() {
 		document.querySelectorAll<HTMLButtonElement>("#opendream .tier-interest-button").forEach(button => {
 			const id = button.getAttribute("data-tier-name") || "";
-			button.classList.toggle("interested", isItemInterested(id));
+			const selected = isItemInterested(id);
+			button.classList.toggle("interested", selected);
+			button.setAttribute("aria-pressed", String(selected));
+			if (button.dataset.defaultLabel && button.dataset.selectedLabel) button.textContent = selected ? button.dataset.selectedLabel : button.dataset.defaultLabel;
 		});
 	}
 
@@ -122,7 +265,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 </script>
 
 <style>
-	section {
+	section#opendream {
 		background-color: var(--items-bg);
 		padding: 5rem 2rem;
 		display: flex;
@@ -203,9 +346,9 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	.tier-interest-button.interested {
-		background-color: var(--items-green);
-		border-color: var(--items-green);
-		color: var(--white);
+		background-color: #77b55a;
+		border-color: #77b55a;
+		color: var(--black);
 	}
 
 	h3 {
@@ -245,29 +388,342 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		height: 2rem;
 	}
 
-	.popup-body {
-		padding: 2rem 3rem;
-		display: grid;
-		gap: 2rem;
+	.dream-hero-message {
+		position: relative;
+		z-index: 1;
+		max-width: 42rem;
+		color: var(--white);
 	}
 
-	.popup-section h3 {
+	.eyebrow {
+		font-size: 0.78rem;
+		font-weight: 800;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		color: #77b55a;
+	}
+
+	.dream-hero-message .eyebrow {
+		color: #77b55a;
+	}
+
+	.hero-headline {
+		font-size: clamp(1.55rem, 3vw, 2.7rem);
+		font-weight: 800;
+		line-height: 1.3;
+		margin: 0.4rem 0 0.75rem;
+	}
+
+	.hero-description {
+		font-size: 1rem;
+		line-height: 1.65;
+	}
+
+	.popup-body {
+		padding: 0 3rem 3rem;
+		color: var(--black);
+	}
+
+	.dream-section {
+		padding: 3rem 0;
+		border-bottom: 1px solid #d9ded9;
+	}
+
+	.dream-section h3,
+	.dream-cta h3 {
 		text-align: left;
+		font-size: clamp(1.45rem, 2.4vw, 2rem);
+		line-height: 1.3;
+		margin: 0.4rem 0 1.2rem;
+	}
+
+	.dream-section h4 {
+		font-size: 1.1rem;
+		margin: 0 0 0.55rem;
+	}
+
+	.section-intro,
+	.section-note,
+	.dream-section li,
+	.dream-section p,
+	.dream-cta p {
+		line-height: 1.7;
+	}
+
+	.section-intro {
+		max-width: 60rem;
+		margin: 0 0 1.5rem;
+	}
+
+	.section-note {
+		font-size: 0.9rem;
+		color: var(--gray);
+		margin: 1rem 0 0;
+	}
+
+	.impact-grid,
+	.fund-groups,
+	.comparison-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.impact-card {
+		background: var(--white);
+		border: 2px solid #dcebd5;
+		border-radius: 1.25rem;
+		padding: 1.6rem;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.impact-card:nth-child(2) {
+		border-color: #d9e3fa;
+	}
+
+	.impact-count {
+		font-size: clamp(2rem, 4vw, 3.25rem);
+		font-weight: 800;
+		line-height: 1.1 !important;
+		color: #77b55a;
+		margin: 0 0 0.45rem;
+	}
+
+	.impact-card:nth-child(2) .impact-count {
+		color: #426bd1;
+	}
+
+	.impact-price {
+		font-size: 1.7rem;
+		font-weight: 800;
+		margin: 0;
+	}
+
+	.impact-description {
+		margin: 0.75rem 0 1.5rem;
+		flex: 1;
+	}
+
+	.popup-interest-button {
+		background: #77b55a;
+		border-color: #77b55a;
+		color: var(--black);
+		white-space: normal;
+		font-weight: 700;
+		min-height: 2.75rem;
+	}
+
+	.popup-interest-button:hover {
+		background: #527d3c;
+		color: var(--white);
+	}
+
+	.popup-interest-button.interested {
+		background: var(--white);
+		color: var(--black);
+		border-color: #77b55a;
+	}
+
+	.fund-section,
+	.review-section {
+		margin-inline: -3rem;
+		padding-inline: 3rem;
+		background: #edf4e9;
+	}
+
+	.fund-highlight {
+		display: flex;
+		align-items: baseline;
+		gap: 0.8rem;
+		flex-wrap: wrap;
+		margin-bottom: 1rem;
+	}
+
+	.plan-value-statement {
+		font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+		font-weight: 800;
+		margin: 0 0 1rem;
+	}
+
+	.fund-highlight strong {
+		font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+		color: #77b55a;
+	}
+
+	.fund-group,
+	.comparison-card {
+		background: var(--white);
+		border-radius: 1rem;
+		padding: 1.35rem;
+	}
+
+	.fund-group ul,
+	.comparison-card ul {
+		padding-left: 1.2rem;
+		margin: 0;
+	}
+
+	.fund-group li + li,
+	.comparison-card li + li {
+		margin-top: 0.45rem;
+	}
+
+	.benefit-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.65fr) repeat(2, minmax(0, 1fr));
+		grid-template-rows: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.benefit-card {
+		background: var(--white);
+		border-radius: 1rem;
+		padding: 1.35rem;
+	}
+
+	.benefit-card-featured {
+		grid-column: 1;
+		grid-row: span 2;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		border: 2px solid #dcebd5;
+	}
+
+	.benefit-image {
+		margin: auto 0 0;
+		min-width: 0;
+		width: 100%;
+	}
+
+	.benefit-image img {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: 0.7rem;
+		border: 1px solid #d5e1d0;
+	}
+
+	.benefit-image figcaption {
+		color: var(--gray);
+		font-size: 0.8rem;
+		line-height: 1.5;
+		margin-top: 0.5rem;
+	}
+
+	.benefit-card svg {
+		color: var(--items-green);
+		margin-bottom: 0.75rem;
+	}
+
+	.benefit-card[data-icon="web"] svg,
+	.benefit-card[data-icon="social"] svg {
+		color: #426bd1;
+	}
+
+	.benefit-card p {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	.review-steps {
+		counter-reset: review;
+		list-style: none;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.review-steps li {
+		background: var(--white);
+		border-radius: 1rem;
+		padding: 1.25rem;
+	}
+
+	.review-steps li::before {
+		counter-increment: review;
+		content: counter(review, decimal-leading-zero);
+		display: block;
+		color: #77b55a;
+		font-weight: 800;
 		font-size: 1.4rem;
 		margin-bottom: 0.5rem;
 	}
 
-	.popup-links a {
-		display: inline-block;
-		margin-right: 1.5rem;
-		color: #0171e3;
-		text-decoration: underline;
-		text-underline-offset: 2px;
+	.comparison-card:nth-child(2) {
+		border: 2px solid #dcebd5;
 	}
 
-	.popup-section p {
-		line-height: 1.8;
-		font-size: 1.05rem;
+	.links-section {
+		border-bottom: 0;
+	}
+
+	.popup-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem 1.5rem;
+		margin-top: 1rem;
+	}
+
+	.popup-links a {
+		color: #075ba9;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.dream-cta {
+		background: var(--black);
+		color: var(--white);
+		border-radius: 1.25rem;
+		padding: 2rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.dream-cta h3,
+	.dream-cta p {
+		margin: 0;
+	}
+
+	.dream-cta-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		flex: none;
+	}
+
+	.dream-cta .popup-interest-button.interested {
+		background: var(--white);
+	}
+
+	.tier-interest-button:focus-visible,
+	.popup-links a:focus-visible {
+		outline: 3px solid #426bd1;
+		outline-offset: 3px;
+	}
+
+	@media screen and (max-width: 65rem) {
+		.benefit-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-template-rows: none;
+		}
+
+		.benefit-card-featured {
+			grid-column: 1 / -1;
+			grid-row: auto;
+			display: grid;
+			grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+			align-items: center;
+		}
+
+		.benefit-image {
+			margin: 0;
+		}
 	}
 
 	@media screen and (max-width: 45rem) {
@@ -280,12 +736,50 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		}
 
 		.popup-body {
+			padding: 0 1.25rem 1.5rem;
+		}
+
+		.dream-hero-message .hero-description {
+			font-size: 0.9rem;
+		}
+
+		.dream-section {
+			padding-block: 2.25rem;
+		}
+
+		.fund-section,
+		.review-section {
+			margin-inline: -1.25rem;
+			padding-inline: 1.25rem;
+		}
+
+		.impact-grid,
+		.fund-groups,
+		.benefit-grid,
+		.review-steps,
+		.comparison-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.benefit-card-featured {
+			grid-column: auto;
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		.dream-cta {
+			align-items: stretch;
+			flex-direction: column;
 			padding: 1.5rem;
+		}
+
+		.dream-cta-actions {
+			flex-direction: column;
 		}
 	}
 
 	@media print {
-		section {
+		section#opendream {
 			padding: 2rem;
 			break-inside: avoid;
 		}
