@@ -275,6 +275,8 @@
 		</div>
 
 		<script>
+			import { localizeInterestedItem, getInterestedItemDeadline } from "../utils/interested-item-i18n.ts";
+
 			interface InterestedItem {
 				id: string;
 				title: string;
@@ -289,7 +291,13 @@
 
 				try {
 					const items = localStorage.getItem("interestItems");
-					return items ? JSON.parse(items) : [];
+					// Quotation is in Chinese; re-localize items that may have been added on the English page
+					return items
+						? JSON.parse(items).map((item: InterestedItem) => {
+								const localized = localizeInterestedItem(item, "zh-Hant");
+								return { ...localized, deadline: getInterestedItemDeadline(item.id) || item.deadline };
+							})
+						: [];
 				} catch (error) {
 					console.error("Error getting interested items from localStorage:", error);
 					return [];
