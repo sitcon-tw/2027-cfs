@@ -1,3 +1,5 @@
+import { localizeInterestedItem } from "./interested-items-i18n.js";
+
 export interface InterestedItem {
 	id: string;
 	title: string;
@@ -30,7 +32,8 @@ export function getInterestedItems(): InterestedItem[] {
 
 	try {
 		const items = localStorage.getItem(INTEREST_ITEMS_KEY);
-		return items ? JSON.parse(items) : [];
+		// Always show items in the current page language, not the one they were added in
+		return items ? (JSON.parse(items) as InterestedItem[]).map(item => localizeInterestedItem(item)) : [];
 	} catch (error) {
 		console.error("Error getting interested items from localStorage:", error);
 		return [];

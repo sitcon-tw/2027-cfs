@@ -275,26 +275,8 @@
 		</div>
 
 		<script>
-			interface InterestedItem {
-				id: string;
-				title: string;
-				category: string;
-				image: string;
-				deadline: string;
-				price?: string;
-			}
-
-			function getInterestedItems(): InterestedItem[] {
-				if (typeof window === "undefined") return [];
-
-				try {
-					const items = localStorage.getItem("interestItems");
-					return items ? JSON.parse(items) : [];
-				} catch (error) {
-					console.error("Error getting interested items from localStorage:", error);
-					return [];
-				}
-			}
+			// Shared helper re-localizes items to this page's language (zh-Hant), even if added on the English page
+			import { getInterestedItems } from "../utils/local-storage.ts";
 
 			function formatPrice(price: string): number {
 				// Check if price starts with $ or NT$ (numeric price)
