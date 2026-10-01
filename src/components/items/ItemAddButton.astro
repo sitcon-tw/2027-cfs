@@ -1,0 +1,105 @@
+---
+import { Plus, Check } from "@lucide/astro";
+
+interface Props {
+	id: string;
+	title: string;
+	image?: string;
+	price?: string;
+	deadline?: string;
+	popupId?: string;
+	lang?: string;
+	class?: string;
+}
+
+const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Hant", class: className } = Astro.props;
+---
+
+<button
+	type="button"
+	class:list={["add-button", className]}
+	data-item-id={id}
+	data-item-title={title}
+	data-item-image={image}
+	data-item-price={price}
+	data-item-deadline={deadline}
+	data-popup-id={popupId}
+	aria-label={lang === "en" ? `Save ${title}` : `收藏${title}`}
+	aria-pressed="false"
+>
+	<span class="add-icon"><Plus /></span>
+	<span class="added-icon"><Check /></span>
+</button>
+
+<style>
+	.add-button {
+		width: 2rem;
+		height: 2rem;
+		flex-shrink: 0;
+		border-radius: 50%;
+		background-color: var(--black);
+		color: var(--white);
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform 0.2s ease;
+	}
+
+	.add-button :global(svg) {
+		width: 20px;
+		height: 20px;
+	}
+
+	.add-icon,
+	.added-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+
+	.add-button .added-icon {
+		display: none;
+	}
+
+	.add-button.added .added-icon {
+		display: flex;
+	}
+
+	.add-button.added .add-icon {
+		display: none;
+	}
+
+	.add-button:hover {
+		transform: scale(1.1);
+	}
+
+	.add-button:focus-visible {
+		outline: 2px solid #14693e;
+		outline-offset: 3px;
+	}
+
+	.add-button.added {
+		background-color: var(--items-progress);
+	}
+
+	.add-button:disabled,
+	.add-button.disabled {
+		background-color: var(--gray);
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.add-button:disabled:hover,
+	.add-button.disabled:hover {
+		transform: none;
+	}
+
+	@media print {
+		.add-button {
+			display: none;
+		}
+	}
+</style>

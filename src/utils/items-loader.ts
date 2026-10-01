@@ -70,6 +70,27 @@ export interface ItemData {
 	sub: SubItem[];
 }
 
+export interface ItemOption extends SubItem {
+	id: string;
+}
+
+/** Render every item as options while preserving existing saved-item IDs. */
+export function getItemOptions(item: ItemData): ItemOption[] {
+	if (item.sub.length > 0) {
+		return item.sub.map((option, index) => ({ ...option, id: `${item.id}-sub-${index}` }));
+	}
+	return [
+		{
+			id: item.id,
+			name: item.name,
+			price: item.price,
+			remaining: item.remaining,
+			image: item.image,
+			image_description: item.image_description
+		}
+	];
+}
+
 function getLocaleSuffix(locale: string): string {
 	return locale === "zh-Hant" || locale === "zh" ? "_zh" : "_en";
 }

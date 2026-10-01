@@ -287,7 +287,9 @@ const items = itemsUnsorted.sort((a, b) => {
 			currentCount = getInterestedItems().length;
 		}
 
-		if (currentCount > previousInterestCount) {
+		// Keep selection uninterrupted while any item popup is open.
+		const isSelecting = document.querySelector(".item-popup-bg.show");
+		if (currentCount > previousInterestCount && !isSelecting) {
 			setTimeout(() => openPopover(), 0);
 		}
 
