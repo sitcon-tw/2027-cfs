@@ -31,6 +31,7 @@ const en = lang === "en";
 </section>
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
+	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
 
 	// Legacy endpoint: the development team must confirm the 2027 recipient/form before launch.
 	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse";
@@ -41,6 +42,7 @@ const en = lang === "en";
 	const en = document.documentElement.lang === "en";
 	const selectionText = () =>
 		getInterestedItems()
+			.map(item => localizeInterestedItem(item, document.documentElement.lang))
 			.map(item => `• ${item.title}${item.price ? ` — ${item.price}` : ""}`)
 			.join("\n");
 	function updateSelection() {

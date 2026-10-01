@@ -17,6 +17,7 @@ const items = itemsUnsorted.sort((a, b) => {
 <script>
 	import { getInterestedItems, removeInterestedItem, isItemInterested, isDeadlinePassed } from "../../utils/local-storage.ts";
 	import { initializeAddToCart, updateAddButtonStates } from "../../utils/add-to-cart-handler.ts";
+	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
 
 	// Wait for DOM to be ready before initializing add-to-cart functionality
 	document.addEventListener("DOMContentLoaded", function () {
@@ -230,7 +231,7 @@ const items = itemsUnsorted.sort((a, b) => {
 	};
 
 	const renderInterestItemsList = () => {
-		const items = getInterestedItems();
+		const items = getInterestedItems().map(item => localizeInterestedItem(item, document.documentElement.lang));
 		const listContainer = document.getElementById("interestItemsList");
 
 		if (!listContainer) return;

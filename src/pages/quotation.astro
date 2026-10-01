@@ -275,6 +275,8 @@
 		</div>
 
 		<script>
+			import { localizeInterestedItem } from "../utils/plan-helper.ts";
+
 			interface InterestedItem {
 				id: string;
 				title: string;
@@ -315,7 +317,8 @@
 			}
 
 			function generateQuotation() {
-				const items = getInterestedItems();
+				// The quotation is Chinese-only, so show every item in Chinese regardless of the language it was added in
+				const items = getInterestedItems().map(item => localizeInterestedItem(item, "zh-Hant"));
 				const contentDiv = document.getElementById("content");
 
 				if (!contentDiv) return;
