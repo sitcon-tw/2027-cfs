@@ -1,3 +1,5 @@
+import { localizeItemPrice } from "./item-price";
+
 import planData from "@data/plan.json" with { type: "json" };
 import itemData from "@data/item.json" with { type: "json" };
 import { opendream as zhOpendream } from "@i18n/zh-Hant.json";
@@ -129,7 +131,7 @@ export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: str
 	}
 
 	// If there's a price, return it, otherwise return empty string (no "洽詢")
-	return itemPrice || "";
+	return localizeItemPrice(itemPrice || "", lang);
 }
 
 /**
