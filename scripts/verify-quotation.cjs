@@ -7,9 +7,20 @@ const zh = require("../src/i18n/zh-Hant.json");
 const en = require("../src/i18n/en.json");
 const base = (process.env.REVIEW_BASE_URL || "http://127.0.0.1:4321/").replace(/\/?$/, "/");
 const output = process.env.REVIEW_OUTPUT;
-const ids = ["23", "5-sub-0", "tier-navigator", "opendream-5", "28"];
+const ids = ["23", "5-sub-0", "tier-navigator", "opendream-5", "28", "22-sub-0", "22-sub-1", "tier-visionary", "opendream-10"];
 const numericPrice = price => Number(price.replace(/[^0-9]/g, ""));
-const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData["5"].sub[0].price) + numericPrice(planData.navigator.price) + numericPrice(zh.opendream.plans[0].price);
+const numericPrices = [
+	itemData["23"].price,
+	itemData["5"].sub[0].price,
+	planData.navigator.price,
+	zh.opendream.plans[0].price,
+	null,
+	itemData["22"].sub[0].price,
+	itemData["22"].sub[1].price,
+	planData.visionary.price,
+	zh.opendream.plans[1].price
+];
+const expectedTotal = numericPrices.reduce((total, price) => total + (price ? numericPrice(price) : 0), 0);
 
 (async () => {
 	const browser = process.env.CDP_URL
@@ -46,8 +57,13 @@ const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData
 			itemData["5"].sub[0][sourceName],
 			planData.navigator[sourceName],
 			`${translations.opendream.title}｜${translations.opendream.plans[0].name}`,
-			itemData["28"][sourceName]
+			itemData["28"][sourceName],
+			itemData["22"].sub[0][sourceName],
+			itemData["22"].sub[1][sourceName],
+			planData.visionary[sourceName],
+			`${translations.opendream.title}｜${translations.opendream.plans[1].name}`
 		];
+		const expectedPrices = numericPrices.map(price => (price ? `NT$${numericPrice(price).toLocaleString(english ? "en-US" : "zh-TW")}` : english ? "Plan Included Item" : "方案包含項目"));
 
 		await page.goto(base + languagePath, { waitUntil: "networkidle" });
 		await page.evaluate(items => {
@@ -58,6 +74,7 @@ const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData
 		if (!(await page.locator("#interestPopover").evaluate(el => el.classList.contains("active")))) {
 			await page.locator("#interestButton").click();
 		}
+		assert.deepEqual(await page.locator("#interestPopover .item-price-tag").allTextContents(), expectedPrices, "The floating selection list must use NT$ and preserve plan-included labels");
 		const [quotation] = await Promise.all([page.waitForEvent("popup"), page.locator(".download-quote-btn").click()]);
 		await quotation.waitForLoadState("networkidle");
 		await quotation.locator(".items-table").waitFor();
@@ -67,9 +84,12 @@ const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData
 		assert.equal(await quotation.locator(".quotation-container h1").innerText(), t.title);
 		assert.deepEqual(await quotation.locator(".items-table th").allTextContents(), [t.number, t.item_name, t.quantity, t.unit_price, t.subtotal]);
 		assert.deepEqual(await quotation.locator(".item-title").allTextContents(), expectedTitles);
+		assert.deepEqual(await quotation.locator(".price-cell").allTextContents(), expectedPrices);
+		assert.deepEqual(await quotation.locator(".subtotal-cell").allTextContents(), expectedPrices);
+		assert.ok((await quotation.locator(".summary-note").innerText()).includes(`NT$${Math.round(expectedTotal * 0.05).toLocaleString(english ? "en-US" : "zh-TW")}`));
 		assert.ok((await quotation.locator(".summary-row.total").innerText()).includes(`NT$${expectedTotal.toLocaleString(english ? "en-US" : "zh-TW")}`));
-		assert.equal(await quotation.locator(".item-deadline").count(), 1);
-		assert.ok((await quotation.locator(".item-deadline").innerText()).startsWith(t.deadline));
+		assert.equal(await quotation.locator(".item-deadline").count(), 3);
+		for (const deadline of await quotation.locator(".item-deadline").allTextContents()) assert.ok(deadline.startsWith(t.deadline));
 		assert.equal(await quotation.locator(".notes li").count(), t.notes.length + 1);
 		const text = await quotation.locator(".quotation-container").innerText();
 		assert.ok(text.includes(t.non_numeric_note));

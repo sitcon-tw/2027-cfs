@@ -128,8 +128,9 @@ export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: str
 		return lang === "en" ? "Plan Included Item" : "方案包含項目";
 	}
 
-	// If there's a price, return it, otherwise return empty string (no "洽詢")
-	return itemPrice || "";
+	// Use the same New Taiwan dollar prefix as quotation subtotals and totals.
+	// Leave non-numeric price labels and empty prices unchanged.
+	return (itemPrice || "").replace(/^\$(?=\d[\d,]*(?:\.\d+)?$)/, "NT$");
 }
 
 /**
