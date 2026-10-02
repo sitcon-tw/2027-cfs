@@ -463,28 +463,7 @@
 					"note": "looking for internships or jobs"
 				}
 			],
-			"note": "Event results compiled by the organizing team after the conference. Registration statistics: snapshot after the second ticket wave on 2026/03/03, n=1,315.",
-			"coverage": {
-				"title": "2026 press coverage:",
-				"links": [
-					{
-						"name": "Office of the President",
-						"url": "https://www.president.gov.tw/News/39930"
-					},
-					{
-						"name": "CNA",
-						"url": "https://www.cna.com.tw/news/aipl/202603280032.aspx"
-					},
-					{
-						"name": "Economic Daily News",
-						"url": "https://money.udn.com/money/story/7307/9408273"
-					},
-					{
-						"name": "OCAC News",
-						"url": "https://ocacnews.net/article/423192"
-					}
-				]
-			}
+			"note": "Figures are for reference and may vary by reporting date and methodology; headcount margin of error: ±50 people"
 		},
 		"popup": {
 			"title": "Related Statistics",
