@@ -92,9 +92,9 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 										{tier.name}
 									</div>
 									<div class="tier-price">{tier.price}</div>
-								<Button variant="outlined" class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
-									{t.interested}
-								</Button>
+									<Button variant="outlined" class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
+										{t.interested}
+									</Button>
 								</div>
 							))
 						}

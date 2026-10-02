@@ -8,6 +8,7 @@
 		"preview": "astro preview",
 		"astro": "astro",
 		"format": "prettier --write .",
+		"format:check": "prettier --check .",
 		"test": "astro check",
 		"fetch-data": "node ./scripts/fetch-and-merge.js",
 		"build:preview": "node scripts/build-preview.js"
