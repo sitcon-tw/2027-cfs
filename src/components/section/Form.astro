@@ -1,301 +1,196 @@
 ---
-const { t } = Astro.props;
-import FormInput from "../FormInput.astro";
-import CorporateQR from "@assets/img/qrcode-form.webp";
-import PersonalQR from "@assets/img/qrcode-personal.webp";
+import Button from "../Button.astro";
+const { t, lang } = Astro.props;
+const en = lang === "en";
 ---
 
-<section id="form">
-	<h2>
-		{t.titleLine1}
-		<br class="rwd-hidden" />
-		{t.titleLine2}
-	</h2>
-	<div class="qrcodes">
-		<div>
-			<img src={CorporateQR.src} alt={t.qrAlt} />
-			<p>{t.corporateTitle}</p>
+<section id="form" data-contact-lang={lang}>
+	<h2>{en ? "Let's build SITCON 2027 together" : "一起成就 SITCON 2027"}</h2>
+	<p class="intro">{en ? "Leave a way to reach you and we'll discuss a suitable partnership together." : "留下方便聯絡您的方式，我們會與您一起討論適合的合作方式。"}</p>
+	<form id="sponsor-form" data-error={t.messages.error}>
+		<div class="identity">
+			<div><label for="organization">{t.fields.organization.title} <span aria-hidden="true">*</span></label><input id="organization" name="organization" autocomplete="organization" required /></div>
+			<div><label for="contact-name">{t.fields.name.title} <span aria-hidden="true">*</span></label><input id="contact-name" name="name" autocomplete="name" required /></div>
 		</div>
-		<div>
-			<img src={PersonalQR.src} alt={t.qrAlt} />
-			<p>{t.personal.qrcode}</p>
+		<label for="contact">{t.fields.contact.title} <span aria-hidden="true">*</span></label>
+		<p id="contact-help" class="help">{t.fields.contact.description}</p>
+		<input id="contact" name="contact" type="text" aria-describedby="contact-help" placeholder={t.fields.contact.placeholder} required />
+		<label for="inquiry-text">{en ? "Ideas or questions (optional)" : "合作想法或問題（選填）"}</label>
+		<textarea
+			id="inquiry-text"
+			name="message"
+			rows="4"
+			placeholder={en ? "For example: recruiting, brand exposure, budget, or a good time to call." : "例如：徵才、品牌曝光、預算，或方便聯絡的時段。"}
+		>
+		</textarea>
+		<div class="selection"><p>{en ? "Plans / items of interest" : "感興趣的方案／品項"}</p><p id="inquiry-selection"></p></div>
+		<div class="submit-wrap">
+			<Button id="submit" type="submit" size="default" color="#14693e" hoverColor="#14693e">{en ? "Let's talk" : "送出合作洽詢"}</Button>
 		</div>
-	</div>
-	<div class="container">
-		<form id="sponsor-form" data-required-message={t.messages.required} data-leading-equal-message={t.messages.leadingEqual} data-error-message={t.messages.error}>
-			<h3>{t.corporateTitle}</h3>
-			<FormInput title={t.fields.organization.title} name="organization" description={t.fields.organization.description} placeholder={t.fields.organization.placeholder} required />
-			<FormInput title={t.fields.department.title} name="department" description={t.fields.department.description} placeholder={t.fields.department.placeholder} />
-			<FormInput title={t.fields.name.title} name="name" description={t.fields.name.description} placeholder={t.fields.name.placeholder} required />
-			<FormInput title={t.fields.contact.title} name="contact" description={t.fields.contact.description} placeholder={t.fields.contact.placeholder} required />
-			<FormInput title={t.fields.message.title} name="message" description={t.fields.message.description} placeholder={t.fields.message.placeholder} type="textarea" />
-			<div id="submit-section">
-				<button id="submit" type="submit" data-default-text={t.button.default} data-loading-text={t.button.loading}>
-					{t.button.default}
-				</button>
-				<span id="form-message" aria-live="polite"></span>
-			</div>
-		</form>
-		<div class="divider"></div>
-		<div class="personal">
-			<h3>{t.personal.title}</h3>
-			<a class="personal-button" href="https://sitcon.org/donate" target="_blank">{t.personal.cta}</a>
-		</div>
-	</div>
+		<p id="form-message" role="status" aria-live="polite"></p>
+	</form>
+	<p class="alternative">{en ? "You can also email us at" : "也歡迎直接來信"} <a href="mailto:contact@sitcon.org">contact@sitcon.org</a></p>
+	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
 </section>
-
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
+	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
 
+	// Legacy endpoint: the development team must confirm the 2027 recipient/form before launch.
 	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse";
-
-	const form = document.getElementById("sponsor-form") as HTMLFormElement | null;
-	const submitButton = document.getElementById("submit") as HTMLButtonElement | null;
-	const messageElement = document.getElementById("form-message") as HTMLSpanElement | null;
-
-	if (!form || !submitButton || !messageElement) {
-		console.warn("Sponsor form elements are missing.");
-	} else {
-		const requiredMessage = form.dataset.requiredMessage ?? "請確認必填欄位";
-		const leadingEqualMessage = form.dataset.leadingEqualMessage ?? "回答的第一個字不可是=";
-		const successMessage = form.dataset.successMessage ?? "已送出成功！感謝您的填寫";
-		const errorMessage = form.dataset.errorMessage ?? "發生錯誤，請稍後再試";
-		const defaultButtonText = submitButton.dataset.defaultText ?? submitButton.textContent ?? "";
-		const loadingButtonText = submitButton.dataset.loadingText ?? "送出中…";
-
-		const entryMap = {
-			organization: "entry.1867519928",
-			department: "entry.363990418",
-			name: "entry.1660888396",
-			contact: "entry.1209239304",
-			message: "entry.65159086"
-		} as const;
-
-		const messageTextarea = form.querySelector('[name="message"]') as HTMLTextAreaElement | null;
-		let userMessage = "";
-
-		function getCartItemsString() {
-			const interestedItems = getInterestedItems();
-			if (interestedItems.length === 0) return "";
-
-			const itemsList = interestedItems.map(item => item.title).join("、");
-
-			return `感興趣的項目：${itemsList}`;
-		}
-
-		function updateMessageField() {
-			if (!messageTextarea) return;
-
-			const cartItems = getCartItemsString();
-			if (cartItems) {
-				messageTextarea.value = userMessage.trim() ? `${userMessage}\n\n${cartItems}` : cartItems;
-			} else {
-				messageTextarea.value = userMessage;
-			}
-		}
-
-		if (messageTextarea) {
-			messageTextarea.addEventListener("input", () => {
-				const currentValue = messageTextarea.value;
-				const cartItems = getCartItemsString();
-
-				if (cartItems && currentValue.includes(cartItems)) {
-					userMessage = currentValue.replace(`\n\n${cartItems}`, "").replace(cartItems, "").trim();
-				} else {
-					userMessage = currentValue;
-				}
-			});
-
-			updateMessageField();
-
-			window.addEventListener("itemsChange", () => {
-				updateMessageField();
-			});
-		}
-
-		const checkForm = () => {
-			const formData = new FormData(form);
-			if (!formData.get("organization") || !formData.get("name") || !formData.get("contact")) {
-				messageElement.textContent = requiredMessage;
-				return false;
-			}
-			for (const [, value] of formData.entries()) {
-				if (typeof value === "string" && value.startsWith("=")) {
-					messageElement.textContent = leadingEqualMessage;
-					return false;
-				}
-			}
-			messageElement.textContent = "";
-			return true;
-		};
-
-		form.addEventListener("submit", event => {
-			event.preventDefault();
-			if (!checkForm()) return;
-
-			submitButton.disabled = true;
-			submitButton.textContent = loadingButtonText;
-
-			const formData = new FormData();
-			Object.entries(entryMap).forEach(([localKey, entryKey]) => {
-				const value = (form.querySelector(`[name="${localKey}"]`) as HTMLInputElement | null)?.value ?? "";
-				formData.append(entryKey, value);
-			});
-
-			fetch(apiUrl, {
-				method: "POST",
-				mode: "no-cors",
-				body: formData
-			})
-				.then(() => {
-					form.reset();
-					userMessage = "";
-					updateMessageField();
-					messageElement.textContent = successMessage;
-				})
-				.catch(e => {
-					console.error("Form submit error:", e);
-					messageElement.textContent = errorMessage;
-				})
-				.finally(() => {
-					submitButton.disabled = false;
-					submitButton.textContent = defaultButtonText;
-				});
-		});
+	const form = document.querySelector<HTMLFormElement>("#sponsor-form");
+	const button = document.querySelector<HTMLButtonElement>("#submit");
+	const status = document.querySelector<HTMLElement>("#form-message");
+	const selection = document.querySelector<HTMLElement>("#inquiry-selection");
+	const en = document.documentElement.lang === "en";
+	const selectionText = () =>
+		getInterestedItems()
+			.map(item => localizeInterestedItem(item, document.documentElement.lang))
+			.map(item => `• ${item.title}${item.price ? ` — ${item.price}` : ""}`)
+			.join("\n");
+	function updateSelection() {
+		if (selection) selection.textContent = selectionText() || (en ? "Not selected yet — we can discuss this together." : "尚未選擇也沒關係，可以一起討論。");
 	}
+	updateSelection();
+	window.addEventListener("itemsChange", updateSelection);
+	form?.addEventListener("submit", async event => {
+		event.preventDefault();
+		if (!button || !status || button.disabled) return;
+		const values = new FormData(form);
+		for (const name of ["organization", "name", "contact"]) {
+			if (!String(values.get(name) || "").trim()) {
+				status.textContent = en ? "Please fill in the required fields." : "請填寫必填欄位。";
+				form.querySelector<HTMLInputElement>(`[name="${name}"]`)?.focus();
+				return;
+			}
+		}
+		const body = new FormData();
+		const entries = { organization: "entry.1867519928", name: "entry.1660888396", contact: "entry.1209239304" };
+		for (const [name, entry] of Object.entries(entries)) body.set(entry, String(values.get(name) || "").trim());
+		const items = selectionText();
+		body.set("entry.65159086", [String(values.get("message") || "").trim(), items ? `${en ? "Plans / items of interest:" : "感興趣的方案／品項："}\n${items}` : ""].filter(Boolean).join("\n\n"));
+		const label = button.textContent;
+		button.disabled = true;
+		button.textContent = en ? "Sending…" : "送出中…";
+		status.textContent = "";
+		try {
+			await fetch(apiUrl, { method: "POST", mode: "no-cors", body, signal: AbortSignal.timeout(20000) });
+			// An opaque response cannot confirm acceptance. Keep the entered data for follow-up.
+			status.textContent = en ? "Request sent. To confirm receipt, please contact contact@sitcon.org." : "已傳送請求；若需確認收件，歡迎聯絡 contact@sitcon.org。";
+		} catch {
+			status.textContent = form.dataset.error || "Please try again.";
+		} finally {
+			button.disabled = false;
+			button.textContent = label;
+		}
+	});
 </script>
-
 <style>
 	section {
-		background: linear-gradient(#f1f3fb, #fff 8rem);
-		padding: 2rem;
+		padding: 4rem 1.5rem;
+		text-align: center;
+		background: #eff6ee;
 	}
 	h2 {
-		padding-block: 2rem;
+		font-size: clamp(1.8rem, 5vw, 3rem);
+		margin-bottom: 1rem;
 	}
-	h3 {
-		font-size: 2.5rem;
+	.intro {
+		margin: 0 auto 2rem;
+		max-width: 42rem;
+		line-height: 1.7;
 	}
-
-	.container {
+	form {
+		max-width: 42rem;
+		margin: 0 auto 1.5rem;
+		text-align: left;
+	}
+	.identity {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+	.identity > div {
+		min-width: 0;
+	}
+	label {
+		display: block;
+		margin-bottom: 0.4rem;
+		font-weight: 600;
+	}
+	label span {
+		color: #a12b23;
+	}
+	.help {
+		font-size: 0.9rem;
+		line-height: 1.6;
+		margin-bottom: 0.5rem;
+	}
+	input,
+	textarea {
+		box-sizing: border-box;
+		width: 100%;
+		padding: 0.75rem;
+		margin-bottom: 1.25rem;
+		font: inherit;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #1d1d1f;
+		background: white;
+		border: 1px solid #8ba693;
+		border-radius: 0.5rem;
+	}
+	textarea {
+		resize: vertical;
+		min-height: 7rem;
+	}
+	.selection {
+		background: #fff9;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+	#inquiry-selection {
+		white-space: pre-line;
+		overflow-wrap: anywhere;
+		margin-top: 0.4rem;
+	}
+	.submit-wrap {
 		display: flex;
 		justify-content: center;
-		align-items: center;
-		gap: 4rem;
-		margin: auto;
 	}
-
-	#sponsor-form,
-	.personal {
-		flex: 1;
-		max-width: 23rem;
+	input:focus-visible,
+	textarea:focus-visible {
+		outline: 2px solid #14693e;
+		outline-offset: 3px;
 	}
-
-	#sponsor-form h3 {
-		margin-bottom: 1.5rem;
-	}
-
 	#form-message {
-		margin-top: 0.5rem;
-		color: #0171e3;
+		margin-top: 0.75rem;
+		line-height: 1.6;
+		overflow-wrap: anywhere;
 	}
-
-	.form-title {
-		font-size: 2.5rem;
-		font-weight: 700;
-		line-height: 120%; /* 3rem */
+	a {
+		color: #12663c;
+		text-underline-offset: 0.2em;
 	}
-
+	.alternative,
 	.personal {
-		text-align: center;
+		font-size: 0.9rem;
+		line-height: 1.7;
+		margin: 0.5rem auto;
 	}
-	.personal-button {
-		padding: 0.75rem 1.5rem;
-		text-decoration: none;
-		border-radius: 100px;
-		margin-top: 1rem;
-		display: inline-block;
-	}
-
-	.divider {
-		background: var(--black);
-		width: 1px;
-		height: 39rem;
-	}
-
-	.rwd-hidden {
-		display: none;
-	}
-
-	#submit {
-		padding: 0.5rem 1.5rem;
-		border-radius: 0.25rem;
-		margin: 0.25rem 1rem 1rem 0rem;
-	}
-
-	.personal-button,
-	#submit {
-		border: none;
-		cursor: pointer;
-		background-color: #0171e3;
-		color: var(--white);
-		transition: background-color 0.3s ease;
-	}
-
-	.personal-button:hover,
-	#submit:hover {
-		background-color: #0a7bec;
-	}
-
-	.personal-button:active,
-	#submit:active {
-		background-color: #0056b3;
-	}
-
-	@media screen and (max-width: 65rem) {
-		.rwd-hidden {
-			display: inline;
+	@media (max-width: 35rem) {
+		.identity {
+			grid-template-columns: 1fr;
+			gap: 0;
 		}
-	}
-
-	@media screen and (max-width: 60rem) {
-		.divider {
-			display: none;
+		.submit-wrap {
+			width: 100%;
 		}
-
-		.container {
-			flex-direction: column;
-			gap: 5rem;
-		}
-	}
-
-	@media screen {
-		.qrcodes {
-			display: none;
-		}
-	}
-
-	@media print {
-		.container {
-			display: none;
-		}
-
-		h2 {
-			margin: 0;
-			padding: 0;
-			margin-top: 32pt;
-		}
-
-		.qrcodes {
-			display: flex;
-			justify-content: center;
-			gap: 4rem;
-			margin-top: 2rem;
-			text-align: center;
-		}
-
-		.qrcodes img {
-			width: 80pt;
+		.submit-wrap :global(.site-button) {
+			width: 100%;
 		}
 	}
 </style>

@@ -1,22 +1,31 @@
 ---
-const { t } = Astro.props;
+const { t, lang } = Astro.props;
+import Button from "../Button.astro";
 ---
 
 <nav aria-label="Main Navigation" class="navbar">
 	<div class="nav-container">
 		<a href="#"><h1 class="nav-title">{t.title}</h1></a>
-		<button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+		<Button class="hamburger" size="icon" color="transparent" hoverColor="transparent" textColor="var(--black)" aria-label="Toggle menu" aria-expanded="false">
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
-		</button>
+		</Button>
 		<div class="nav-menu" id="nav-menu">
-			<a href="#about" class="nav-link">{t.data}</a>
-			<a href="#time" class="nav-link">{t.info}</a>
 			<a href="#plans" class="nav-link">{t.plan}</a>
-			<a href={"/2027/cfs/" + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
-			<a href="#form" class="nav-link contact-btn">{t.contact}</a>
-			<button class="nav-link export-btn">{t.export}</button>
+			<a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/` + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
+			<Button href="mailto:contact@sitcon.org" size="compact" color="#00d959" hoverColor="#00bb4b" textColor="var(--black)" class="nav-link contact-btn">{t.contact}</Button>
+			<Button
+				color="#e8e8ed"
+				hoverColor="#d0d0d5"
+				textColor="var(--black)"
+				hoverTextColor="#000"
+				href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/${lang === "en" ? "en/" : ""}brochure/`}
+				size="compact"
+				class="nav-link export-btn"
+				target="_blank"
+				rel="noopener">{t.export}</Button
+			>
 		</div>
 	</div>
 </nav>
@@ -45,6 +54,7 @@ const { t } = Astro.props;
 	.nav-title {
 		font-size: 1.3rem;
 		font-weight: bold;
+		white-space: nowrap;
 	}
 
 	.nav-menu {
@@ -54,54 +64,21 @@ const { t } = Astro.props;
 		white-space: nowrap;
 	}
 
-	a {
+	a:not(.site-button) {
 		text-decoration: none;
 		color: inherit;
 		transition: 0.2s ease-out;
 	}
 
-	.nav-link:hover {
+	:global(.nav-link:not(.site-button):hover) {
 		color: #6b6b73;
 	}
 
-	.contact-btn,
-	.export-btn {
-		border-radius: 5rem;
-		padding: 0.25rem 1.25rem;
-	}
-
-	.contact-btn {
-		background-color: #00d959;
-	}
-
-	.contact-btn:hover {
-		background-color: #00bb4b;
-		color: inherit;
-	}
-
-	.export-btn {
-		background-color: #e8e8ed;
-		border: none;
-		outline: transparent;
-		cursor: pointer;
-	}
-
-	.export-btn:hover {
-		background-color: #d0d0d5;
-		color: #000;
-	}
-
 	/* Hamburger Menu */
-	.hamburger {
+	:global(.site-button.hamburger) {
 		display: none;
 		flex-direction: column;
 		justify-content: space-around;
-		width: 1.5rem;
-		height: 1.5rem;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-
 		z-index: 1001;
 	}
 
@@ -113,20 +90,20 @@ const { t } = Astro.props;
 		transform-origin: center;
 	}
 
-	.hamburger.active .hamburger-line:nth-child(1) {
+	:global(.hamburger.active .hamburger-line:nth-child(1)) {
 		transform: rotate(45deg) translate(0.35rem, 0.35rem);
 	}
 
-	.hamburger.active .hamburger-line:nth-child(2) {
+	:global(.hamburger.active .hamburger-line:nth-child(2)) {
 		opacity: 0;
 	}
 
-	.hamburger.active .hamburger-line:nth-child(3) {
+	:global(.hamburger.active .hamburger-line:nth-child(3)) {
 		transform: rotate(-45deg) translate(0.35rem, -0.35rem);
 	}
 
-	@media screen and (max-width: 60rem) {
-		.hamburger {
+	@media screen and (max-width: 72rem) {
+		:global(.site-button.hamburger) {
 			display: flex;
 		}
 
@@ -153,7 +130,7 @@ const { t } = Astro.props;
 			pointer-events: auto;
 		}
 
-		.nav-link {
+		.nav-menu :global(.nav-link) {
 			text-align: center;
 		}
 	}
@@ -162,10 +139,23 @@ const { t } = Astro.props;
 		.nav-menu {
 			padding: 2rem 1rem 1rem;
 		}
-		.nav-title {
-			font-size: 1.1rem;
+		.nav-container {
+			gap: 0.75rem;
+			padding: 1rem 1.25rem;
 		}
-		.hamburger {
+		.nav-container > a {
+			min-width: 0;
+			flex: 1 1 auto;
+		}
+		.nav-title {
+			font-size: clamp(0.85rem, 4vw, 1.1rem);
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		:global(.site-button.hamburger) {
+			flex-shrink: 0;
+		}
+		:global(.hamburger) {
 			scale: 0.95;
 		}
 	}
@@ -187,8 +177,11 @@ const { t } = Astro.props;
 		navMenu.classList.toggle("active");
 	});
 
-	const printButton = document.querySelector(".export-btn") as HTMLButtonElement;
-	printButton.addEventListener("click", () => {
-		window.print();
-	});
+	navMenu.querySelectorAll("a").forEach(link =>
+		link.addEventListener("click", () => {
+			hamburger.setAttribute("aria-expanded", "false");
+			hamburger.classList.remove("active");
+			navMenu.classList.remove("active");
+		})
+	);
 </script>

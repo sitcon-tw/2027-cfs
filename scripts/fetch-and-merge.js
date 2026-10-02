@@ -344,7 +344,7 @@ function mergeSheetData(sheets) {
 			quantity: itemRow["數量"] || "",
 			remaining: itemRow["剩餘數量"] || "",
 			unit: normalizeUnit(itemRow["單位"] || ""),
-			type: itemRow["類型"] || "",
+			type: itemRow["曝光方式"] || itemRow["類型"] || "",
 
 			global_description_zh: globalDesc?.["文案"] || "",
 			global_description_en: globalDesc?.["description"] || "",

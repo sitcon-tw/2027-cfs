@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build-and-publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.repository == 'sitcon-tw/2027-cfs'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source

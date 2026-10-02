@@ -1,0 +1,127 @@
+---
+interface Props {
+	id: string;
+	title: string;
+	data: Record<string, number>;
+	colors: string[];
+	unit?: string;
+}
+const { id, title, data, colors, unit } = Astro.props;
+const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+let offset = 0;
+const circumference = 2 * Math.PI * 80;
+const entries = Object.entries(data).map(([label, value], index) => {
+	const fraction = total > 0 ? value / total : 0;
+	const start = offset;
+	offset += fraction;
+	return {
+		label,
+		value,
+		percentage: unit ? `${(fraction * 100).toFixed(1)}%` : `${value}%`,
+		color: colors[index % colors.length],
+		length: fraction * circumference,
+		offset: -start * circumference
+	};
+});
+---
+
+<figure class="distribution-chart" id={id} aria-labelledby={`${id}-title`}>
+	<figcaption id={`${id}-title`}>{title}</figcaption>
+	<svg viewBox="0 0 240 240" aria-hidden="true" focusable="false">
+		{
+			entries.map(entry => (
+				<circle
+					cx="120"
+					cy="120"
+					r="80"
+					fill="none"
+					stroke={entry.color}
+					stroke-width="42"
+					stroke-dasharray={`${entry.length} ${circumference - entry.length}`}
+					stroke-dashoffset={entry.offset}
+					transform="rotate(-90 120 120)"
+				/>
+			))
+		}
+	</svg>
+	<ul class="chart-legend">
+		{
+			entries.map(entry => (
+				<li>
+					<span class="legend-color" style={{ backgroundColor: entry.color }} aria-hidden="true" />
+					<span class="legend-label">{entry.label}</span>
+					<span class="legend-value">
+						{unit && (
+							<span class="legend-count">
+								{entry.value.toLocaleString("en-US")} {unit}
+							</span>
+						)}
+						<strong>{entry.percentage}</strong>
+					</span>
+				</li>
+			))
+		}
+	</ul>
+</figure>
+
+<style>
+	.distribution-chart {
+		min-width: 0;
+		width: 100%;
+		margin: 0;
+		color: var(--black);
+		break-inside: avoid;
+	}
+	figcaption {
+		min-height: 3.25em;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		font-size: 1.15rem;
+		font-weight: 700;
+		line-height: 1.5;
+		overflow-wrap: anywhere;
+		color: #48484a;
+	}
+	svg {
+		display: block;
+		width: min(100%, 17rem);
+		height: auto;
+		margin: 0 auto 0.5rem;
+	}
+	.chart-legend {
+		list-style: none;
+		padding: 0;
+		margin: 0 auto;
+		max-width: 27rem;
+	}
+	li {
+		display: grid;
+		grid-template-columns: 0.65rem minmax(0, 1fr) auto;
+		align-items: baseline;
+		gap: 0.6rem;
+		padding: 0.55rem 0;
+		border-bottom: 1px solid #e0e0e0;
+		font-size: 0.9rem;
+		line-height: 1.5;
+	}
+	.legend-color {
+		width: 0.65rem;
+		height: 0.65rem;
+		border-radius: 50%;
+	}
+	.legend-label {
+		overflow-wrap: anywhere;
+	}
+	.legend-value {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+	.legend-count {
+		display: block;
+		font-size: 0.8rem;
+		color: #666;
+	}
+</style>

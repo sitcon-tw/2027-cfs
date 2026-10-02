@@ -1,5 +1,7 @@
 import planData from "@data/plan.json" with { type: "json" };
 import itemData from "@data/item.json" with { type: "json" };
+import { opendream as zhOpendream } from "@i18n/zh-Hant.json";
+import { opendream as enOpendream } from "@i18n/en.json";
 import type { ItemDataRaw } from "./items-loader.js";
 
 interface Plan {
@@ -74,39 +76,18 @@ export function findItemByNameOrId(itemNameOrId: string): { itemId: string; item
 	return null;
 }
 
-/**
- * Get localized name for a plan benefit
- * @param benefit The benefit object from plan.json
- * @param lang Language code ("zh-Hant" or "en")
- * @returns Localized name string
- */
-export function getBenefitLocalizedName(benefit: { item_id: string; item_name: string; quantity: string }, lang: string = "zh-Hant"): string {
-	// If we have an item_id, use it to look up the item
-	if (benefit.item_id) {
-		const result = findItemByNameOrId(benefit.item_id);
-		if (result) {
-			// Use sub-item name if available, otherwise use parent item name
-			if (result.subItemData) {
-				return lang === "en" ? result.subItemData.name_en : result.subItemData.name_zh;
-			}
-			return lang === "en" ? result.itemData.name_en : result.itemData.name_zh;
-		}
-	}
+type PlanBenefit = Plan["benefits"][number];
 
-	// If no item_id, try to match by Chinese name
-	if (benefit.item_name) {
-		const result = findItemByNameOrId(benefit.item_name);
-		if (result) {
-			// Use sub-item name if available, otherwise use parent item name
-			if (result.subItemData) {
-				return lang === "en" ? result.subItemData.name_en : result.subItemData.name_zh;
-			}
-			return lang === "en" ? result.itemData.name_en : result.itemData.name_zh;
-		}
-	}
+/** Resolve both main items and sub-items, including benefits without an ID. */
+export function resolveBenefitItem(benefit: PlanBenefit) {
+	return (benefit.item_id ? findItemByNameOrId(benefit.item_id) : null) || findItemByNameOrId(benefit.item_name);
+}
 
-	// Fallback to the original item_name
-	return benefit.item_name;
+/** Get the localized name from the same item resolution used for interactions. */
+export function getBenefitLocalizedName(benefit: PlanBenefit, lang: string = "zh-Hant"): string {
+	const result = resolveBenefitItem(benefit);
+	const item = result?.subItemData || result?.itemData;
+	return item ? (lang === "en" ? item.name_en : item.name_zh) : benefit.item_name;
 }
 
 /**
@@ -158,4 +139,38 @@ export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: str
  */
 export function isItemInAnyPlan(itemId: string): boolean {
 	return plans.some(plan => plan.benefits.some(benefit => benefit.item_id === itemId));
+}
+
+/**
+ * Re-localize a stored interested item for the current page language.
+ * Items in localStorage keep the title/price text from the language they were added in,
+ * so derive them again from the source data by id whenever they are displayed.
+ * @param item The stored interested item
+ * @param lang Language for display ("zh-Hant" or "en")
+ * @returns A copy of the item with localized title and price, plus the source deadline date for regular items (unchanged if the id is unknown)
+ */
+export function localizeInterestedItem<T extends { id: string; title: string; price?: string; deadline?: string }>(item: T, lang: string = "zh-Hant"): T {
+	const en = lang === "en";
+
+	if (item.id.startsWith("tier-")) {
+		const plan = (planData as Record<string, Plan>)[item.id.slice("tier-".length)];
+		return plan ? { ...item, title: en ? plan.name_en : plan.name_zh, price: plan.price } : item;
+	}
+
+	if (item.id.startsWith("opendream-")) {
+		const opendream = en ? enOpendream : zhOpendream;
+		const plan = opendream.plans.find(p => p.id === item.id);
+		return plan ? { ...item, title: `${opendream.title}｜${plan.name}`, price: plan.price } : item;
+	}
+
+	const result = findItemByNameOrId(item.id);
+	if (!result || result.itemId !== item.id) return item;
+	const source = result.subItemData ?? result.itemData;
+	return {
+		...item,
+		title: en ? source.name_en : source.name_zh,
+		price: getItemDisplayPrice(item.id, source.price, lang),
+		// The stored deadline is the localized card text (e.g. "3/9 截止"), so use the language-neutral source date instead
+		deadline: result.itemData.deadline
+	};
 }

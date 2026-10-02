@@ -1,0 +1,600 @@
+{
+ "source": "SITCON Flickr via sitcon-tw/flickr-photo-finder photos sheet, exported 2026-09-23",
+ "note": "Photographer is taken from the finder index only when it is a name; file-name prefixes are not treated as credits. All index entries are ai_labeled (not human-reviewed). Second pass 2026-09-23: substitutions that were not exact 2026 matches were reverted to the original imagery; the news collage, the annual-moment section imagery and venue photos are the originals from commit 0dbbf3e.",
+ "photos": [
+  {
+   "slot": "hero_intro",
+   "photo_id": "55248174439",
+   "file": "src/assets/img/intro.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55248174439",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 16:16:00",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 年會國際會議廳，會眾坐滿階梯座席面向舞台",
+   "alt_en": "SITCON 2026 main hall packed with attendees facing the stage",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "stat_attendee",
+   "photo_id": "55248342255",
+   "file": "src/assets/img/stat/attendee-stat.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55248342255",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 16:14:29",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 年會會場，從前排到二樓看台坐滿會眾",
+   "alt_en": "SITCON 2026 lecture hall full from the front rows to the balcony",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "stat_speaker",
+   "photo_id": "55246448540",
+   "file": "src/assets/img/stat/speaker-stat.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55246448540",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 09:12:27",
+   "photographer": "月太",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 講者在講台前手持 SITCON 2026 麥克風",
+   "alt_en": "A SITCON 2026 speaker at the podium holding the SITCON 2026 microphone",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "月太"
+  },
+  {
+   "slot": "stat_events",
+   "photo_id": "55383480150",
+   "file": "src/assets/img/stat/events-stat.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55383480150",
+   "album": "SITCON Camp 2026",
+   "date_taken": "2026-07-08 16:16:30",
+   "photographer": "康喔",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON Camp 2026 學員圍在筆電旁討論",
+   "alt_en": "SITCON Camp 2026 participants gathered around a laptop",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "康喔"
+  },
+  {
+   "slot": "stat_volunteer",
+   "photo_id": "54886326338",
+   "file": "src/assets/img/stat/volunteer-stat.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/54886326338",
+   "album": "SITCON 2026 工人相見歡",
+   "date_taken": "2025-10-25 15:44:51",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 工作人員相見歡大合照，大家比出愛心",
+   "alt_en": "SITCON 2026 staff meetup group photo with heart gestures",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "about_popup_hero",
+   "photo_id": "55244926657",
+   "file": "src/assets/img/about-popup-2026.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55244926657",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 12:59:49",
+   "photographer": "",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 年會參與者在 JAM THE CHAOS 主視覺背板前合影",
+   "alt_en": "SITCON 2026 participants posing in front of the JAM THE CHAOS backdrop",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": ""
+  },
+  {
+   "slot": "opendream_bg",
+   "photo_id": "55245974409",
+   "file": "src/assets/img/opendream-2026.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245974409",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 13:04:27",
+   "photographer": "pU",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 年輕參與者在主視覺背板前合照",
+   "alt_en": "Young SITCON 2026 participants in front of the main backdrop",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "pU"
+  },
+  {
+   "slot": "news_groups",
+   "photo_id": "54847440924",
+   "file": "src/assets/img/groups.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/54847440924",
+   "album": "SITCON 2026 負一籌＋BoF",
+   "date_taken": "2025-08-09 18:09:52",
+   "photographer": "pU",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 負一籌 × BoF 聚會的合照與披薩",
+   "alt_en": "SITCON 2026 pre-planning meetup and BoF with pizza",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "pU"
+  },
+  {
+   "slot": "news_edu",
+   "photo_id": "54978168920",
+   "file": "src/assets/img/edu.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/54978168920",
+   "album": "2025 SITCON Hour of Code 桃園場",
+   "date_taken": "2025-12-06 15:57:03",
+   "photographer": "康喔",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "2025 SITCON Hour of Code 桃園場大合照",
+   "alt_en": "2025 SITCON Hour of Code Taoyuan group photo",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "康喔"
+  },
+  {
+   "slot": "news_hackathon",
+   "photo_id": "53897983352",
+   "file": "src/assets/img/hackathon.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/53897983352",
+   "album": "SITCON Hackathon 2024",
+   "date_taken": "2024-07-06 09:26:56",
+   "photographer": "小群",
+   "license": "CC BY-SA 2.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by-sa/2.0"
+   ],
+   "alt_zh": "SITCON Hackathon 2024 參與者在講堂合照",
+   "alt_en": "SITCON Hackathon 2024 participants in the lecture hall",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "小群"
+  },
+  {
+   "slot": "news_camp",
+   "photo_id": "55383804618",
+   "file": "src/assets/img/camp.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55383804618",
+   "album": "SITCON Camp 2026",
+   "date_taken": "2026-07-08 09:40:58",
+   "photographer": "竺原",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON Camp 2026 學員在教室舉手回應",
+   "alt_en": "SITCON Camp 2026 participants raising their hands in class",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "竺原"
+  },
+  {
+   "slot": "item 6",
+   "photo_id": "55244868277",
+   "file": "public/items/55244868277.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55244868277",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 17:03:01",
+   "photographer": "月太",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 迎賓袋內的贊助商文宣、掛繩與面紙包",
+   "alt_en": "Sponsor flyers, lanyards and a tissue pack from the SITCON 2026 welcome bag",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "月太"
+  },
+  {
+   "slot": "item 5",
+   "photo_id": "55246008294",
+   "file": "public/items/55246008294.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55246008294",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 09:40:40",
+   "photographer": "",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 工作人員發放帆布袋",
+   "alt_en": "SITCON 2026 staff handing out canvas bags",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": ""
+  },
+  {
+   "slot": "item 23",
+   "photo_id": "55246067549",
+   "file": "public/items/55246067549.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55246067549",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 12:14:50",
+   "photographer": "",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 導覽團帶領參與者參觀攤位",
+   "alt_en": "A SITCON 2026 guided tour visiting the booths",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": ""
+  },
+  {
+   "slot": "item 1",
+   "photo_id": "55245760211",
+   "file": "public/items/55245760211.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245760211",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:23:23",
+   "photographer": "BUN",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 供餐區的贊助商小旗與餐點",
+   "alt_en": "Sponsor flags on the SITCON 2026 meal table",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "BUN"
+  },
+  {
+   "slot": "item 1-sub-0",
+   "photo_id": "55245760831",
+   "file": "public/items/55245760831.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245760831",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:19:16",
+   "photographer": "BUN",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 工作人員分裝餐點，桌上插著贊助商小旗",
+   "alt_en": "SITCON 2026 staff packing meals beside sponsor flags",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "BUN"
+  },
+  {
+   "slot": "item 1-sub-1",
+   "photo_id": "55244856967",
+   "file": "public/items/55244856967.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55244856967",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:23:45",
+   "photographer": "BUN",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 餐點區的贊助商小旗與排隊人潮",
+   "alt_en": "Sponsor flags at the SITCON 2026 food area with attendees queuing",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "BUN"
+  },
+  {
+   "slot": "item 2",
+   "photo_id": "55245996529",
+   "file": "public/items/55245996529.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245996529",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:29:51",
+   "photographer": "月太",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 印有贊助商圖樣的紙餐墊",
+   "alt_en": "A SITCON 2026 paper placemat printed with a sponsor design",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "月太"
+  },
+  {
+   "slot": "item 24",
+   "photo_id": "55246151595",
+   "file": "public/items/55246151595.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55246151595",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:38:00",
+   "photographer": "康喔",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 會場門上的贊助商指示牌",
+   "alt_en": "A sponsor-branded venue sign at SITCON 2026",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "康喔"
+  },
+  {
+   "slot": "item 16",
+   "photo_id": "55246322579",
+   "file": "public/items/55246322579.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55246322579",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 10:59:53",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 加大攤位上的贊助商展示",
+   "alt_en": "A sponsor's enlarged booth at SITCON 2026",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "item 37",
+   "photo_id": "55245917048",
+   "file": "public/items/55245917048.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245917048",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 07:29:35",
+   "photographer": "月太",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 會場入口與兩側的 JAM THE CHAOS 看板",
+   "alt_en": "SITCON 2026 venue entrance with JAM THE CHAOS signs",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "月太"
+  },
+  {
+   "slot": "item 28",
+   "photo_id": "55246493860",
+   "file": "public/items/55246493860.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55246493860",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 09:09:39",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 贊助商攤位與展示桌",
+   "alt_en": "A sponsor booth at SITCON 2026",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "item 10",
+   "photo_id": "55244868277",
+   "file": "public/items/55244868277.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55244868277",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 17:03:01",
+   "photographer": "月太",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 迎賓袋內的贊助商文宣、掛繩與面紙包",
+   "alt_en": "Sponsor flyers, lanyards and a tissue pack from the SITCON 2026 welcome bag",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "月太"
+  },
+  {
+   "slot": "item 38",
+   "photo_id": "55244873992",
+   "file": "public/items/55244873992.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55244873992",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 08:08:10",
+   "photographer": "BUN",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 年會意象背板與合作夥伴 Logo",
+   "alt_en": "SITCON 2026 main backdrop with partner logos",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "BUN"
+  },
+  {
+   "slot": "item 29",
+   "photo_id": "55245769956",
+   "file": "public/items/55245769956.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245769956",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 16:52:49",
+   "photographer": "月太",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 R0 投影幕輪播贊助商 Logo",
+   "alt_en": "Sponsor logos on the SITCON 2026 R0 screen",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "月太"
+  },
+  {
+   "slot": "item 36",
+   "photo_id": "55248058358",
+   "file": "public/items/55248058358.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55248058358",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 13:21:01",
+   "photographer": "阿智",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 講者背板與合作夥伴 Logo",
+   "alt_en": "SITCON 2026 speaker backdrop with partner logos",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "阿智"
+  },
+  {
+   "slot": "item 30",
+   "photo_id": "55250543379",
+   "file": "public/items/55250543379.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55250543379",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 22:35:02",
+   "photographer": "pU",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 迎賓袋內的企業招募文宣",
+   "alt_en": "Company recruitment flyers from the SITCON 2026 welcome bag",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "pU"
+  },
+  {
+   "slot": "time_volunteer",
+   "photo_id": "55245885083",
+   "file": "src/assets/img/sitcon-volunteer.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55245885083",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 18:04:40",
+   "photographer": "pU",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 全體工作人員在國際會議廳舞台前的大合照",
+   "alt_en": "SITCON 2026 all-staff group photo on the main hall stage",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "pU"
+  },
+  {
+   "slot": "time_popup_bg",
+   "photo_id": "55250303861",
+   "file": "src/assets/img/r0.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55250303861",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-27 14:04:20",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 國際會議廳舞台與後方直播控制席",
+   "alt_en": "SITCON 2026 main hall stage and the live-stream control desk",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "venue_R0",
+   "photo_id": "55250303556",
+   "file": "public/venue/R0.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55250303556",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-27 17:13:49",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 R0 國際會議廳舞台與座席",
+   "alt_en": "The stage and seating in the R0 main hall at SITCON 2026",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "venue_R1R2",
+   "photo_id": "55247039552",
+   "file": "public/venue/R1 R2.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55247039552",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 11:02:36",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 R1／R2 會議室與聽眾",
+   "alt_en": "Audience seating in an R1/R2 session room at SITCON 2026",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "venue_lounge",
+   "photo_id": "55247034862",
+   "file": "public/venue/lounge.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55247034862",
+   "album": "SITCON 2026",
+   "date_taken": "2026-03-28 14:30:13",
+   "photographer": "夏川",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0"
+   ],
+   "alt_zh": "SITCON 2026 交誼廳，落地窗旁排滿長桌與會眾",
+   "alt_en": "SITCON 2026 lounge with long tables beside the floor-to-ceiling windows",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "news_popup_hero",
+   "photo_id": "55472524973",
+   "file": "src/assets/img/news/community-hero.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55472524973",
+   "album": "SITCON 2027 負一籌 x COSCUP BoF",
+   "photographer": "康喔",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0/"
+   ],
+   "alt_zh": "SITCON 2027 負一籌 × COSCUP BoF，參與者在教室分享披薩並交流",
+   "alt_en": "Participants sharing pizza and talking at the SITCON 2027 × COSCUP BoF gathering",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "康喔",
+   "source_note": "Photo Finder photos row 10, read 2026-10-02; license confirmed on Flickr."
+  }
+ ]
+}

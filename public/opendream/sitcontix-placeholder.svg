@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" role="img" aria-labelledby="title description">
+  <title id="title">SITCONTIX 圖片佔位</title>
+  <desc id="description">用於展示圖片在合作回饋卡片中的位置，並非實際售票系統畫面。</desc>
+  <rect width="800" height="450" fill="#edf4e9"/>
+  <rect x="28" y="28" width="744" height="394" rx="24" fill="#f8fbf6" stroke="#9abd8c" stroke-width="3" stroke-dasharray="12 10"/>
+  <g transform="translate(354 96)" fill="none" stroke="#6a9b55" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="92" height="76" rx="12"/>
+    <circle cx="28" cy="25" r="7"/>
+    <path d="m12 61 23-22 17 15 14-12 14 19"/>
+  </g>
+  <text x="400" y="222" text-anchor="middle" fill="#24431e" font-family="Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="2">SITCONTIX</text>
+  <text x="400" y="274" text-anchor="middle" fill="#527a45" font-family="Arial, sans-serif" font-size="25" font-weight="700">圖片佔位 · IMAGE PLACEHOLDER</text>
+  <path d="M300 306h200" stroke="#b8d0af" stroke-width="3" stroke-linecap="round"/>
+  <text x="400" y="350" text-anchor="middle" fill="#687967" font-family="Arial, sans-serif" font-size="17">16:9</text>
+</svg>

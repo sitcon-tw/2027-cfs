@@ -1,0 +1,49 @@
+/* Use the existing catalog palette for both toggles and card badges. */
+[data-filter-tone="purpose"] {
+	--filter-bg: var(--items-deadline-tag);
+}
+[data-filter-tone="format"] {
+	--filter-bg: var(--items-remaining-tag);
+}
+.filter-badge {
+	border-radius: 25px;
+	font-family: inherit;
+	color: var(--black);
+}
+.filter-badge {
+	background-color: var(--filter-bg);
+	padding: 0.2rem 0.65rem;
+	font-size: 0.85rem;
+	line-height: 1.4;
+}
+/* Keep the selected category palette; base and hover colors come from Button props. */
+.site-button.filter-toggle[aria-pressed="true"] {
+	background-color: var(--filter-bg, var(--gray-container));
+}
+@media screen and (max-width: 768px) {
+	.filter-toggle {
+		padding: 0.5rem 0.75rem;
+	}
+}
+
+.filter-radio-indicator,
+.filter-multi-indicator {
+	width: 1.25rem;
+	height: 1.25rem;
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+.filter-unselected-icon {
+	display: inline-flex;
+}
+.filter-selected-icon {
+	display: none;
+}
+.filter-toggle[aria-pressed="true"] .filter-unselected-icon {
+	display: none;
+}
+.filter-toggle[aria-pressed="true"] .filter-selected-icon {
+	display: inline-flex;
+}

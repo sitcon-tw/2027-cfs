@@ -32,9 +32,10 @@ interface TeamItem {
 			<p>{t.date}</p>
 			<p>{t.location}</p>
 		</div>
-		<img src={volunteer.src} alt="志工" class="volunteer-img" />
+		<img src={volunteer.src} alt={t.volunteer_alt || "志工"} class="volunteer-img" />
 	</div>
-	<div class="aos spacer"></div>
+
+	<div class="spacer"></div>
 	<Popup btnText={t.popup_label} title={t.popup_label} hero={true} id="place-staff-popup" background={r0.src}>
 		<div class="info-container">
 			<h3>{t.activity_schedule}</h3>
@@ -68,30 +69,32 @@ interface TeamItem {
 								<p>{item.description}</p>
 							</div>
 						</div>
-						<img src={`/2027/cfs/venue/${item.code}.webp`} alt={item.name} />
+						<img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/venue/${item.code}.webp?v=20260928`} alt={item.name} />
 					</div>
 				))
 			}
 		</div>
-		<div class="info-container">
-			<h3>{t.team}</h3>
-			<div class="team-container">
-				{
-					teams.map((item: TeamItem) => (
-						<div class="team">
-							<strong>
-								{item.title}
+		{
+			teams.length > 0 && (
+				<div class="info-container">
+					<h3>{t.team}</h3>
+					<div class="team-container">
+						{teams.map((item: TeamItem) => (
+							<div class="team">
+								<strong>
+									{item.title}
+									<br />
+									{item.name}
+								</strong>
+								{item.school}
 								<br />
-								{item.name}
-							</strong>
-							{item.school}
-							<br />
-							{item.major}
-						</div>
-					))
-				}
-			</div>
-		</div>
+								{item.major}
+							</div>
+						))}
+					</div>
+				</div>
+			)
+		}
 	</Popup>
 </section>
 
@@ -354,6 +357,42 @@ interface TeamItem {
 
 		.venue-container {
 			padding-top: 30pt;
+		}
+	}
+
+	.timeline {
+		white-space: normal;
+		overflow: visible;
+		gap: 1rem;
+		width: 100%;
+	}
+	.timeline > div:not(.line) {
+		display: grid;
+		grid-template-columns: 12ch 1fr;
+		gap: 1rem;
+	}
+	.timeline span.date,
+	.timeline.zh-hant span.date {
+		width: auto;
+	}
+	@media (max-width: 600px) {
+		.info-container {
+			padding: 1.5rem;
+		}
+		.info-container h3 {
+			font-size: 1.6rem;
+		}
+		.timeline {
+			--left: 1.5rem;
+			font-size: 1rem;
+			line-height: 1.6;
+		}
+		.timeline > div:not(.line) {
+			grid-template-columns: 1fr;
+			gap: 0.1rem;
+		}
+		.location {
+			padding: 1.5rem;
 		}
 	}
 </style>

@@ -1,0 +1,78 @@
+---
+import { Plus, Check } from "@lucide/astro";
+import Button from "../Button.astro";
+
+interface Props {
+	id: string;
+	title: string;
+	image?: string;
+	price?: string;
+	deadline?: string;
+	popupId?: string;
+	lang?: string;
+	class?: string;
+}
+
+const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Hant", class: className } = Astro.props;
+---
+
+<Button
+	size="icon"
+	color="var(--black)"
+	hoverColor="var(--black)"
+	class:list={["add-button", className]}
+	data-item-id={id}
+	data-item-title={title}
+	data-item-image={image}
+	data-item-price={price}
+	data-item-deadline={deadline}
+	data-popup-id={popupId}
+	aria-label={lang === "en" ? `Save ${title}` : `收藏${title}`}
+	aria-pressed="false"
+>
+	<span class="add-icon"><Plus /></span>
+	<span class="added-icon"><Check /></span>
+</Button>
+
+<style is:global>
+	.add-button {
+		flex-shrink: 0;
+	}
+
+	.add-icon,
+	.added-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+
+	.add-button .added-icon {
+		display: none;
+	}
+
+	.add-button.added .added-icon {
+		display: flex;
+	}
+
+	.add-button.added .add-icon {
+		display: none;
+	}
+
+	.add-button.site-button--normal.added,
+	.add-button.site-button--normal.added:hover {
+		background-color: var(--items-progress);
+		color: var(--white);
+	}
+
+	.add-button:disabled,
+	.add-button.disabled {
+		background-color: var(--gray);
+	}
+
+	@media print {
+		.add-button {
+			display: none;
+		}
+	}
+</style>

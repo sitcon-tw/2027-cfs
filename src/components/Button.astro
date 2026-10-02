@@ -1,0 +1,125 @@
+---
+interface Props {
+	variant?: "normal" | "outlined";
+	size?: "default" | "compact" | "icon";
+	href?: string;
+	type?: "button" | "submit" | "reset";
+	class?: string;
+	/** Background colors; either can be overridden independently. */
+	color?: string;
+	hoverColor?: string;
+	textColor?: string;
+	hoverTextColor?: string;
+	borderColor?: string;
+	style?: string;
+	[key: string]: any;
+}
+
+const { variant = "normal", size = "default", href, type = "button", class: className, color, hoverColor, textColor, hoverTextColor, borderColor, style, ...attributes } = Astro.props;
+const classes = ["site-button", `site-button--${variant}`, `site-button--${size}`, className];
+const buttonStyle = [
+	color && `--site-button-background:${color}`,
+	hoverColor && `--site-button-hover-background:${hoverColor}`,
+	textColor && `--site-button-color:${textColor}`,
+	hoverTextColor && `--site-button-hover-color:${hoverTextColor}`,
+	borderColor && `--site-button-border-color:${borderColor}`,
+	style
+]
+	.filter(Boolean)
+	.join(";");
+---
+
+{
+	href ? (
+		<a class:list={classes} href={href} style={buttonStyle || undefined} {...attributes}>
+			<slot />
+		</a>
+	) : (
+		<button class:list={classes} type={type} style={buttonStyle || undefined} {...attributes}>
+			<slot />
+		</button>
+	)
+}
+
+<style is:global>
+	.site-button {
+		--site-button-height: 2.75rem;
+		--site-button-icon-size: 1.25rem;
+		appearance: none;
+		box-sizing: border-box;
+		border: 0;
+		border-radius: 9999px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: var(--site-button-height);
+		padding: 0.5rem 1.25rem;
+		font: inherit;
+		line-height: 1.2;
+		text-align: center;
+		text-decoration: none;
+		vertical-align: middle;
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.site-button--normal {
+		background-color: var(--site-button-background, var(--button-dark, #303030));
+		color: var(--site-button-color, var(--white, #fff));
+	}
+
+	.site-button--outlined {
+		background-color: var(--site-button-background, transparent);
+		border: 1px solid var(--site-button-border-color, currentColor);
+		color: var(--site-button-color, var(--black, #1d1d1f));
+	}
+
+	.site-button--compact {
+		--site-button-height: 2.25rem;
+		--site-button-icon-size: 1rem;
+		padding-inline: 0.875rem;
+		font-size: 0.9rem;
+		white-space: nowrap;
+	}
+
+	.site-button--icon {
+		width: 2.75rem;
+		min-width: 2.75rem;
+		height: 2.75rem;
+		min-height: 2.75rem;
+		padding: 0;
+	}
+
+	.site-button svg {
+		width: var(--site-button-icon-size);
+		height: var(--site-button-icon-size);
+		flex: none;
+		stroke-width: 2;
+	}
+
+	.site-button--normal:where(:hover):where(:not(:disabled, .disabled, [aria-disabled="true"])) {
+		background-color: var(--site-button-hover-background, #404044);
+		color: var(--site-button-hover-color, var(--site-button-color, var(--white, #fff)));
+	}
+
+	.site-button--outlined:where(:hover):where(:not(:disabled, .disabled, [aria-disabled="true"])) {
+		background-color: var(--site-button-hover-background, var(--gray-container, #e8e8ec));
+		color: var(--site-button-hover-color, var(--site-button-color, var(--black, #1d1d1f)));
+	}
+
+	.site-button:focus-visible {
+		outline: 2px solid #14693e;
+		outline-offset: 3px;
+	}
+
+	.site-button:disabled,
+	.site-button.disabled,
+	.site-button[aria-disabled="true"] {
+		cursor: not-allowed;
+		opacity: 0.55;
+	}
+</style>
