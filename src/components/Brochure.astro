@@ -166,9 +166,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 								<article>
 									<div>
 										<h3>
-											<a class="print-link" href={`${site}item/${item.id}/`}>
-												{item.name}
-											</a>
+											<a href={`${site}item/${item.id}/`}>{item.name}</a>
 										</h3>
 										<p>{excerpt(item.global_description)}</p>
 									</div>
