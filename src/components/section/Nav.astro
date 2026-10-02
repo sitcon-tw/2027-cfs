@@ -12,6 +12,8 @@ import Button from "../Button.astro";
 			<span class="hamburger-line"></span>
 		</Button>
 		<div class="nav-menu" id="nav-menu">
+			<a href="#about" class="nav-link">{t.data}</a>
+			<a href="#time" class="nav-link">{t.info}</a>
 			<a href="#plans" class="nav-link">{t.plan}</a>
 			<a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/` + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
 			<Button href="mailto:contact@sitcon.org" size="compact" color="#00d959" hoverColor="#00bb4b" textColor="var(--black)" class="nav-link contact-btn">{t.contact}</Button>
