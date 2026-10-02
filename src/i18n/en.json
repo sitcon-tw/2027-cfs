@@ -269,10 +269,10 @@
 				]
 			},
 			"eligibility": {
-				"title": "Eligibility and review",
-				"description": "The program is for enrolled students whose family finances make travel to the conference difficult.",
+				"title": "How students apply for support",
+				"description": "Enrolled students with financial need can apply for travel and lodging support through the following steps.",
 				"steps": [
-					"Applicants provide proof of enrollment and financial need.",
+					"Students submit an application with proof of enrollment and financial need.",
 					"SITCON reviews eligibility and documents, then sends invitation codes to approved applicants.",
 					"Students complete registration with the code to gain admission."
 				],

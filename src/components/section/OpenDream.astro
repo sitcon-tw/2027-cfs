@@ -70,8 +70,8 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	</div>
 	<div class="aos spacer"></div>
 	<Popup btnText={t.popup_label} title={t.popup.title} id="opendream-popup" background={volunteer.src} lang={lang}>
-		<div class="popup-body">
-			<section class="dream-section purpose-section" aria-labelledby="dream-purpose-title">
+		<div class="popup-body" lang={lang}>
+			<section class:list={["dream-section purpose-section", { "purpose-section-en": lang === "en" }]} aria-labelledby="dream-purpose-title">
 				<h3 id="dream-purpose-title">{t.popup.hero.headline}</h3>
 				<p>{t.popup.hero.description}</p>
 			</section>
@@ -340,10 +340,11 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	.popup-body {
 		padding: 0 3rem;
 		color: var(--black);
+		container-type: inline-size;
 	}
 
 	.dream-section {
-		padding: 2rem 0;
+		padding: 1.5rem 0;
 	}
 
 	.details-section {
@@ -356,7 +357,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	.purpose-section p {
-		max-width: 46rem;
+		max-width: none;
 		font-size: 1.125rem;
 	}
 
@@ -368,9 +369,14 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	.purpose-section h3 {
-		max-width: 24ch;
+		max-width: none;
 		font-size: clamp(1.875rem, 3.5vw, 2.75rem);
 		letter-spacing: -0.025em;
+	}
+
+	.purpose-section-en h3,
+	.purpose-section-en p {
+		max-width: none;
 	}
 
 	.dream-section h4,
@@ -383,7 +389,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	.dream-section p,
 	.dream-section li,
 	.benefit-grid dd {
-		line-height: 1.7;
+		line-height: 1.6;
 	}
 
 	.dream-section p {
@@ -406,7 +412,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	.impact-grid {
 		background: var(--white);
 		border-radius: 1.5rem;
-		padding: 2.5rem 0;
+		padding: 2rem 0;
 		gap: 0;
 	}
 
@@ -439,31 +445,52 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		letter-spacing: -0.05em;
 	}
 
+	/* Keep each tier on one centered axis, with its student count in a single row. */
+	@container (min-width: 38rem) {
+		.impact-plan h4 {
+			flex-direction: row;
+			align-items: baseline;
+			justify-content: center;
+			gap: 0.5rem;
+			font-size: clamp(1.25rem, 2.2cqw, 1.5rem);
+		}
+
+		.impact-count {
+			font-size: clamp(3.5rem, 8cqw, 5.5rem);
+		}
+	}
+
 	.impact-plan :global(.tier-interest-button) {
 		margin-top: 1rem;
 	}
 
 	.benefit-grid {
 		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1rem;
 		margin: 1.5rem 0 0;
 	}
 
+	.benefit-card:last-child {
+		grid-column: 1 / -1;
+	}
+
+	/* Card radius and spacing follow Highlights; icons sit beside the copy. */
 	.benefit-card {
+		position: relative;
 		background: var(--white);
 		border-radius: 1rem;
-		padding: 1.5rem;
+		padding: 1.5rem 1.5rem 1.5rem 4.25rem;
 	}
 
 	.benefit-card dt {
-		display: flex;
-		flex-direction: column;
-		gap: 1.25rem;
 		line-height: 1.4;
 	}
 
 	.benefit-card svg {
+		position: absolute;
+		left: 1.5rem;
+		top: 1.5rem;
 		color: var(--gray);
 	}
 
@@ -476,8 +503,11 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
 		gap: 2rem;
-		align-items: start;
-		margin-top: 1.5rem;
+		align-items: center;
+		margin-top: 1rem;
+		padding: 1.5rem;
+		border-radius: 1rem;
+		background: var(--white);
 	}
 
 	.fund-highlight {
@@ -524,8 +554,30 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		outline-offset: 3px;
 	}
 
-	.dream-section .plans {
-		margin: 1.5rem auto 0;
+	@container (max-width: 20rem) {
+		.benefit-card,
+		.fund-layout {
+			padding: 1rem;
+		}
+
+		.benefit-card dt {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+		}
+
+		.benefit-card svg {
+			position: static;
+			flex-shrink: 0;
+		}
+
+		.fund-highlight :global(.sponsorship-price) {
+			font-size: 1.125rem;
+		}
+	}
+
+	.dream-section > p:last-child:not(.section-note) {
+		margin-bottom: 0;
 	}
 
 	@media screen and (max-width: 65rem) {
@@ -543,7 +595,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		.fund-layout,
 		.benefit-grid,
 		.comparison-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.popup-body {
@@ -572,6 +624,19 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 
 		.purpose-section h3 {
 			font-size: 1.875rem;
+		}
+	}
+
+	@media screen and (max-width: 30rem) {
+		.impact-grid {
+			grid-template-columns: 1fr;
+			gap: 1.75rem;
+		}
+
+		.impact-plan + .impact-plan {
+			border-left: 0;
+			border-top: 1px solid var(--gray-container);
+			padding-top: 1.75rem;
 		}
 	}
 
