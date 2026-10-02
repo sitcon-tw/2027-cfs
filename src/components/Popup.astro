@@ -65,10 +65,15 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.11) inset;
 		backdrop-filter: blur(3.5px);
 		background-color: #e8e8ed;
+		transition: background-color 0.2s ease;
 		width: fit-content;
 		position: sticky;
 		bottom: 2rem;
 		margin: auto;
+	}
+
+	.detail-btn:hover {
+		background-color: #d0d0d5;
 	}
 
 	:global(.close-btn) {

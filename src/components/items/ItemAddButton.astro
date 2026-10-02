@@ -19,7 +19,7 @@ const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Ha
 <Button
 	size="icon"
 	color="var(--black)"
-	hoverColor="var(--black)"
+	hoverColor="#000"
 	class:list={["add-button", className]}
 	data-item-id={id}
 	data-item-title={title}
@@ -59,10 +59,13 @@ const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Ha
 		display: none;
 	}
 
-	.add-button.site-button--normal.added,
-	.add-button.site-button--normal.added:hover {
+	.add-button.site-button--normal.added:where(:not(:disabled, .disabled, [aria-disabled="true"])) {
 		background-color: var(--items-progress);
 		color: var(--white);
+	}
+
+	.add-button.site-button--normal.added:hover:where(:not(:disabled, .disabled, [aria-disabled="true"])) {
+		background-color: color-mix(in srgb, var(--items-progress) 85%, black);
 	}
 
 	.add-button:disabled,
