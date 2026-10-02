@@ -1,3 +1,5 @@
+import { localizeItemPrice } from "./item-price.js";
+
 /**
  * Utility functions for loading items data from individual markdown folders
  */
@@ -134,7 +136,7 @@ function extractLocalizedData(rawData: ItemDataRaw, locale: string, id: string):
 	// Extract localized sub-items
 	const localizedSub: SubItem[] = rawData.sub.map(subItem => ({
 		name: suffix === "_zh" ? subItem.name_zh : subItem.name_en,
-		price: subItem.price,
+		price: localizeItemPrice(subItem.price, locale),
 		remaining: subItem.remaining,
 		image: subItem.image,
 		image_description: suffix === "_zh" ? subItem.image_description_zh : subItem.image_description_en
@@ -155,7 +157,7 @@ function extractLocalizedData(rawData: ItemDataRaw, locale: string, id: string):
 		product_promotion: suffix === "_zh" ? rawData.product_promotion_zh : rawData.product_promotion_en,
 		image: rawData.image,
 		image_description: suffix === "_zh" ? rawData.image_description_zh : rawData.image_description_en,
-		price: rawData.price,
+		price: localizeItemPrice(rawData.price, locale),
 		deadline: rawData.deadline,
 		talent_recruitment_order: rawData.talent_recruitment_order,
 		brand_exposure_order: rawData.brand_exposure_order,

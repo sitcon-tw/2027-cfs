@@ -1,3 +1,5 @@
+import { localizeItemPrice } from "./item-price.js";
+
 import planData from "@data/plan.json" with { type: "json" };
 import itemData from "@data/item.json" with { type: "json" };
 import { opendream as zhOpendream } from "@i18n/zh-Hant.json";
@@ -128,9 +130,9 @@ export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: str
 		return lang === "en" ? "Plan Included Item" : "方案包含項目";
 	}
 
-	// Use the same New Taiwan dollar prefix as quotation subtotals and totals.
-	// Leave non-numeric price labels and empty prices unchanged.
-	return (itemPrice || "").replace(/^\$(?=\d[\d,]*(?:\.\d+)?$)/, "NT$");
+	// Match quotation subtotals without changing non-numeric price labels.
+	const price = (itemPrice || "").replace(/^\$(?=\d[\d,]*(?:\.\d+)?$)/, "NT$");
+	return localizeItemPrice(price, lang);
 }
 
 /**
