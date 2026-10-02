@@ -7,9 +7,63 @@ const zh = require("../src/i18n/zh-Hant.json");
 const en = require("../src/i18n/en.json");
 const base = (process.env.REVIEW_BASE_URL || "http://127.0.0.1:4321/").replace(/\/?$/, "/");
 const output = process.env.REVIEW_OUTPUT;
-const ids = ["23", "5-sub-0", "tier-navigator", "opendream-5", "28"];
 const numericPrice = price => Number(price.replace(/[^0-9]/g, ""));
-const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData["5"].sub[0].price) + numericPrice(planData.navigator.price) + numericPrice(zh.opendream.plans[0].price);
+
+// Keep the selection and its independent expectations together in each case.
+function pricedCase(id, source) {
+	assert.ok(source, `Missing fixture source for ${id}`);
+	return {
+		id,
+		title: english => source[english ? "name_en" : "name_zh"],
+		amount: numericPrice(source.price),
+		deadline: source.deadline || "",
+		includedInPlan: false
+	};
+}
+
+function itemCase(id, { includedInPlan = false } = {}) {
+	const [parentId, subIndex] = id.split("-sub-");
+	const parent = itemData[parentId];
+	assert.ok(parent, `Missing item fixture ${parentId}`);
+	const source = subIndex === undefined ? parent : parent.sub[Number(subIndex)];
+	return {
+		...pricedCase(id, source),
+		deadline: parent.deadline,
+		includedInPlan,
+		amount: includedInPlan ? 0 : numericPrice(source.price)
+	};
+}
+
+function tierCase(id) {
+	return pricedCase(`tier-${id}`, planData[id]);
+}
+
+function openDreamCase(id) {
+	const resolvePlan = translations => {
+		const program = translations.opendream;
+		const plan = program.plans.find(plan => plan.id === id);
+		assert.ok(plan, `Missing Open Dream fixture ${id}`);
+		return { title: `${program.title}｜${plan.name}`, price: plan.price };
+	};
+	const localized = { zh: resolvePlan(zh), en: resolvePlan(en) };
+	return {
+		...pricedCase(id, localized.zh),
+		title: english => localized[english ? "en" : "zh"].title
+	};
+}
+
+const cases = [
+	itemCase("23"), // Exclusive guided tour
+	itemCase("5-sub-0"), // Canvas bag option
+	tierCase("navigator"),
+	openDreamCase("opendream-5"),
+	itemCase("28", { includedInPlan: true }), // Booth included in a sponsorship plan
+	itemCase("22-sub-0"), // R0 chair covers
+	itemCase("22-sub-1"), // R1 chair covers
+	tierCase("visionary"),
+	openDreamCase("opendream-10")
+];
+const expectedTotal = cases.reduce((total, testCase) => total + testCase.amount, 0);
 
 (async () => {
 	const browser = process.env.CDP_URL
@@ -32,32 +86,27 @@ const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData
 		const lang = english ? "en" : "zh-Hant";
 		const translations = english ? en : zh;
 		const t = translations.quotation;
-		const sourceName = english ? "name_en" : "name_zh";
-		const selectedItems = ids.map(id => ({
-			id,
+		const selectedItems = cases.map(testCase => ({
+			id: testCase.id,
 			title: english ? "舊的中文收藏名稱" : "Old English selection",
 			category: "all",
 			image: "",
 			deadline: "NaN/NaN 截止",
 			price: english ? "方案包含項目" : "Plan Included Item"
 		}));
-		const expectedTitles = [
-			itemData["23"][sourceName],
-			itemData["5"].sub[0][sourceName],
-			planData.navigator[sourceName],
-			`${translations.opendream.title}｜${translations.opendream.plans[0].name}`,
-			itemData["28"][sourceName]
-		];
+		const expectedTitles = cases.map(testCase => testCase.title(english));
+		const expectedPrices = cases.map(testCase => (testCase.includedInPlan ? (english ? "Plan Included Item" : "方案包含項目") : `NT$${testCase.amount.toLocaleString(english ? "en-US" : "zh-TW")}`));
 
 		await page.goto(base + languagePath, { waitUntil: "networkidle" });
 		await page.evaluate(items => {
 			localStorage.setItem("interestItems", JSON.stringify(items));
 			window.dispatchEvent(new CustomEvent("itemsChange"));
 		}, selectedItems);
-		await page.waitForFunction(count => document.querySelector(".interest-count")?.textContent === String(count), ids.length);
+		await page.waitForFunction(count => document.querySelector(".interest-count")?.textContent === String(count), cases.length);
 		if (!(await page.locator("#interestPopover").evaluate(el => el.classList.contains("active")))) {
 			await page.locator("#interestButton").click();
 		}
+		assert.deepEqual(await page.locator("#interestPopover .item-price-tag").allTextContents(), expectedPrices, "The floating selection list must use NT$ and preserve plan-included labels");
 		const [quotation] = await Promise.all([page.waitForEvent("popup"), page.locator(".download-quote-btn").click()]);
 		await quotation.waitForLoadState("networkidle");
 		await quotation.locator(".items-table").waitFor();
@@ -67,9 +116,12 @@ const expectedTotal = numericPrice(itemData["23"].price) + numericPrice(itemData
 		assert.equal(await quotation.locator(".quotation-container h1").innerText(), t.title);
 		assert.deepEqual(await quotation.locator(".items-table th").allTextContents(), [t.number, t.item_name, t.quantity, t.unit_price, t.subtotal]);
 		assert.deepEqual(await quotation.locator(".item-title").allTextContents(), expectedTitles);
+		assert.deepEqual(await quotation.locator(".price-cell").allTextContents(), expectedPrices);
+		assert.deepEqual(await quotation.locator(".subtotal-cell").allTextContents(), expectedPrices);
+		assert.ok((await quotation.locator(".summary-note").innerText()).includes(`NT$${Math.round(expectedTotal * 0.05).toLocaleString(english ? "en-US" : "zh-TW")}`));
 		assert.ok((await quotation.locator(".summary-row.total").innerText()).includes(`NT$${expectedTotal.toLocaleString(english ? "en-US" : "zh-TW")}`));
-		assert.equal(await quotation.locator(".item-deadline").count(), 1);
-		assert.ok((await quotation.locator(".item-deadline").innerText()).startsWith(t.deadline));
+		assert.equal(await quotation.locator(".item-deadline").count(), cases.filter(testCase => testCase.deadline).length);
+		for (const deadline of await quotation.locator(".item-deadline").allTextContents()) assert.ok(deadline.startsWith(t.deadline));
 		assert.equal(await quotation.locator(".notes li").count(), t.notes.length + 1);
 		const text = await quotation.locator(".quotation-container").innerText();
 		assert.ok(text.includes(t.non_numeric_note));

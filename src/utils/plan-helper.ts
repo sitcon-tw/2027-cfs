@@ -130,8 +130,9 @@ export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: str
 		return lang === "en" ? "Plan Included Item" : "方案包含項目";
 	}
 
-	// If there's a price, return it, otherwise return empty string (no "洽詢")
-	return localizeItemPrice(itemPrice || "", lang);
+	// Match quotation subtotals without changing non-numeric price labels.
+	const price = (itemPrice || "").replace(/^\$(?=\d[\d,]*(?:\.\d+)?$)/, "NT$");
+	return localizeItemPrice(price, lang);
 }
 
 /**
