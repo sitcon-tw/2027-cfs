@@ -6,8 +6,10 @@ import "../../assets/item-filters.css";
 import Stone from "@assets/img/小石.svg";
 import { marked } from "marked";
 import { isItemInAnyPlan } from "../../utils/plan-helper";
+import { formatDeadline } from "../../utils/deadline";
 
 const { t, card, lang = "zh-Hant", selectedCategory = "all" } = Astro.props;
+const displayDeadline = formatDeadline(card.deadline);
 
 // Price shown directly on the card: own price, lowest sub-item price, or plan inclusion
 const subPrices: number[] = (card.sub || []).map((sub: any) => parseInt((sub.price || "").replace(/[^0-9]/g, ""), 10)).filter((n: number) => n > 0);
@@ -69,7 +71,13 @@ const isSoldOut = card.remaining === "0" || options.every(option => option.remai
 					</div>
 				)
 			}
-			<div class="deadline-tag">{`${new Date(card.deadline).getMonth() + 1}/${new Date(card.deadline).getDate()}`} {t.deadline}</div>
+			{
+				displayDeadline && (
+					<div class="deadline-tag">
+						{displayDeadline} {t.deadline}
+					</div>
+				)
+			}
 		</div>
 	</div>
 	<div class="card-content">

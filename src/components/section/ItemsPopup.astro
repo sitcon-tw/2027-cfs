@@ -339,7 +339,8 @@ const items = itemsUnsorted.sort((a, b) => {
 		// Handle download quote button
 		if (target.closest(".download-quote-btn")) {
 			e.preventDefault();
-			const quotationUrl = window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/quotation`;
+			const languagePath = document.documentElement.lang === "en" ? "en/" : "";
+			const quotationUrl = window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${languagePath}quotation`;
 			window.open(quotationUrl, "_blank");
 			closePopover();
 			return;

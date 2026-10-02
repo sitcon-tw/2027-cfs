@@ -29,9 +29,11 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		}
 		<slot />
 		{
-			<button class="close-btn" type="button" aria-label={lang === "en" ? "Close" : "關閉"}>
-				<X stroke-width={3.5} />
-			</button>
+			(
+				<button class="close-btn" type="button" aria-label={lang === "en" ? "Close" : "關閉"}>
+					<X stroke-width={3.5} />
+				</button>
+			)
 		}
 	</div>
 </div>
@@ -102,6 +104,8 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	}
 
 	.popup-bg {
+		/* The backdrop click handler must not highlight non-interactive content. */
+		-webkit-tap-highlight-color: transparent;
 		position: fixed;
 		inset: 0;
 		width: 100%;
@@ -135,6 +139,12 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		position: relative;
 		padding-bottom: 2rem;
 		cursor: auto;
+	}
+
+	.popup :global(a),
+	.popup :global(button),
+	.popup :global(summary) {
+		-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
 	}
 	.no-hero.popup {
 		padding-bottom: 0;

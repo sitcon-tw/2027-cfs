@@ -3,7 +3,7 @@ type NumericData = Record<string, number>;
 import { getImage } from "astro:assets";
 import photo from "@assets/img/about-popup-2026.webp";
 import planData from "@data/plan.json";
-import { loadItemsData } from "../utils/items-loader";
+import { getItemOptions, loadItemsData } from "../utils/items-loader";
 import { getBenefitLocalizedName } from "../utils/plan-helper";
 const { lang = "zh-Hant" } = Astro.props;
 const en = lang === "en";
@@ -157,8 +157,8 @@ const label = (zh: string, english: string) => (en ? english : zh);
 						<h2>{label("依合作目標，搭配贊助品項", "Find the right sponsorship options")}</h2>
 						<p class="note">
 							{label(
-								"各品項／子品項報價參考；截止時間與名額請洽團隊確認，完整內容請開啟品項連結。",
-								"Reference prices per item or option. Confirm deadlines and availability with our team; follow item links for details."
+								"各品項／子品項報價參考；截止時間與名額請洽團隊確認，完整內容請參考品項頁面。",
+								"Reference prices per item or option. Confirm deadlines and availability with our team; see item pages for details."
 							)}
 						</p>
 						<div class="catalog-list">
@@ -171,20 +171,15 @@ const label = (zh: string, english: string) => (en ? english : zh);
 										<p>{excerpt(item.global_description)}</p>
 									</div>
 									<div class="pricing">
-										{item.sub.length ? (
-											item.sub.map(sub => (
-												<p>
-													<span>{sub.name}</span>
-													<strong>
-														{sub.price || label("洽詢", "Contact us")}
-														{sub.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
-													</strong>
-												</p>
-											))
-										) : (
-											<strong>{item.price || label("洽詢", "Contact us")}</strong>
-										)}
-										{item.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
+										{getItemOptions(item).map(option => (
+											<p>
+												<span class="option-name">{item.sub.length ? option.name : ""}</span>
+												<span class="price-status">
+													{(item.remaining === "0" || option.remaining === "0") && <small>{label("已額滿", "Sold out")}</small>}
+													<strong>{option.price || label("洽詢", "Contact us")}</strong>
+												</span>
+											</p>
+										))}
 									</div>
 								</article>
 							))}
@@ -215,7 +210,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 						))
 					}
 				</div>
-				<p><a href={`${site}#opendream`}>{label("查看開源築夢計畫完整權益 →", "Explore Open Dream benefits →")}</a></p>
+				<p><a class="print-link" href={`${site}#opendream`}>{label("查看開源築夢計畫完整權益 →", "Explore Open Dream benefits →")}</a></p>
 				<p class="note">{t.opendream.price_note}</p>
 				<h2>{label("場地規模", "Venue overview")}</h2>
 				<table>
@@ -486,15 +481,25 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		justify-content: space-between;
 		gap: 2mm;
 	}
+	.pricing .option-name {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+	.pricing .price-status {
+		display: flex;
+		align-items: baseline;
+		gap: 2mm;
+		flex-shrink: 0;
+	}
 	.pricing strong {
 		white-space: nowrap;
 		font-size: 10pt;
 	}
 	.pricing small {
-		display: block;
 		font-size: 8pt;
 		color: #526657;
-		margin-top: 1mm;
+		white-space: nowrap;
 	}
 	.dream-plans {
 		display: grid;
@@ -639,6 +644,15 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		}
 		a {
 			text-decoration: none;
+		}
+		a.print-link::after {
+			content: attr(href);
+			display: block;
+			font-size: 8pt;
+			font-weight: 400;
+			line-height: 1.4;
+			color: #526657;
+			overflow-wrap: anywhere;
 		}
 	}
 </style>

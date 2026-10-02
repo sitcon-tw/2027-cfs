@@ -9,8 +9,10 @@ import { marked } from "marked";
 import { linkifyVenueCodes } from "../../utils/venue-linkify.ts";
 
 import { getItemOptions, type SubItem } from "../../utils/items-loader";
+import { formatDeadline } from "../../utils/deadline";
 
 const { item, t, lang, popupId } = Astro.props;
+const displayDeadline = formatDeadline(item.deadline);
 
 const options = getItemOptions(item);
 const planPrice = isItemInAnyPlan(item.id) ? (lang === "en" ? "Plan Included Item" : "方案包含項目") : "";
@@ -114,7 +116,13 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 						</span>
 					)
 				}
-				<span class="category">{`${new Date(item.deadline).getMonth() + 1}/${new Date(item.deadline).getDate()}`} {t.deadline}</span>
+				{
+					displayDeadline && (
+						<span class="category">
+							{displayDeadline} {t.deadline}
+						</span>
+					)
+				}
 			</div>
 			{
 				item.id === "22" && (
