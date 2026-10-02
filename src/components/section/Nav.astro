@@ -190,6 +190,28 @@ const { t, lang } = Astro.props;
 </style>
 
 <script>
+	document.querySelectorAll<HTMLAnchorElement>('nav a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener("click", event => {
+			if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+			const href = anchor.getAttribute("href")!;
+			const target = href === "#" ? 0 : document.getElementById(href.slice(1));
+			if (target === null) return;
+			event.preventDefault();
+			const oldURL = window.location.href;
+			if (window.location.hash !== href) {
+				history.pushState(null, "", href);
+				window.dispatchEvent(new HashChangeEvent("hashchange", { oldURL, newURL: window.location.href }));
+			}
+			window.scrollPageTo(target, { immediate: false, offset: target === 0 ? 0 : -32 });
+			if (target instanceof HTMLElement) {
+				const hadTabindex = target.hasAttribute("tabindex");
+				if (!hadTabindex) target.setAttribute("tabindex", "-1");
+				target.focus({ preventScroll: true });
+				if (!hadTabindex) target.addEventListener("blur", () => target.removeAttribute("tabindex"), { once: true });
+			}
+		});
+	});
+
 	const hamburger = document.querySelector(".hamburger") as HTMLButtonElement;
 	const navMenu = document.querySelector(".nav-menu") as HTMLDivElement;
 	hamburger.addEventListener("click", () => {
