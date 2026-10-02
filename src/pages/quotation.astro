@@ -276,6 +276,7 @@
 
 		<script>
 			import { localizeInterestedItem } from "../utils/plan-helper.ts";
+			import { parseDeadline } from "../utils/deadline.ts";
 
 			interface InterestedItem {
 				id: string;
@@ -345,6 +346,7 @@
 				const tableRows = items
 					.map((item, index) => {
 						const itemPrice = item.price || "";
+						const deadline = parseDeadline(item.deadline) ? item.deadline.trim() : "";
 						const isPlanItem = isPlanIncluded(itemPrice);
 
 						if (isPlanItem) {
@@ -362,7 +364,7 @@
 							<td>${index + 1}</td>
 							<td>
 								<div class="item-title">${item.title}</div>
-								${item.deadline ? `<div class="item-deadline">截止日期：${item.deadline}</div>` : ""}
+								${deadline ? `<div class="item-deadline">截止日期：${deadline}</div>` : ""}
 							</td>
 							<td class="quantity-cell">1</td>
 							<td class="price-cell">${itemPrice || "—"}</td>

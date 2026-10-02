@@ -1,5 +1,6 @@
 import { isItemInterested, addInterestedItem, removeInterestedItem, getInterestedItems, isDeadlinePassed, type InterestedItem } from "./local-storage.js";
 import { getItemDisplayPrice } from "./plan-helper.js";
+import { parseDeadline } from "./deadline.js";
 
 declare global {
 	interface Window {
@@ -44,8 +45,7 @@ export function handleAddButtonClick(button: HTMLElement, event: Event): void {
 			removeInterestedItem(id);
 		} else {
 			// Add to interested items
-			const deadlineEl = card?.querySelector(".deadline-tag, .category");
-			const displayDeadline = deadlineEl?.textContent || "";
+			const deadline = parseDeadline(itemDeadline) ? itemDeadline.trim() : "";
 
 			// Get user's language preference (default to zh-Hant if not available)
 			const userLang = document.documentElement.lang || navigator.language || "zh-Hant";
@@ -58,7 +58,7 @@ export function handleAddButtonClick(button: HTMLElement, event: Event): void {
 				title: itemTitle,
 				category: "all",
 				image: itemImage,
-				deadline: displayDeadline,
+				deadline,
 				price: displayPrice
 			});
 		}

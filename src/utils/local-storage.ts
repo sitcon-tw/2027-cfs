@@ -1,3 +1,5 @@
+import { parseDeadline } from "./deadline.js";
+
 export interface InterestedItem {
 	id: string;
 	title: string;
@@ -115,24 +117,10 @@ export function clearInterestedItems(): boolean {
  * @returns true if deadline has passed, false otherwise
  */
 export function isDeadlinePassed(deadline: string): boolean {
-	if (!deadline || deadline === "") return false;
+	const deadlineDate = parseDeadline(deadline);
+	if (!deadlineDate) return false;
 
-	try {
-		// Parse the deadline (format: "YYYY/MM/DD")
-		const deadlineDate = new Date(deadline);
-		// Validate the date
-		if (isNaN(deadlineDate.getTime())) {
-			console.error("Invalid deadline date string:", deadline);
-			return false;
-		}
-		// Set to end of day for the deadline
-		deadlineDate.setHours(23, 59, 59, 999);
-
-		const now = new Date();
-
-		return now > deadlineDate;
-	} catch (error) {
-		console.error("Error parsing deadline:", error);
-		return false;
-	}
+	// A sponsorship deadline remains available through the end of its day.
+	deadlineDate.setHours(23, 59, 59, 999);
+	return new Date() > deadlineDate;
 }
