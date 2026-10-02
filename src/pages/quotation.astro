@@ -1,13 +1,22 @@
 ---
 // Quotation page - generates a printable quotation from interested items
+import { quotation as zhQuotation } from "../i18n/zh-Hant.json";
+import { quotation as enQuotation } from "../i18n/en.json";
+
+interface Props {
+	lang?: "zh-Hant" | "en";
+}
+
+const { lang = "zh-Hant" } = Astro.props;
+const t = lang === "en" ? enQuotation : zhQuotation;
 ---
 
 <!doctype html>
-<html lang="zh-Hant">
+<html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>SITCON 2027 贊助報價單</title>
+		<title>{t.title}</title>
 		<style is:global>
 			* {
 				margin: 0;
@@ -265,8 +274,8 @@
 	<body>
 		<div class="quotation-container">
 			<header>
-				<h1>SITCON 2027 贊助報價單</h1>
-				<p class="subtitle">學生計算機年會贊助報價單</p>
+				<h1>{t.title}</h1>
+				<p class="subtitle">{t.subtitle}</p>
 			</header>
 
 			<div id="content">
@@ -277,6 +286,12 @@
 		<script>
 			import { localizeInterestedItem } from "../utils/plan-helper.ts";
 			import { parseDeadline } from "../utils/deadline.ts";
+			import { quotation as zhQuotation } from "../i18n/zh-Hant.json";
+			import { quotation as enQuotation } from "../i18n/en.json";
+
+			const lang = document.documentElement.lang === "en" ? "en" : "zh-Hant";
+			const locale = lang === "en" ? "en-US" : "zh-TW";
+			const t = lang === "en" ? enQuotation : zhQuotation;
 
 			interface InterestedItem {
 				id: string;
@@ -310,7 +325,7 @@
 			}
 
 			function formatCurrency(amount: number): string {
-				return `NT$${amount.toLocaleString("zh-TW")}`;
+				return `NT$${amount.toLocaleString(locale)}`;
 			}
 
 			function isPlanIncluded(price: string): boolean {
@@ -318,8 +333,8 @@
 			}
 
 			function generateQuotation() {
-				// The quotation is Chinese-only, so show every item in Chinese regardless of the language it was added in
-				const items = getInterestedItems().map(item => localizeInterestedItem(item, "zh-Hant"));
+				// Re-localize saved selections for the quotation's language, including older selections.
+				const items = getInterestedItems().map(item => localizeInterestedItem(item, lang));
 				const contentDiv = document.getElementById("content");
 
 				if (!contentDiv) return;
@@ -327,14 +342,14 @@
 				if (items.length === 0) {
 					contentDiv.innerHTML = `
 						<div class="empty-state">
-							<h2>沒有選擇任何項目</h2>
-							<p>請返回贊助徵求書頁面選擇感興趣的贊助項目</p>
+							<h2>${t.empty_title}</h2>
+							<p>${t.empty_description}</p>
 						</div>
 					`;
 					return;
 				}
 
-				const today = new Date().toLocaleDateString("zh-TW", {
+				const today = new Date().toLocaleDateString(locale, {
 					year: "numeric",
 					month: "2-digit",
 					day: "2-digit"
@@ -364,7 +379,7 @@
 							<td>${index + 1}</td>
 							<td>
 								<div class="item-title">${item.title}</div>
-								${deadline ? `<div class="item-deadline">截止日期：${deadline}</div>` : ""}
+								${deadline ? `<div class="item-deadline">${t.deadline} ${deadline}</div>` : ""}
 							</td>
 							<td class="quantity-cell">1</td>
 							<td class="price-cell">${itemPrice || "—"}</td>
@@ -377,27 +392,27 @@
 				contentDiv.innerHTML = `
 					<div class="quotation-info">
 						<div class="info-item">
-							<span class="info-label">報價日期：</span>
+							<span class="info-label">${t.quotation_date}</span>
 							<span>${today}</span>
 						</div>
 						<div class="info-item">
-							<span class="info-label">聯絡方式：</span>
+							<span class="info-label">${t.contact}</span>
 							<span>contact@sitcon.org</span>
 						</div>
 						<div class="info-item">
-							<span class="info-label">項目數量：</span>
-							<span>${items.length} 項</span>
+							<span class="info-label">${t.item_count}</span>
+							<span>${t.item_count_value.replace("{count}", String(items.length))}</span>
 						</div>
 					</div>
 
 					<table class="items-table">
 						<thead>
 							<tr>
-								<th style="width: 60px;">項次</th>
-								<th>項目名稱</th>
-								<th style="width: 60px;">數量</th>
-								<th style="width: 120px;">單價</th>
-								<th style="width: 120px;">小計</th>
+								<th style="width: 60px;">${t.number}</th>
+								<th>${t.item_name}</th>
+								<th style="width: 60px;">${t.quantity}</th>
+								<th style="width: 120px;">${t.unit_price}</th>
+								<th style="width: 120px;">${t.subtotal}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -410,11 +425,11 @@
 							? `
 					<div class="summary-section">
 						<div class="summary-row total">
-							<span>預估總計（未稅）：</span>
+							<span>${t.total}</span>
 							<span>${formatCurrency(totalAmount)}</span>
 						</div>
 						<div class="summary-note">
-							* 若需開立統一發票，需另加 5% 營業稅（約 ${formatCurrency(Math.round(totalAmount * 0.05))}）
+							${t.tax_note.replace("{amount}", formatCurrency(Math.round(totalAmount * 0.05)))}
 						</div>
 					</div>
 					`
@@ -422,21 +437,16 @@
 					}
 
 					<div class="notes">
-						<h3>注意事項</h3>
+						<h3>${t.notes_title}</h3>
 						<ul>
-							<li>本報價單僅供參考，實際金額與權益請以正式合約為準</li>
-							<li>標示「方案包含項目」的項目為贊助方案內含權益，需選購相應方案</li>
-							<li>部分項目標示「獨家」，採先到先得方式，售完為止</li>
-							<li>請注意各項目的截止日期，逾期可能影響權益提供</li>
-							${hasNonNumericPrices ? "<li>部分項目包含於贊助方案中，總計僅計算單獨販售項目與方案費用</li>" : ""}
-							<li>若需要開立「統一發票」則需額外增加 5% 的營業稅</li>
-							<li>如有任何疑問，歡迎來信 contact@sitcon.org 洽詢</li>
+							${t.notes.map(note => `<li>${note}</li>`).join("")}
+							${hasNonNumericPrices ? `<li>${t.non_numeric_note}</li>` : ""}
 						</ul>
 					</div>
 
 					<div class="footer">
-						<p>SITCON 學生計算機年會 Students' Information Technology Conference</p>
-						<p>本報價單於 ${today} 由系統自動生成</p>
+						<p>${t.organization}</p>
+						<p>${t.generated_note.replace("{date}", today)}</p>
 					</div>
 				`;
 			}

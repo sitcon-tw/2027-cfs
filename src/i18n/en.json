@@ -621,6 +621,36 @@
 			}
 		]
 	},
+	"quotation": {
+		"title": "SITCON 2027 Sponsorship Quotation",
+		"subtitle": "Students' Information Technology Conference Sponsorship Quotation",
+		"empty_title": "No items selected",
+		"empty_description": "Return to the sponsorship website to select sponsorship items you are interested in.",
+		"deadline": "Deadline:",
+		"quotation_date": "Quotation date:",
+		"contact": "Contact:",
+		"item_count": "Items selected:",
+		"item_count_value": "{count}",
+		"number": "No.",
+		"item_name": "Item name",
+		"quantity": "Quantity",
+		"unit_price": "Unit price",
+		"subtotal": "Subtotal",
+		"total": "Estimated total (before tax):",
+		"tax_note": "* A unified invoice requires an additional 5% business tax (approximately {amount}).",
+		"notes_title": "Notes",
+		"notes": [
+			"This quotation is for reference only. Final pricing and benefits are subject to the formal agreement.",
+			"Items marked \"Plan Included Item\" are benefits included in a sponsorship plan and require the corresponding plan.",
+			"Items marked \"Exclusive\" are available on a first-come, first-served basis until sold out.",
+			"Please check each item's deadline. Missing a deadline may affect delivery of the benefits.",
+			"A unified invoice requires an additional 5% business tax.",
+			"For questions, email contact@sitcon.org."
+		],
+		"non_numeric_note": "Some items are included in sponsorship plans. The total only includes separately priced items and plan fees.",
+		"organization": "SITCON Students' Information Technology Conference",
+		"generated_note": "This quotation was automatically generated on {date}."
+	},
 	"footer": {
 		"collaboration": "Future Collaboration",
 		"description": "We welcome various forms of event or media collaboration—co-hosting workshops, hackathons, podcasts, and more. Reach out with your ideas.",
