@@ -3,7 +3,7 @@ type NumericData = Record<string, number>;
 import { getImage } from "astro:assets";
 import photo from "@assets/img/about-popup-2026.webp";
 import planData from "@data/plan.json";
-import { loadItemsData } from "../utils/items-loader";
+import { getItemOptions, loadItemsData } from "../utils/items-loader";
 import { getBenefitLocalizedName } from "../utils/plan-helper";
 const { lang = "zh-Hant" } = Astro.props;
 const en = lang === "en";
@@ -171,20 +171,15 @@ const label = (zh: string, english: string) => (en ? english : zh);
 										<p>{excerpt(item.global_description)}</p>
 									</div>
 									<div class="pricing">
-										{item.sub.length ? (
-											item.sub.map(sub => (
-												<p>
-													<span>{sub.name}</span>
-													<strong>
-														{sub.price || label("洽詢", "Contact us")}
-														{sub.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
-													</strong>
-												</p>
-											))
-										) : (
-											<strong>{item.price || label("洽詢", "Contact us")}</strong>
-										)}
-										{item.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
+										{getItemOptions(item).map(option => (
+											<p>
+												<span class="option-name">{item.sub.length ? option.name : ""}</span>
+												<span class="price-status">
+													{(item.remaining === "0" || option.remaining === "0") && <small>{label("已額滿", "Sold out")}</small>}
+													<strong>{option.price || label("洽詢", "Contact us")}</strong>
+												</span>
+											</p>
+										))}
 									</div>
 								</article>
 							))}
@@ -486,15 +481,25 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		justify-content: space-between;
 		gap: 2mm;
 	}
+	.pricing .option-name {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+	.pricing .price-status {
+		display: flex;
+		align-items: baseline;
+		gap: 2mm;
+		flex-shrink: 0;
+	}
 	.pricing strong {
 		white-space: nowrap;
 		font-size: 10pt;
 	}
 	.pricing small {
-		display: block;
 		font-size: 8pt;
 		color: #526657;
-		margin-top: 1mm;
+		white-space: nowrap;
 	}
 	.dream-plans {
 		display: grid;
