@@ -1,4 +1,4 @@
-import { localizeItemPrice } from "./item-price";
+import { localizeItemPrice } from "./item-price.js";
 
 /**
  * Utility functions for loading items data from individual markdown folders

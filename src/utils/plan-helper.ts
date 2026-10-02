@@ -1,4 +1,4 @@
-import { localizeItemPrice } from "./item-price";
+import { localizeItemPrice } from "./item-price.js";
 
 import planData from "@data/plan.json" with { type: "json" };
 import itemData from "@data/item.json" with { type: "json" };
