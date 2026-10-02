@@ -432,28 +432,7 @@
 					"note": "正在尋找實習或正職"
 				}
 			],
-			"note": "活動成果：主辦團隊會後彙整。報名受眾統計：2026/03/03 第二波索票後，n=1,315。",
-			"coverage": {
-				"title": "2026 媒體報導：",
-				"links": [
-					{
-						"name": "總統府新聞",
-						"url": "https://www.president.gov.tw/News/39930"
-					},
-					{
-						"name": "中央社",
-						"url": "https://www.cna.com.tw/news/aipl/202603280032.aspx"
-					},
-					{
-						"name": "經濟日報",
-						"url": "https://money.udn.com/money/story/7307/9408273"
-					},
-					{
-						"name": "僑務電子報",
-						"url": "https://ocacnews.net/article/423192"
-					}
-				]
-			}
+			"note": "數據僅供參考，可能因統計時間與口徑而有差異；人數統計誤差範圍為 ±50 人"
 		},
 		"popup": {
 			"title": "相關統計資料",

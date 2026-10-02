@@ -60,18 +60,6 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 			))
 		}
 		{t.review.note && <p class="review-note aos aos-fadeIn">{t.review.note}</p>}
-		{
-			t.review.coverage && (
-				<p class="review-coverage aos aos-fadeIn">
-					<span>{t.review.coverage.title}</span>
-					{t.review.coverage.links.map((link: { name: string; url: string }) => (
-						<a href={link.url} target="_blank" rel="noopener noreferrer">
-							{link.name}
-						</a>
-					))}
-				</p>
-			)
-		}
 	</div>
 	<Popup btnText={t.detail} title={t.detail} background={Volunteer.src} id="stat-popup" class="popup">
 		<div class="container">
@@ -189,29 +177,11 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 	}
 
 	.review-note {
-		font-size: 0.85rem;
+		font-size: 0.75rem;
 		font-weight: 400;
-		color: var(--gray);
+		color: #a1a1aa;
 		margin-top: 1rem;
 		line-height: 1.5;
-	}
-
-	.review-coverage {
-		font-size: 0.85rem;
-		font-weight: 400;
-		color: var(--gray);
-		margin-top: 0.5rem;
-		line-height: 1.6;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 0.25rem 1rem;
-	}
-
-	.review-coverage a {
-		color: #0171e3;
-		text-decoration: underline;
-		text-underline-offset: 2px;
 	}
 
 	.data-note {
