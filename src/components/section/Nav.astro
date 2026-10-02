@@ -1,20 +1,31 @@
 ---
 const { t, lang } = Astro.props;
+import Button from "../Button.astro";
 ---
 
 <nav aria-label="Main Navigation" class="navbar">
 	<div class="nav-container">
 		<a href="#"><h1 class="nav-title">{t.title}</h1></a>
-		<button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+		<Button class="hamburger" size="icon" color="transparent" hoverColor="transparent" textColor="var(--black)" aria-label="Toggle menu" aria-expanded="false">
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
 			<span class="hamburger-line"></span>
-		</button>
+		</Button>
 		<div class="nav-menu" id="nav-menu">
 			<a href="#plans" class="nav-link">{t.plan}</a>
 			<a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/` + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
-			<a href="mailto:contact@sitcon.org" class="nav-link contact-btn">{t.contact}</a>
-			<a class="nav-link export-btn" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/${lang === "en" ? "en/" : ""}brochure/`} target="_blank" rel="noopener">{t.export}</a>
+			<Button href="mailto:contact@sitcon.org" size="compact" color="#00d959" hoverColor="#00bb4b" textColor="var(--black)" class="nav-link contact-btn">{t.contact}</Button>
+			<Button
+				color="#e8e8ed"
+				hoverColor="#d0d0d5"
+				textColor="var(--black)"
+				hoverTextColor="#000"
+				href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/${lang === "en" ? "en/" : ""}brochure/`}
+				size="compact"
+				class="nav-link export-btn"
+				target="_blank"
+				rel="noopener">{t.export}</Button
+			>
 		</div>
 	</div>
 </nav>
@@ -53,54 +64,21 @@ const { t, lang } = Astro.props;
 		white-space: nowrap;
 	}
 
-	a {
+	a:not(.site-button) {
 		text-decoration: none;
 		color: inherit;
 		transition: 0.2s ease-out;
 	}
 
-	.nav-link:hover {
+	:global(.nav-link:not(.site-button):hover) {
 		color: #6b6b73;
 	}
 
-	.contact-btn,
-	.export-btn {
-		border-radius: 5rem;
-		padding: 0.25rem 1.25rem;
-	}
-
-	.contact-btn {
-		background-color: #00d959;
-	}
-
-	.contact-btn:hover {
-		background-color: #00bb4b;
-		color: inherit;
-	}
-
-	.export-btn {
-		background-color: #e8e8ed;
-		border: none;
-		outline: transparent;
-		cursor: pointer;
-	}
-
-	.export-btn:hover {
-		background-color: #d0d0d5;
-		color: #000;
-	}
-
 	/* Hamburger Menu */
-	.hamburger {
+	:global(.site-button.hamburger) {
 		display: none;
 		flex-direction: column;
 		justify-content: space-around;
-		width: 1.5rem;
-		height: 1.5rem;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-
 		z-index: 1001;
 	}
 
@@ -112,20 +90,20 @@ const { t, lang } = Astro.props;
 		transform-origin: center;
 	}
 
-	.hamburger.active .hamburger-line:nth-child(1) {
+	:global(.hamburger.active .hamburger-line:nth-child(1)) {
 		transform: rotate(45deg) translate(0.35rem, 0.35rem);
 	}
 
-	.hamburger.active .hamburger-line:nth-child(2) {
+	:global(.hamburger.active .hamburger-line:nth-child(2)) {
 		opacity: 0;
 	}
 
-	.hamburger.active .hamburger-line:nth-child(3) {
+	:global(.hamburger.active .hamburger-line:nth-child(3)) {
 		transform: rotate(-45deg) translate(0.35rem, -0.35rem);
 	}
 
 	@media screen and (max-width: 72rem) {
-		.hamburger {
+		:global(.site-button.hamburger) {
 			display: flex;
 		}
 
@@ -152,7 +130,7 @@ const { t, lang } = Astro.props;
 			pointer-events: auto;
 		}
 
-		.nav-link {
+		.nav-menu :global(.nav-link) {
 			text-align: center;
 		}
 	}
@@ -174,10 +152,10 @@ const { t, lang } = Astro.props;
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-		.hamburger {
+		:global(.site-button.hamburger) {
 			flex-shrink: 0;
 		}
-		.hamburger {
+		:global(.hamburger) {
 			scale: 0.95;
 		}
 	}

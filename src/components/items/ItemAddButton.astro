@@ -1,5 +1,6 @@
 ---
 import { Plus, Check } from "@lucide/astro";
+import Button from "../Button.astro";
 
 interface Props {
 	id: string;
@@ -15,8 +16,10 @@ interface Props {
 const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Hant", class: className } = Astro.props;
 ---
 
-<button
-	type="button"
+<Button
+	size="icon"
+	color="var(--black)"
+	hoverColor="var(--black)"
 	class:list={["add-button", className]}
 	data-item-id={id}
 	data-item-title={title}
@@ -29,27 +32,11 @@ const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Ha
 >
 	<span class="add-icon"><Plus /></span>
 	<span class="added-icon"><Check /></span>
-</button>
+</Button>
 
-<style>
+<style is:global>
 	.add-button {
-		width: 2rem;
-		height: 2rem;
 		flex-shrink: 0;
-		border-radius: 50%;
-		background-color: var(--black);
-		color: var(--white);
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: transform 0.2s ease;
-	}
-
-	.add-button :global(svg) {
-		width: 20px;
-		height: 20px;
 	}
 
 	.add-icon,
@@ -72,29 +59,15 @@ const { id, title, image = "", price = "", deadline = "", popupId, lang = "zh-Ha
 		display: none;
 	}
 
-	.add-button:hover {
-		transform: scale(1.1);
-	}
-
-	.add-button:focus-visible {
-		outline: 2px solid #14693e;
-		outline-offset: 3px;
-	}
-
-	.add-button.added {
+	.add-button.site-button--normal.added,
+	.add-button.site-button--normal.added:hover {
 		background-color: var(--items-progress);
+		color: var(--white);
 	}
 
 	.add-button:disabled,
 	.add-button.disabled {
 		background-color: var(--gray);
-		cursor: not-allowed;
-		opacity: 0.5;
-	}
-
-	.add-button:disabled:hover,
-	.add-button.disabled:hover {
-		transform: none;
 	}
 
 	@media print {

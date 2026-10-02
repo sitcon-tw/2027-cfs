@@ -1,5 +1,6 @@
 ---
 import { X, Heart, Plus, Check, Circle, CircleDot } from "@lucide/astro";
+import Button from "../Button.astro";
 import { loadItemsData, translateType } from "../../utils/items-loader";
 import { isInactive } from "../../utils/item-status";
 import { purposes } from "../../utils/item-filters";
@@ -53,7 +54,19 @@ const groups = [
 						)}
 						<div class="filter-options">
 							{group.options.map(option => (
-								<button type="button" class="filter-toggle" data-filter-group={group.id} data-filter-value={option.id} data-filter-tone={group.id} aria-pressed="false" aria-controls="item-catalog">
+								<Button
+									type="button"
+									variant="normal"
+									color="var(--white)"
+									textColor="var(--black)"
+									hoverColor="var(--filter-bg, var(--gray-container))"
+									class="filter-toggle"
+									data-filter-group={group.id}
+									data-filter-value={option.id}
+									data-filter-tone={group.id}
+									aria-pressed="false"
+									aria-controls="item-catalog"
+								>
 									{group.id === "purpose" ? (
 										<span class="filter-radio-indicator" aria-hidden="true">
 											<span class="filter-unselected-icon">
@@ -74,7 +87,7 @@ const groups = [
 										</span>
 									)}
 									<span>{option.label}</span>
-								</button>
+								</Button>
 							))}
 						</div>
 					</fieldset>
@@ -86,7 +99,9 @@ const groups = [
 		</p>
 		<div class="filter-empty" hidden>
 			<p>{t.filters.empty}</p>
-			<button type="button" class="filter-toggle" data-clear-filters>{t.filters.clear}</button>
+			<Button type="button" variant="normal" color="var(--white)" textColor="var(--black)" hoverColor="var(--gray-container)" size="compact" class="filter-toggle" data-clear-filters
+				>{t.filters.clear}</Button
+			>
 		</div>
 
 		<div class="cards-container fade-active" id="item-catalog">
@@ -102,10 +117,20 @@ const groups = [
 			<span class="arrow">▼</span>
 		</button>
 
-		<button class="interest-button" id="interestButton">
+		<Button
+			variant="outlined"
+			color="var(--white)"
+			textColor="var(--black)"
+			borderColor="var(--items-green)"
+			size="icon"
+			class="interest-button"
+			id="interestButton"
+			type="button"
+			aria-label={t.interestedItems}
+		>
 			<span class="heart-icon"><Heart /></span>
 			<span class="interest-count">0</span>
-		</button>
+		</Button>
 
 		<div class="interest-popover lenis-scroll" id="interestPopover">
 			<div class="popover-header">
@@ -117,12 +142,12 @@ const groups = [
 			<div class="popover-footer">
 				<p class="footer-text">{t.shareInterestedItemsText}</p>
 				<div class="action-buttons">
-					<button class="action-button download-quote-btn">
+					<Button size="compact" hoverColor="#404040" class="action-button download-quote-btn" type="button">
 						{t.downloadQuote}
-					</button>
-					<button class="action-button view-plan-btn" id="viewPlanBtn">
+					</Button>
+					<Button size="compact" hoverColor="#404040" class="action-button view-plan-btn" id="viewPlanBtn" type="button">
 						<span id="viewPlanBtnText">{t.viewPlanDetails}</span>
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -253,30 +278,23 @@ const groups = [
 		font-size: 0.8rem;
 	}
 
-	.interest-button {
+	:global(.site-button.interest-button) {
+		border-width: 2px;
 		position: fixed;
 		bottom: 2rem;
 		right: 2rem;
 		width: 3.5rem;
-		aspect-ratio: 1 / 1;
-		border-radius: 50%;
-		background-color: var(--white);
-		border: 2px solid var(--items-green);
-		cursor: pointer;
+		height: 3.5rem;
 		display: none;
-		align-items: center;
-		justify-content: center;
 		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-		transition: all 0.2s ease;
 		z-index: 1000;
 	}
 
-	.interest-button:hover {
-		transform: scale(1.05);
+	:global(.interest-button:hover) {
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 	}
 
-	.interest-button .heart-icon {
+	:global(.interest-button .heart-icon) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -284,13 +302,11 @@ const groups = [
 		transition: all 0.2s ease;
 	}
 
-	.interest-button .heart-icon svg {
-		width: 20px;
-		height: 20px;
+	:global(.interest-button .heart-icon svg) {
 		stroke-width: 2;
 	}
 
-	.interest-button .interest-count {
+	:global(.interest-button .interest-count) {
 		position: absolute;
 		top: -4px;
 		right: -4px;
@@ -310,7 +326,7 @@ const groups = [
 		transition: all 0.2s ease;
 	}
 
-	.interest-button .interest-count:not(:empty) {
+	:global(.interest-button .interest-count:not(:empty)) {
 		opacity: 1;
 		transform: scale(1);
 	}
@@ -427,29 +443,15 @@ const groups = [
 	}
 
 	:global(.remove-item) {
-		background: none;
-		border: none;
-		color: rgba(0, 0, 0, 0.4);
-		cursor: pointer;
-		width: 32px;
-		height: 32px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 50%;
-		transition: all 0.2s ease;
+		--site-button-background: transparent;
+		--site-button-color: rgba(0, 0, 0, 0.4);
+		--site-button-hover-background: rgba(0, 0, 0, 0.06);
+		--site-button-hover-color: rgba(0, 0, 0, 0.8);
 		flex-shrink: 0;
 	}
 
 	:global(.remove-item svg) {
-		width: 18px;
-		height: 18px;
-		stroke-width: 1.5;
-	}
-
-	:global(.remove-item:hover) {
-		background-color: rgba(0, 0, 0, 0.06);
-		color: rgba(0, 0, 0, 0.8);
+		stroke-width: 2;
 	}
 
 	.action-buttons {
@@ -458,25 +460,11 @@ const groups = [
 		margin-top: 1rem;
 	}
 
-	.action-button {
+	:global(.action-button) {
 		flex: 1;
-		padding: 0.2rem;
-		background-color: var(--button-dark);
-		color: var(--white);
-		border: none;
-		border-radius: 25px;
-		font-size: 0.9rem;
 		font-weight: 400;
-		cursor: pointer;
-		transition: all 0.2s ease;
 		text-align: center;
 		white-space: nowrap;
-	}
-
-	.action-button:hover {
-		background-color: #404040;
-		transform: translateY(-1px);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	}
 
 	@media screen and (max-width: 1024px) {
@@ -494,19 +482,14 @@ const groups = [
 			padding: 0 1rem;
 		}
 
-		.interest-button {
+		:global(.site-button.interest-button) {
 			bottom: 1rem;
 			right: 1rem;
 			width: 50px;
 			height: 50px;
 		}
 
-		.interest-button .heart-icon svg {
-			width: 18px;
-			height: 18px;
-		}
-
-		.interest-button .interest-count {
+		:global(.interest-button .interest-count) {
 			font-size: 0.7rem;
 			min-width: 16px;
 			height: 16px;

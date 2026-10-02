@@ -1,6 +1,7 @@
 ---
 type NumericData = Record<string, number>;
 import { getImage } from "astro:assets";
+import Button from "./Button.astro";
 import photo from "@assets/img/about-popup-2026.webp";
 import planData from "@data/plan.json";
 import { getItemOptions, loadItemsData } from "../utils/items-loader";
@@ -42,7 +43,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		<div class="toolbar">
 			<a href={site}>← {label("返回贊助網站", "Back to website")}</a><span>
 				{label("建議選擇 A4、關閉頁首及頁尾，另存為 PDF。", "Choose A4, disable headers and footers, and save as PDF.")}
-			</span><button id="print">{label("下載／列印 PDF", "Save / print PDF")}</button>
+			</span><Button id="print" size="compact" color="#226c44" hoverColor="#226c44">{label("下載／列印 PDF", "Save / print PDF")}</Button>
 		</div>
 		<main>
 			<section class="page cover">
@@ -286,15 +287,6 @@ const label = (zh: string, english: string) => (en ? english : zh);
 	}
 	.toolbar span {
 		font-size: 0.9rem;
-	}
-	button {
-		font: inherit;
-		border: 0;
-		border-radius: 0.5rem;
-		padding: 0.6rem 1rem;
-		background: #226c44;
-		color: white;
-		cursor: pointer;
 	}
 	a {
 		color: #226c44;

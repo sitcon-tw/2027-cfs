@@ -5,7 +5,6 @@
 [data-filter-tone="format"] {
 	--filter-bg: var(--items-remaining-tag);
 }
-.filter-toggle,
 .filter-badge {
 	border-radius: 25px;
 	font-family: inherit;
@@ -17,39 +16,20 @@
 	font-size: 0.85rem;
 	line-height: 1.4;
 }
-/* Keep the original pill shape and palette for both selection modes. */
-.filter-toggle {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	min-height: 44px;
-	padding: 0.75rem 1.5rem;
-	border: none;
-	background-color: var(--white);
-	font-size: 1rem;
-	cursor: pointer;
-	transition: background-color 0.3s ease;
-}
-.filter-toggle:hover,
-.filter-toggle[aria-pressed="true"] {
+/* Keep the selected category palette; base and hover colors come from Button props. */
+.site-button.filter-toggle[aria-pressed="true"] {
 	background-color: var(--filter-bg, var(--gray-container));
-}
-.filter-toggle:focus-visible {
-	outline: 2px solid var(--black);
-	outline-offset: 3px;
 }
 @media screen and (max-width: 768px) {
 	.filter-toggle {
 		padding: 0.5rem 0.75rem;
-		font-size: 0.9rem;
 	}
 }
 
 .filter-radio-indicator,
 .filter-multi-indicator {
-	width: 1rem;
-	height: 1rem;
+	width: 1.25rem;
+	height: 1.25rem;
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;

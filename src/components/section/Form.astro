@@ -1,4 +1,5 @@
 ---
+import Button from "../Button.astro";
 const { t, lang } = Astro.props;
 const en = lang === "en";
 ---
@@ -23,7 +24,9 @@ const en = lang === "en";
 		>
 		</textarea>
 		<div class="selection"><p>{en ? "Plans / items of interest" : "感興趣的方案／品項"}</p><p id="inquiry-selection"></p></div>
-		<button type="submit" id="submit">{en ? "Let's talk" : "送出合作洽詢"}</button>
+		<div class="submit-wrap">
+			<Button id="submit" type="submit" size="default" color="#14693e" hoverColor="#14693e">{en ? "Let's talk" : "送出合作洽詢"}</Button>
+		</div>
 		<p id="form-message" role="status" aria-live="polite"></p>
 	</form>
 	<p class="alternative">{en ? "You can also email us at" : "也歡迎直接來信"} <a href="mailto:contact@sitcon.org">contact@sitcon.org</a></p>
@@ -154,24 +157,12 @@ const en = lang === "en";
 		overflow-wrap: anywhere;
 		margin-top: 0.4rem;
 	}
-	button {
-		display: block;
-		margin-inline: auto;
-		padding: 0.8rem 2rem;
-		border: none;
-		border-radius: 2rem;
-		background: #14693e;
-		color: white;
-		font: inherit;
-		cursor: pointer;
-	}
-	button:disabled {
-		opacity: 0.6;
-		cursor: wait;
+	.submit-wrap {
+		display: flex;
+		justify-content: center;
 	}
 	input:focus-visible,
-	textarea:focus-visible,
-	button:focus-visible {
+	textarea:focus-visible {
 		outline: 2px solid #14693e;
 		outline-offset: 3px;
 	}
@@ -195,7 +186,10 @@ const en = lang === "en";
 			grid-template-columns: 1fr;
 			gap: 0;
 		}
-		button {
+		.submit-wrap {
+			width: 100%;
+		}
+		.submit-wrap :global(.site-button) {
 			width: 100%;
 		}
 	}

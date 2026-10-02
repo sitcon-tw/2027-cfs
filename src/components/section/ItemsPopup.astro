@@ -227,7 +227,9 @@ const items = itemsUnsorted.sort((a, b) => {
 			titleSpan.textContent = item.title;
 
 			const removeButton = document.createElement("button");
-			removeButton.className = "remove-item";
+			removeButton.type = "button";
+			removeButton.className = "site-button site-button--normal site-button--icon remove-item";
+			removeButton.setAttribute("aria-label", document.documentElement.lang === "en" ? `Remove ${item.title}` : `移除${item.title}`);
 			removeButton.setAttribute("data-item-id", item.id);
 
 			if (removeIconTemplate) {

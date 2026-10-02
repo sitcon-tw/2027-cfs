@@ -1,5 +1,6 @@
 ---
 import Popup from "../Popup.astro";
+import Button from "../Button.astro";
 import ItemAddButton from "./ItemAddButton.astro";
 import ItemPrice from "./ItemPrice.astro";
 import { isItemInAnyPlan } from "../../utils/plan-helper";
@@ -129,9 +130,9 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 					<aside class="venue-summary">
 						<strong>{lang === "en" ? "Compare venues" : "會議廳規模比較"}</strong>
 						<p>{lang === "en" ? "R0: 426 seats, opening and keynote venue. R1 / R2: 112 seats each." : "R0：426 席，開場與 Keynote 主會場。R1／R2：各 112 席。"}</p>
-						<button type="button" class="venue-detail-action">
+						<Button color="transparent" hoverColor="transparent" textColor="#12663c" size="compact" class="venue-detail-action" type="button">
 							{lang === "en" ? "View venue details" : "查看場地詳情"}
-						</button>
+						</Button>
 					</aside>
 				)
 			}
@@ -557,6 +558,9 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		margin-top: 0;
 	}
 
+	:global(.site-button.venue-detail-action) {
+		text-decoration: underline;
+	}
 	@media screen and (max-width: 900px) {
 		.popup-content {
 			grid-template-columns: 1fr;
@@ -633,13 +637,6 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		background: #e4efe5;
 		border-radius: 0.7rem;
 		line-height: 1.7;
-	}
-	.venue-detail-action {
-		border: 0;
-		background: none;
-		text-decoration: underline;
-		color: #12663c;
-		cursor: pointer;
 	}
 	@media screen and (max-width: 900px) {
 		.popup-content {

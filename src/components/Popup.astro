@@ -1,5 +1,6 @@
 ---
 import { X, Plus } from "@lucide/astro";
+import Button from "./Button.astro";
 const { title, background, btnText, hero = true, id = Math.random().toString(36).slice(2, 9), button = true, variant = "default", lang = "zh-Hant" } = Astro.props;
 ---
 
@@ -30,9 +31,9 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		<slot />
 		{
 			(
-				<button class="close-btn" type="button" aria-label={lang === "en" ? "Close" : "關閉"}>
+				<Button class="close-btn" size="icon" color="var(--black)" type="button" aria-label={lang === "en" ? "Close" : "關閉"}>
 					<X stroke-width={3.5} />
-				</button>
+				</Button>
 			)
 		}
 	</div>
@@ -49,8 +50,7 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	}
 </style>
 <style>
-	.detail-btn,
-	.close-btn {
+	.detail-btn {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -71,24 +71,11 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		margin: auto;
 	}
 
-	.close-btn {
-		border: 0;
-		padding: 0;
-		width: 2.8rem;
-		aspect-ratio: 1 / 1;
+	:global(.close-btn) {
 		position: absolute;
 		top: 2rem;
 		right: 2rem;
-		background-color: var(--black);
-		color: var(--white);
-	}
-
-	.close-btn:hover {
-		background-color: #404044;
-	}
-	.close-btn:focus-visible {
-		outline: 2px solid #14693e;
-		outline-offset: 3px;
+		z-index: 5;
 	}
 
 	.detail-btn .plus {
@@ -227,7 +214,7 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 
 	@media print {
 		.detail-btn,
-		.close-btn {
+		:global(.close-btn) {
 			display: none !important;
 		}
 

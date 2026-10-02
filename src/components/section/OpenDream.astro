@@ -3,6 +3,7 @@ import Cycle from "./Cycle.astro";
 const { t, lang } = Astro.props;
 import Popup from "@components/Popup.astro";
 import { Check } from "@lucide/astro";
+import Button from "../Button.astro";
 import volunteer from "@assets/img/opendream-2026.webp";
 
 interface OpenDreamPlan {
@@ -44,9 +45,9 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 							{plan.name}
 						</div>
 						<div class="tier-price">{plan.price}</div>
-						<button class="tier-interest-button" data-tier-name={plan.id} data-tier-title={`${t.title}｜${plan.name}`} data-tier-price={plan.price}>
+						<Button variant="outlined" size="default" class="tier-interest-button" data-tier-name={plan.id} data-tier-title={`${t.title}｜${plan.name}`} data-tier-price={plan.price}>
 							{t.interested}
-						</button>
+						</Button>
 					</div>
 				))
 			}
@@ -88,8 +89,12 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 										<p class="impact-count">{impact.count}</p>
 										<p class="impact-price">{plan.price}</p>
 										<p class="impact-description">{impact.description}</p>
-										<button
-											type="button"
+										<Button
+											variant="normal"
+											color="#77b55a"
+											hoverColor="#527d3c"
+											textColor="var(--black)"
+											hoverTextColor="var(--white)"
 											class="tier-interest-button popup-interest-button"
 											data-tier-name={plan.id}
 											data-tier-title={`${t.title}｜${plan.name}`}
@@ -99,7 +104,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 											aria-pressed="false"
 										>
 											{t.popup.cta.add}
-										</button>
+										</Button>
 									</article>
 								)
 							);
@@ -202,8 +207,12 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 				<div class="dream-cta-actions">
 					{
 						t.plans.map((plan: OpenDreamPlan) => (
-							<button
-								type="button"
+							<Button
+								variant="normal"
+								color="#77b55a"
+								hoverColor="#527d3c"
+								textColor="var(--black)"
+								hoverTextColor="var(--white)"
 								class="tier-interest-button popup-interest-button"
 								data-tier-name={plan.id}
 								data-tier-title={`${t.title}｜${plan.name}`}
@@ -213,7 +222,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 								aria-pressed="false"
 							>
 								{t.popup.cta.add} · {plan.name}
-							</button>
+							</Button>
 						))
 					}
 				</div>
@@ -328,24 +337,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		margin-bottom: 0.5rem;
 	}
 
-	.tier-interest-button {
-		background: transparent;
-		border: 1px solid var(--black);
-		cursor: pointer;
-		padding: 0.5rem 1rem;
-		border-radius: 25px;
-		transition: all 0.2s ease;
-		font-size: 0.9rem;
-		color: var(--black);
-		white-space: nowrap;
-	}
-
-	.tier-interest-button:hover {
-		background-color: var(--gray-container);
-		transform: scale(1.02);
-	}
-
-	.tier-interest-button.interested {
+	#opendream :global(.site-button.tier-interest-button.interested) {
 		background-color: #77b55a;
 		border-color: #77b55a;
 		color: var(--black);
@@ -506,21 +498,12 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		flex: 1;
 	}
 
-	.popup-interest-button {
-		background: #77b55a;
-		border-color: #77b55a;
-		color: var(--black);
+	:global(.popup-interest-button) {
 		white-space: normal;
 		font-weight: 700;
-		min-height: 2.75rem;
 	}
 
-	.popup-interest-button:hover {
-		background: #527d3c;
-		color: var(--white);
-	}
-
-	.popup-interest-button.interested {
+	:global(.variant-opendream .site-button.popup-interest-button.interested) {
 		background: var(--white);
 		color: var(--black);
 		border-color: #77b55a;
@@ -697,13 +680,12 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		flex: none;
 	}
 
-	.dream-cta .popup-interest-button.interested {
+	.dream-cta :global(.popup-interest-button.interested) {
 		background: var(--white);
 	}
 
-	.tier-interest-button:focus-visible,
 	.popup-links a:focus-visible {
-		outline: 3px solid #426bd1;
+		outline: 2px solid #426bd1;
 		outline-offset: 3px;
 	}
 
@@ -784,7 +766,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 			break-inside: avoid;
 		}
 
-		.tier-interest-button {
+		:global(.tier-interest-button) {
 			display: none;
 		}
 	}

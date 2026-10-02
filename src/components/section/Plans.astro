@@ -1,6 +1,7 @@
 ---
 const { t, lang } = Astro.props;
 import { Container, Check } from "@lucide/astro";
+import Button from "../Button.astro";
 import planData from "@data/plan.json";
 import { loadItemsData } from "../../utils/items-loader";
 import { getBenefitLocalizedName, resolveBenefitItem } from "../../utils/plan-helper";
@@ -91,9 +92,9 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 										{tier.name}
 									</div>
 									<div class="tier-price">{tier.price}</div>
-									<button class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
-										{t.interested}
-									</button>
+								<Button variant="outlined" class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
+									{t.interested}
+								</Button>
 								</div>
 							))
 						}
@@ -440,30 +441,14 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		font-weight: 600;
 		white-space: nowrap;
 	}
-	.tier-interest-button {
-		background: transparent;
-		border: 1px solid var(--black);
-		cursor: pointer;
-		padding: 0.4rem 0.8rem;
-		min-height: 44px;
-		border-radius: 25px;
-		font: inherit;
-		font-size: 0.875rem;
-		color: var(--black);
-	}
-	.tier-interest-button:hover {
-		background: var(--gray-container);
-	}
-	.tier-interest-button.interested {
+	#plans :global(.site-button.tier-interest-button.interested) {
 		background: #14693e;
 		border-color: #14693e;
 		color: white;
 	}
-	.tier-interest-button:disabled {
+	#plans :global(.site-button.tier-interest-button:disabled) {
 		background: var(--gray);
 		border-color: var(--gray);
-		cursor: not-allowed;
-		opacity: 0.5;
 		color: white;
 	}
 	.plan-cell {
@@ -541,7 +526,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		.tier-price {
 			font-size: 0.8125rem;
 		}
-		.tier-interest-button {
+		:global(.tier-interest-button) {
 			font-size: 0.8125rem;
 			padding: 0.25rem 0.625rem;
 		}
@@ -569,7 +554,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 			position: static;
 			box-shadow: none;
 		}
-		.tier-interest-button {
+		:global(.tier-interest-button) {
 			display: none;
 		}
 		.tier-name {
