@@ -7,20 +7,63 @@ const zh = require("../src/i18n/zh-Hant.json");
 const en = require("../src/i18n/en.json");
 const base = (process.env.REVIEW_BASE_URL || "http://127.0.0.1:4321/").replace(/\/?$/, "/");
 const output = process.env.REVIEW_OUTPUT;
-const ids = ["23", "5-sub-0", "tier-navigator", "opendream-5", "28", "22-sub-0", "22-sub-1", "tier-visionary", "opendream-10"];
 const numericPrice = price => Number(price.replace(/[^0-9]/g, ""));
-const numericPrices = [
-	itemData["23"].price,
-	itemData["5"].sub[0].price,
-	planData.navigator.price,
-	zh.opendream.plans[0].price,
-	null,
-	itemData["22"].sub[0].price,
-	itemData["22"].sub[1].price,
-	planData.visionary.price,
-	zh.opendream.plans[1].price
+
+// Keep the selection and its independent expectations together in each case.
+function pricedCase(id, source) {
+	assert.ok(source, `Missing fixture source for ${id}`);
+	return {
+		id,
+		title: english => source[english ? "name_en" : "name_zh"],
+		amount: numericPrice(source.price),
+		deadline: source.deadline || "",
+		includedInPlan: false
+	};
+}
+
+function itemCase(id, { includedInPlan = false } = {}) {
+	const [parentId, subIndex] = id.split("-sub-");
+	const parent = itemData[parentId];
+	assert.ok(parent, `Missing item fixture ${parentId}`);
+	const source = subIndex === undefined ? parent : parent.sub[Number(subIndex)];
+	return {
+		...pricedCase(id, source),
+		deadline: parent.deadline,
+		includedInPlan,
+		amount: includedInPlan ? 0 : numericPrice(source.price)
+	};
+}
+
+function tierCase(id) {
+	return pricedCase(`tier-${id}`, planData[id]);
+}
+
+function openDreamCase(id) {
+	const resolvePlan = translations => {
+		const program = translations.opendream;
+		const plan = program.plans.find(plan => plan.id === id);
+		assert.ok(plan, `Missing Open Dream fixture ${id}`);
+		return { title: `${program.title}｜${plan.name}`, price: plan.price };
+	};
+	const localized = { zh: resolvePlan(zh), en: resolvePlan(en) };
+	return {
+		...pricedCase(id, localized.zh),
+		title: english => localized[english ? "en" : "zh"].title
+	};
+}
+
+const cases = [
+	itemCase("23"), // Exclusive guided tour
+	itemCase("5-sub-0"), // Canvas bag option
+	tierCase("navigator"),
+	openDreamCase("opendream-5"),
+	itemCase("28", { includedInPlan: true }), // Booth included in a sponsorship plan
+	itemCase("22-sub-0"), // R0 chair covers
+	itemCase("22-sub-1"), // R1 chair covers
+	tierCase("visionary"),
+	openDreamCase("opendream-10")
 ];
-const expectedTotal = numericPrices.reduce((total, price) => total + (price ? numericPrice(price) : 0), 0);
+const expectedTotal = cases.reduce((total, testCase) => total + testCase.amount, 0);
 
 (async () => {
 	const browser = process.env.CDP_URL
@@ -43,34 +86,23 @@ const expectedTotal = numericPrices.reduce((total, price) => total + (price ? nu
 		const lang = english ? "en" : "zh-Hant";
 		const translations = english ? en : zh;
 		const t = translations.quotation;
-		const sourceName = english ? "name_en" : "name_zh";
-		const selectedItems = ids.map(id => ({
-			id,
+		const selectedItems = cases.map(testCase => ({
+			id: testCase.id,
 			title: english ? "舊的中文收藏名稱" : "Old English selection",
 			category: "all",
 			image: "",
 			deadline: "NaN/NaN 截止",
 			price: english ? "方案包含項目" : "Plan Included Item"
 		}));
-		const expectedTitles = [
-			itemData["23"][sourceName],
-			itemData["5"].sub[0][sourceName],
-			planData.navigator[sourceName],
-			`${translations.opendream.title}｜${translations.opendream.plans[0].name}`,
-			itemData["28"][sourceName],
-			itemData["22"].sub[0][sourceName],
-			itemData["22"].sub[1][sourceName],
-			planData.visionary[sourceName],
-			`${translations.opendream.title}｜${translations.opendream.plans[1].name}`
-		];
-		const expectedPrices = numericPrices.map(price => (price ? `NT$${numericPrice(price).toLocaleString(english ? "en-US" : "zh-TW")}` : english ? "Plan Included Item" : "方案包含項目"));
+		const expectedTitles = cases.map(testCase => testCase.title(english));
+		const expectedPrices = cases.map(testCase => (testCase.includedInPlan ? (english ? "Plan Included Item" : "方案包含項目") : `NT$${testCase.amount.toLocaleString(english ? "en-US" : "zh-TW")}`));
 
 		await page.goto(base + languagePath, { waitUntil: "networkidle" });
 		await page.evaluate(items => {
 			localStorage.setItem("interestItems", JSON.stringify(items));
 			window.dispatchEvent(new CustomEvent("itemsChange"));
 		}, selectedItems);
-		await page.waitForFunction(count => document.querySelector(".interest-count")?.textContent === String(count), ids.length);
+		await page.waitForFunction(count => document.querySelector(".interest-count")?.textContent === String(count), cases.length);
 		if (!(await page.locator("#interestPopover").evaluate(el => el.classList.contains("active")))) {
 			await page.locator("#interestButton").click();
 		}
@@ -88,7 +120,7 @@ const expectedTotal = numericPrices.reduce((total, price) => total + (price ? nu
 		assert.deepEqual(await quotation.locator(".subtotal-cell").allTextContents(), expectedPrices);
 		assert.ok((await quotation.locator(".summary-note").innerText()).includes(`NT$${Math.round(expectedTotal * 0.05).toLocaleString(english ? "en-US" : "zh-TW")}`));
 		assert.ok((await quotation.locator(".summary-row.total").innerText()).includes(`NT$${expectedTotal.toLocaleString(english ? "en-US" : "zh-TW")}`));
-		assert.equal(await quotation.locator(".item-deadline").count(), 3);
+		assert.equal(await quotation.locator(".item-deadline").count(), cases.filter(testCase => testCase.deadline).length);
 		for (const deadline of await quotation.locator(".item-deadline").allTextContents()) assert.ok(deadline.startsWith(t.deadline));
 		assert.equal(await quotation.locator(".notes li").count(), t.notes.length + 1);
 		const text = await quotation.locator(".quotation-container").innerText();
