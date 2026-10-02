@@ -94,7 +94,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 											color="#77b55a"
 											hoverColor="#527d3c"
 											textColor="var(--black)"
-											hoverTextColor="var(--white)"
+											hoverTextColor="var(--black)"
 											class="tier-interest-button popup-interest-button"
 											data-tier-name={plan.id}
 											data-tier-title={`${t.title}｜${plan.name}`}
@@ -212,7 +212,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 								color="#77b55a"
 								hoverColor="#527d3c"
 								textColor="var(--black)"
-								hoverTextColor="var(--white)"
+								hoverTextColor="var(--black)"
 								class="tier-interest-button popup-interest-button"
 								data-tier-name={plan.id}
 								data-tier-title={`${t.title}｜${plan.name}`}
@@ -338,9 +338,10 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	#opendream :global(.site-button.tier-interest-button.interested) {
-		background-color: #77b55a;
-		border-color: #77b55a;
-		color: var(--black);
+		--site-button-background: #77b55a;
+		--site-button-hover-background: #527d3c;
+		--site-button-border-color: #77b55a;
+		--site-button-color: var(--black);
 	}
 
 	h3 {
@@ -507,6 +508,10 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		background: var(--white);
 		color: var(--black);
 		border-color: #77b55a;
+	}
+
+	:global(.variant-opendream .site-button.popup-interest-button.interested:hover:not(:disabled, .disabled, [aria-disabled="true"])) {
+		background: var(--gray-container);
 	}
 
 	.fund-section,
@@ -678,10 +683,6 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		flex-wrap: wrap;
 		gap: 0.6rem;
 		flex: none;
-	}
-
-	.dream-cta :global(.popup-interest-button.interested) {
-		background: var(--white);
 	}
 
 	.popup-links a:focus-visible {
