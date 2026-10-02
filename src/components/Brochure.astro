@@ -157,8 +157,8 @@ const label = (zh: string, english: string) => (en ? english : zh);
 						<h2>{label("依合作目標，搭配贊助品項", "Find the right sponsorship options")}</h2>
 						<p class="note">
 							{label(
-								"各品項／子品項報價參考；截止時間與名額請洽團隊確認，完整內容請開啟品項連結。",
-								"Reference prices per item or option. Confirm deadlines and availability with our team; follow item links for details."
+								"各品項／子品項報價參考；截止時間與名額請洽團隊確認，完整內容請參考品項頁面。",
+								"Reference prices per item or option. Confirm deadlines and availability with our team; see item pages for details."
 							)}
 						</p>
 						<div class="catalog-list">
@@ -166,7 +166,9 @@ const label = (zh: string, english: string) => (en ? english : zh);
 								<article>
 									<div>
 										<h3>
-											<a href={`${site}item/${item.id}/`}>{item.name}</a>
+											<a class="print-link" href={`${site}item/${item.id}/`}>
+												{item.name}
+											</a>
 										</h3>
 										<p>{excerpt(item.global_description)}</p>
 									</div>
@@ -210,7 +212,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 						))
 					}
 				</div>
-				<p><a href={`${site}#opendream`}>{label("查看開源築夢計畫完整權益 →", "Explore Open Dream benefits →")}</a></p>
+				<p><a class="print-link" href={`${site}#opendream`}>{label("查看開源築夢計畫完整權益 →", "Explore Open Dream benefits →")}</a></p>
 				<p class="note">{t.opendream.price_note}</p>
 				<h2>{label("場地規模", "Venue overview")}</h2>
 				<table>
@@ -644,6 +646,18 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		}
 		a {
 			text-decoration: none;
+		}
+		.catalog-list article {
+			padding-block: 2mm;
+		}
+		a.print-link::after {
+			content: attr(href);
+			display: block;
+			font-size: 8pt;
+			font-weight: 400;
+			line-height: 1.4;
+			color: #526657;
+			overflow-wrap: anywhere;
 		}
 	}
 </style>
