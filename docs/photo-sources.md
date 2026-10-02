@@ -62,3 +62,10 @@
 ## 2026-09-29 媒體截圖整理
 
 目前使用六則來源：總統府、中央社、經濟日報、僑務電子報、LY Corporation Tech Blog、MUCH。前五則已重新擷取：移除導覽、分享／工具列、浮動促銷、推薦側欄，收緊文章留白；中央社保留新聞影片。MUCH 保留既有影片畫面及標題，移除底部訂閱、按讚和分享列。卡片另列來源名稱，圖片按原比例顯示。重現方式與交接見 [2026-09-29-handoff.md](2026-09-29-handoff.md)。
+
+## 2026-10-02：我們做過的事彈窗封面
+
+- 照片：[55472524973](https://www.flickr.com/photos/sitcon/55472524973)，SITCON 2027 負一籌 × COSCUP BoF。
+- 攝影：康喔；授權：CC BY 4.0（已核對 Flickr 照片頁）。
+- 來源：指定 Photo Finder 試算表 `photos` 分頁第 10 列。
+- 本機檔案：`src/assets/img/news/community-hero.webp`。

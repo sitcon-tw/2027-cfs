@@ -577,6 +577,24 @@
    "curation_status": "ai_labeled",
    "public_use_status": "",
    "raw_photographer_field": "夏川"
+  },
+  {
+   "slot": "news_popup_hero",
+   "photo_id": "55472524973",
+   "file": "src/assets/img/news/community-hero.webp",
+   "photo_url": "https://www.flickr.com/photos/sitcon/55472524973",
+   "album": "SITCON 2027 負一籌 x COSCUP BoF",
+   "photographer": "康喔",
+   "license": "CC BY 4.0",
+   "license_urls": [
+    "https://creativecommons.org/licenses/by/4.0/"
+   ],
+   "alt_zh": "SITCON 2027 負一籌 × COSCUP BoF，參與者在教室分享披薩並交流",
+   "alt_en": "Participants sharing pizza and talking at the SITCON 2027 × COSCUP BoF gathering",
+   "curation_status": "ai_labeled",
+   "public_use_status": "",
+   "raw_photographer_field": "康喔",
+   "source_note": "Photo Finder photos row 10, read 2026-10-02; license confirmed on Flickr."
   }
  ]
 }
