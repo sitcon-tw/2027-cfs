@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 
-// This command is used only by the dedicated Cloudflare preview Worker.
+// This command builds the dedicated Cloudflare preview Worker in GitHub Actions.
 const env = {
 	...process.env,
 	BASE_PATH: "/",

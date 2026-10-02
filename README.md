@@ -67,24 +67,27 @@ pnpm build
 
 ## Cloudflare previews
 
-The `2027-cfs-preview` Worker in the SITCON account serves the `dev` branch at
-https://2027-cfs-preview.sitcon.workers.dev. Cloudflare Workers Builds builds
-other source branches as Worker Previews and posts their URLs on associated PRs.
-New branches should start from `dev` so they contain the Wrangler configuration.
+The `2027-cfs-preview` Worker serves `dev` at <https://2027-cfs-preview.sitcon.workers.dev>. GitHub Actions owns all builds:
 
-Build settings:
+- A push to `dev` rebuilds and deploys the fixed development preview.
+- A pull request targeting `dev` builds without secrets or write permissions. After that build finishes, the trusted workflow on the default branch (`main`) verifies the repository, workflow, PR, head SHA, result, and open state before deploying the artifact as `pr-<number>`.
+- The bot updates one PR comment and the GitHub deployment status with the preview URL and source SHA. Failed builds do not replace the last successful Cloudflare deployment.
+- Closing or merging a PR deletes its Cloudflare Preview. Reopening the PR triggers a fresh build.
 
-- Production branch: `dev` (the persistent development preview).
-- Build command: `pnpm build:preview`.
-- Deploy command: `pnpm exec wrangler deploy`.
-- Preview command: `pnpm exec wrangler preview`.
-- Node.js: 22; pnpm version is pinned in `package.json`.
+The PR build fetches the current public sponsorship spreadsheet and images with `pnpm fetch-data`; it does not use committed sponsorship data. Astro builds at the root path `/`. `dist/_headers` adds `X-Robots-Tag: noindex, nofollow`, and Cloudflare also adds `noindex` on `workers.dev` Preview URLs.
 
-The preview build fetches the current sponsorship data and images, builds Astro
-at `/`, and adds `X-Robots-Tag: noindex, nofollow` to generated responses.
-`SITE_URL` may override the default base preview origin used for absolute metadata URLs.
-The normal `pnpm build` command retains the production `/2027/cfs` base path.
+Repository configuration:
 
-Cloudflare manages the GitHub integration and deployment credentials; no GitHub
-Actions deployment secret is required. Preview builds are triggered by source
-branch pushes, including branches without an open PR.
+1. Add a `CLOUDFLARE_API_TOKEN` Actions secret. Scope it to the SITCON account and only the Workers Scripts write permission needed by `2027-cfs-preview`.
+2. Add `CLOUDFLARE_WORKERS_SUBDOMAIN` as an Actions variable. Its value is the account subdomain used in `pr-<number>-2027-cfs-preview.<subdomain>.workers.dev`.
+3. Keep `.github/workflows/preview-deploy.yml` on the GitHub default branch. GitHub only runs a `workflow_run` workflow from that branch.
+4. After one `dev` deployment and one real fork PR have passed, disable the Worker's native Git integration in Cloudflare. Leaving it enabled creates a second deployment path.
+
+GitHub may require a maintainer to approve the first workflow run from a new external contributor. The untrusted PR job receives neither the Cloudflare token nor a write-capable `GITHUB_TOKEN`; the trusted deployment job checks out only the default branch and never installs or executes files from the PR.
+
+Local equivalent:
+
+```bash
+pnpm build:preview
+pnpm exec wrangler deploy
+```

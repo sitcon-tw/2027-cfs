@@ -1,0 +1,42 @@
+name: Deploy dev Cloudflare preview
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-dev
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.repository == 'sitcon-tw/2027-cfs'
+    name: Deploy dev preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build preview
+        run: pnpm build:preview
+
+      - name: Deploy dev preview
+        run: pnpm exec wrangler deploy --message "dev ${GITHUB_SHA}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
