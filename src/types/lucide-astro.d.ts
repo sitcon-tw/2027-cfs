@@ -3,6 +3,8 @@ declare module "@lucide/astro" {
 	export const Plus: any;
 	export const Check: any;
 	export const Heart: any;
+	export const Circle: any;
+	export const CircleDot: any;
 	export const Flag: any;
 	export const Minus: any;
 	export const Container: any;
