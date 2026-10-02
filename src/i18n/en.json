@@ -222,68 +222,54 @@
 		"popup": {
 			"title": "Open Dream Program Details",
 			"hero": {
-				"eyebrow": "A partnership proposal for organizations",
-				"headline": "A student's finances should not decide whether they can join SITCON.",
+				"headline": "Help students with financial need attend SITCON",
 				"description": "SITCON is free to attend, but travel and lodging can still be barriers. Your support helps students with financial need join the conference and meet the information technology community."
 			},
 			"impact": {
-				"title": "What can your support do?",
-				"plans": [
-					{ "id": "opendream-5", "count": "5 students", "description": "Help 5 students with financial need attend SITCON." },
-					{ "id": "opendream-10", "count": "10 students", "description": "Help 10 students with financial need attend SITCON." }
-				],
-				"note": "The final number supported depends on funding and applications. Plan details and pricing are subject to the official announcement."
+				"title": "Students supported and plan pricing",
+				"note": "The final number of students supported depends on funding and applications."
 			},
 			"plan_value": {
 				"title": "What's included in the plan?",
 				"value_statement": "Student participation support + exclusive partner benefits",
 				"direct_value": "About NT$3,000",
 				"direct_label": "estimated travel and lodging per student",
-				"groups": [
-					{
-						"title": "Student participation support",
-						"items": [
-							"Support 5 or 10 students with financial need, depending on the plan",
-							"Travel subsidy for bus, train or high-speed rail under program rules",
-							"Lodging the night before the event, arranged by SITCON",
-							"Estimated travel and lodging expense of about NT$3,000 per student"
-						]
-					},
-					{
-						"title": "Exclusive partner benefits",
-						"items": [
-							"Exposure related to the program on SITCONTIX",
-							"Partner recognition on the SITCON website",
-							"Recognition in program-related press releases",
-							"Official social media promotion or results content",
-							"Post-event results report"
-						]
-					}
-				],
-				"note": "Per-student expenses are estimates. Final support will be based on verified actual expenses; exposure formats and timing will be confirmed when partnering."
+				"note": "Per-student expenses are estimates. Final support is based on verified actual expenses.",
+				"support_items": ["Travel subsidy for bus, train or high-speed rail under program rules", "Lodging the night before the event, arranged by SITCON"]
 			},
 			"sponsor_benefits": {
-				"title": "What will you receive as a partner?",
-				"description": "These are the currently planned benefits. Logo or text treatment, placement and duration will be confirmed when partnering.",
+				"title": "Sponsor-exclusive benefits",
+				"description": "These planned benefits are exclusive to Open Dream sponsors. Formats, placement and timing will be confirmed when partnering.",
 				"items": [
 					{
 						"icon": "ticket",
 						"title": "SITCONTIX exposure",
-						"description": "Recognition in ticketing or application flows related to this program.",
-						"image": {
-							"src": "opendream/sitcontix-placeholder.svg",
-							"alt": "Placeholder for a SITCONTIX exposure image, not an actual ticketing screen",
-							"caption": "Image placement preview. The actual format and placement will be agreed during the partnership."
-						}
+						"description": "Recognition in ticketing or application flows related to this program."
 					},
-					{ "icon": "web", "title": "SITCON website", "description": "Partner recognition on Open Dream related web pages." },
-					{ "icon": "news", "title": "Press release", "description": "Acknowledgment in program related press releases." },
-					{ "icon": "social", "title": "Official social channels", "description": "Recognition in program promotion or results content." },
-					{ "icon": "report", "title": "Post-event report", "description": "A summary of supported students and program outcomes for internal reporting." }
+					{
+						"icon": "web",
+						"title": "SITCON website",
+						"description": "Partner recognition on Open Dream related web pages."
+					},
+					{
+						"icon": "news",
+						"title": "Press release",
+						"description": "Acknowledgment in program related press releases."
+					},
+					{
+						"icon": "social",
+						"title": "Official social channels",
+						"description": "Recognition in program promotion or results content."
+					},
+					{
+						"icon": "report",
+						"title": "Post-event report",
+						"description": "A summary of supported students and program outcomes for internal reporting."
+					}
 				]
 			},
 			"eligibility": {
-				"title": "How do we verify need?",
+				"title": "Eligibility and review",
 				"description": "The program is for enrolled students whose family finances make travel to the conference difficult.",
 				"steps": [
 					"Applicants provide proof of enrollment and financial need.",
@@ -295,14 +281,17 @@
 			"comparison": {
 				"title": "How is this different from the Far-Away Ticket?",
 				"items": [
-					{ "title": "Far-Away Ticket", "points": ["Reserved tickets for students in high-need areas, outlying islands and overseas", "Admission opportunity", "No travel or lodging subsidy"] },
+					{
+						"title": "Far-Away Ticket",
+						"points": ["Reserved tickets for students in high-need areas, outlying islands and overseas", "Admission opportunity", "No travel or lodging subsidy"]
+					},
 					{
 						"title": "Open Dream Program",
 						"points": ["Enrollment and financial need are eligibility conditions", "Admission after review", "May apply for travel and lodging the night before the event"]
 					}
 				]
 			},
-			"links_title": "Want the full program rules?",
+			"links_title": "Official program documents",
 			"links_description": "The official student application documents contain eligibility, subsidy details and dates.",
 			"links": [
 				{
@@ -315,10 +304,9 @@
 				}
 			],
 			"cta": {
-				"title": "Help students join SITCON",
+				"title": "Choose a plan",
 				"description": "Save a plan you are interested in to discuss it with SITCON alongside your other selections.",
-				"add": "Add to interested items",
-				"selected": "Added to interested items"
+				"selected": "Saved"
 			}
 		}
 	},
