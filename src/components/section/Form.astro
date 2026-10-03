@@ -25,7 +25,9 @@ const en = lang === "en";
 		</textarea>
 		<div class="selection"><p>{en ? "Plans / items of interest" : "感興趣的方案／品項"}</p><p id="inquiry-selection"></p></div>
 		<div class="submit-wrap">
-			<Button id="submit" type="submit" size="default" color="#14693e" hoverColor="#14693e">{en ? "Let's talk" : "送出合作洽詢"}</Button>
+			<Button id="submit" type="submit" size="default" color="#74bf50" hoverColor="color-mix(in srgb, #74bf50 85%, black)" textColor="var(--black, #1d1d1f)"
+				>{en ? "Let's talk" : "送出合作洽詢"}</Button
+			>
 		</div>
 		<p id="form-message" role="status" aria-live="polite"></p>
 	</form>
@@ -163,7 +165,7 @@ const en = lang === "en";
 	}
 	input:focus-visible,
 	textarea:focus-visible {
-		outline: 2px solid #14693e;
+		outline: 2px solid #74bf50;
 		outline-offset: 3px;
 	}
 	#form-message {
@@ -172,7 +174,7 @@ const en = lang === "en";
 		overflow-wrap: anywhere;
 	}
 	a {
-		color: #12663c;
+		color: #74bf50;
 		text-underline-offset: 0.2em;
 	}
 	.alternative,

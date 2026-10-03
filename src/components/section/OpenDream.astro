@@ -29,7 +29,7 @@ interface PopupBenefit {
 	};
 }
 
-const colors = ["#77B55A", "#537FF1"];
+const colors = ["#74bf50", "#537FF1"];
 const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 ---
 
@@ -91,8 +91,8 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 										<p class="impact-description">{impact.description}</p>
 										<Button
 											variant="normal"
-											color="#77b55a"
-											hoverColor="#527d3c"
+											color="#74bf50"
+											hoverColor="color-mix(in srgb, #74bf50 85%, black)"
 											textColor="var(--black)"
 											hoverTextColor="var(--white)"
 											class="tier-interest-button popup-interest-button"
@@ -209,8 +209,8 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 						t.plans.map((plan: OpenDreamPlan) => (
 							<Button
 								variant="normal"
-								color="#77b55a"
-								hoverColor="#527d3c"
+								color="#74bf50"
+								hoverColor="color-mix(in srgb, #74bf50 85%, black)"
 								textColor="var(--black)"
 								hoverTextColor="var(--white)"
 								class="tier-interest-button popup-interest-button"
@@ -338,8 +338,8 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	#opendream :global(.site-button.tier-interest-button.interested) {
-		background-color: #77b55a;
-		border-color: #77b55a;
+		background-color: #74bf50;
+		border-color: #74bf50;
 		color: var(--black);
 	}
 
@@ -392,11 +392,11 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		font-weight: 800;
 		letter-spacing: 0.13em;
 		text-transform: uppercase;
-		color: #77b55a;
+		color: #74bf50;
 	}
 
 	.dream-hero-message .eyebrow {
-		color: #77b55a;
+		color: #74bf50;
 	}
 
 	.hero-headline {
@@ -479,7 +479,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		font-size: clamp(2rem, 4vw, 3.25rem);
 		font-weight: 800;
 		line-height: 1.1 !important;
-		color: #77b55a;
+		color: #74bf50;
 		margin: 0 0 0.45rem;
 	}
 
@@ -506,7 +506,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	:global(.variant-opendream .site-button.popup-interest-button.interested) {
 		background: var(--white);
 		color: var(--black);
-		border-color: #77b55a;
+		border-color: #74bf50;
 	}
 
 	.fund-section,
@@ -532,7 +532,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 
 	.fund-highlight strong {
 		font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-		color: #77b55a;
+		color: #74bf50;
 	}
 
 	.fund-group,
@@ -630,7 +630,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		counter-increment: review;
 		content: counter(review, decimal-leading-zero);
 		display: block;
-		color: #77b55a;
+		color: #74bf50;
 		font-weight: 800;
 		font-size: 1.4rem;
 		margin-bottom: 0.5rem;
