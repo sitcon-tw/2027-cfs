@@ -18,7 +18,7 @@ interface HighlightCard {
 	<div class="cards">
 		{
 			t.cards.map((card: HighlightCard) => (
-				<a class="card aos aos-fadeInBottom" href={card.link} data-item-category={card.category}>
+				<a class="card" href={card.link} data-item-category={card.category}>
 					<div class="title-row">
 						<h3>{card.title}</h3>
 						{card.badge && <span class="badge">{card.badge}</span>}
