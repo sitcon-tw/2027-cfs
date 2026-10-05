@@ -102,7 +102,7 @@ const defaultSchema = {
 				interface Window {
 					popupCtrl: (id?: string, action?: "open" | "close", updateUrl?: boolean, find?: Element | null) => void;
 					dataLayer: any[];
-					scrollPageTo: (top: number) => void;
+					scrollPageTo: (target: number | HTMLElement, options?: { immediate?: boolean; offset?: number }) => void;
 				}
 			}
 
@@ -111,13 +111,20 @@ const defaultSchema = {
 			// Initialize Lenis for smooth scrolling (runs automatically with autoRaf: true)
 			const lenis = new Lenis({
 				autoRaf: true,
-				prevent: node => node.classList.contains("lenis-scroll")
+				prevent: node => node.classList.contains("lenis-scroll"),
+				virtualScroll: ({ deltaX, deltaY }) => {
+					if (Math.abs(deltaX) <= Math.abs(deltaY)) return true;
+					// Horizontal tracks stay native without retaining an old document animation.
+					lenis.scrollTo(lenis.actualScroll, { immediate: true, force: true });
+					return false;
+				}
 			});
 
-			// Keep the smooth-scroll target in sync when layout changes require an immediate jump.
-			window.scrollPageTo = top => {
+			// Keep layout jumps immediate by default; smooth document navigation uses the same animator.
+			window.scrollPageTo = (target, options = {}) => {
+				const immediate = options.immediate ?? true;
 				lenis.resize();
-				lenis.scrollTo(top, { immediate: true, force: true });
+				lenis.scrollTo(target, { ...options, immediate, force: immediate });
 			};
 
 			const observer = new IntersectionObserver(
@@ -156,6 +163,7 @@ const defaultSchema = {
 							if (previous !== popupBg) window.popupCtrl("", "close", false, previous);
 						});
 					}
+					lenis.stop();
 					popupBg.style.overflow = "hidden";
 					popupBg.style.display = "flex";
 					const reveal = () => {
@@ -196,6 +204,7 @@ const defaultSchema = {
 						const closingPopup = popupBg.previousElementSibling as HTMLElement | null;
 						const closingId = closingPopup ? closingPopup.id : id;
 						document.dispatchEvent(new CustomEvent("popupClosed", { detail: { id: closingId } }));
+						if (!document.querySelector(".popup-bg.show")) lenis.start();
 					};
 					if (isItem && !updateUrl) hide();
 					else setTimeout(hide, 300);
@@ -298,6 +307,8 @@ const defaultSchema = {
 
 			// Handle browser back/forward buttons
 			window.addEventListener("popstate", event => {
+				// Release an in-flight target before the browser restores its history position.
+				lenis.scrollTo(lenis.actualScroll, { immediate: true, force: true });
 				// Close all open popups
 				document.querySelectorAll(".popup-bg.show").forEach(popupBg => {
 					const popup = popupBg.previousElementSibling;
@@ -313,7 +324,7 @@ const defaultSchema = {
 					if (event.state.type === "item") {
 						const itemsSection = document.getElementById("items");
 						if (itemsSection) {
-							itemsSection.scrollIntoView({ behavior: "instant" });
+							window.scrollPageTo(itemsSection);
 						}
 					}
 					window.popupCtrl(event.state.popupId, "open", false);
@@ -332,7 +343,7 @@ const defaultSchema = {
 						if (popupElement) {
 							const itemsSection = document.getElementById("items");
 							if (itemsSection) {
-								itemsSection.scrollIntoView({ behavior: "instant" });
+								window.scrollPageTo(itemsSection);
 							}
 							window.popupCtrl(popupId, "open", false);
 						}
@@ -357,7 +368,7 @@ const defaultSchema = {
 							// Scroll to Items section first, then open popup
 							const itemsSection = document.getElementById("items");
 							if (itemsSection) {
-								itemsSection.scrollIntoView({ behavior: "instant" });
+								window.scrollPageTo(itemsSection);
 							}
 							setTimeout(() => window.popupCtrl(popupId, "open", false), 100);
 						}
@@ -428,6 +439,11 @@ const defaultSchema = {
 			html {
 				scroll-behavior: smooth;
 				scroll-padding-top: 2rem;
+			}
+
+			/* Native smooth scrolling must not compete with Lenis' animation loop. */
+			html.lenis {
+				scroll-behavior: auto;
 			}
 
 			body {

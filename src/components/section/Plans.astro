@@ -82,7 +82,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	<div class="plan-comparison">
 		<div class="container" role="table" aria-labelledby="plans-title">
 			<div class="plans-heading" role="rowgroup">
-				<div class="plans-header-scroll lenis-scroll">
+				<div class="plans-header-scroll">
 					<div class="plan-row plans-header" role="row">
 						<div class="row-label header-label" role="columnheader">{lang === "en" ? "Benefits" : "贊助品項"}</div>
 						{
@@ -101,7 +101,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 					</div>
 				</div>
 			</div>
-			<div class="plans-table lenis-scroll" role="region" aria-labelledby="plans-title" tabindex="0">
+			<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
 				<div class="plans-content" role="rowgroup">
 					{
 						rows.map(row => (

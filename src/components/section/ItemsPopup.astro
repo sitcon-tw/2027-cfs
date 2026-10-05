@@ -356,14 +356,14 @@ const items = itemsUnsorted.sort((a, b) => {
 				// Navigate to Form section if user has already visited Plans
 				const formSection = document.getElementById("form");
 				if (formSection) {
-					formSection.scrollIntoView({ behavior: "smooth" });
+					window.scrollPageTo(formSection, { immediate: false, offset: -32 });
 					closePopover();
 				}
 			} else {
 				// Navigate to Plans section if user hasn't visited Plans yet
 				const plansSection = document.getElementById("plans");
 				if (plansSection) {
-					plansSection.scrollIntoView({ behavior: "smooth" });
+					window.scrollPageTo(plansSection, { immediate: false, offset: -32 });
 					closePopover();
 					// Mark that user has visited plans
 					hasVisitedPlans = true;
