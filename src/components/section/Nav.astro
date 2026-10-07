@@ -80,22 +80,29 @@ import Button from "../Button.astro";
 
 	/* Hamburger Menu */
 	:global(.site-button.hamburger) {
+		--hamburger-line-height: 0.15rem;
+		--hamburger-line-gap: 0.3rem;
 		display: none;
 		flex-direction: column;
-		justify-content: space-around;
+		justify-content: center;
+		gap: var(--hamburger-line-gap);
 		z-index: 1001;
 	}
 
 	.hamburger-line {
+		flex: none;
 		width: 1.5rem;
-		height: 0.15rem;
+		height: var(--hamburger-line-height);
 		background-color: #000000;
-		transition: all 0.3s ease;
+		transition:
+			transform 0.3s ease,
+			opacity 0.3s ease;
 		transform-origin: center;
 	}
 
+	/* Move the outer lines onto the middle line before rotating so they cross at the center. */
 	:global(.hamburger.active .hamburger-line:nth-child(1)) {
-		transform: rotate(45deg) translate(0.35rem, 0.35rem);
+		transform: translateY(calc(var(--hamburger-line-height) + var(--hamburger-line-gap))) rotate(45deg);
 	}
 
 	:global(.hamburger.active .hamburger-line:nth-child(2)) {
@@ -103,7 +110,7 @@ import Button from "../Button.astro";
 	}
 
 	:global(.hamburger.active .hamburger-line:nth-child(3)) {
-		transform: rotate(-45deg) translate(0.35rem, -0.35rem);
+		transform: translateY(calc(-1 * (var(--hamburger-line-height) + var(--hamburger-line-gap)))) rotate(-45deg);
 	}
 
 	@media screen and (max-width: 72rem) {
