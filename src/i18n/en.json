@@ -88,6 +88,7 @@
 		"date": "Saturday, March 13, 2027",
 		"location": "Academia Sinica, Humanities and Social Sciences Building",
 		"popup_label": "View event details and the organizing team",
+		"popup_btn": "View event details and the organizing team",
 		"activity_schedule": "Event Schedule",
 		"place_detail": "Venue Details",
 		"location_name": "Academia Sinica<br />Humanities and Social Sciences Building",
@@ -128,6 +129,7 @@
 	},
 	"news": {
 		"title": "What We've Done",
+		"btn": "See what we've done",
 		"things": [
 			{
 				"title": "The largest student CS conference in East Asia",
@@ -415,6 +417,7 @@
 	},
 	"about": {
 		"detail": "Audience & Statistics",
+		"detail_btn": "Explore audience & statistics",
 		"subtitle": "The largest student community",
 		"title": "in East Asia for 14 years",
 		"stats": [
