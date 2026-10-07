@@ -88,6 +88,7 @@
 		"date": "2027 年 3 月 13 日（六）",
 		"location": "中央研究院 人文社會科學館",
 		"popup_label": "活動詳情與籌備團隊",
+		"popup_btn": "查看活動詳情與籌備團隊",
 		"activity_schedule": "活動時程",
 		"place_detail": "場地詳情",
 		"location_name": "中央研究院<br />人文社會科學館",
@@ -128,6 +129,7 @@
 	},
 	"news": {
 		"title": "我們做過的事",
+		"btn": "看看我們做過的事",
 		"things": [
 			{
 				"title": "東亞最大學生資訊年會",
@@ -384,6 +386,7 @@
 	},
 	"about": {
 		"detail": "受眾與統計",
+		"detail_btn": "了解受眾與統計資料",
 		"subtitle": "14 年來全東亞",
 		"title": "最大的學生社群",
 		"stats": [
