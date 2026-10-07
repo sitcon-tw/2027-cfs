@@ -657,7 +657,7 @@
 		"scan_qrcode": "Scan the QR code (sitcon.org/cfs) to view the online sponsorship prospectus. For collaboration, email contact@sitcon.org.",
 		"contact": "Marketing & Media Contacts",
 		"email": "contact@sitcon.org",
-		"contact_list": [],
+		"contact_list": ["Yi-Hsin Huang +886-905-709-062", "Denny Huang +886-922-686-223", "Ying-Chi Huang +886-974-003-155"],
 		"contact_us": "Contact Us",
 		"contact_us_description": "For collaboration:",
 		"contact_us_description2": "For registration:",
