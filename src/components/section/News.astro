@@ -3,8 +3,8 @@ import Popup from "@components/Popup.astro";
 import president2026 from "@assets/img/news/president2026.webp";
 import cna2026 from "@assets/img/news/cna2026.webp";
 import udn2026 from "@assets/img/news/udn2026.webp";
-import ocac2026 from "@assets/img/news/ocac2026.webp";
-import line2026 from "@assets/img/news/line2026.webp";
+import moe2026 from "@assets/img/news/moe2026.webp";
+import agileAwards2026 from "@assets/img/news/agile-awards2026.webp";
 import muchtv2026 from "@assets/img/news/muchtv2026.webp";
 import hk from "@assets/img/sitcon_hk.webp";
 import groups from "@assets/img/groups.webp";
@@ -50,7 +50,7 @@ const news: News[] = [
 ---
 
 <section id="news">
-	<h2>SITCON 2026 {t.coverage_title || "媒體報導"}</h2>
+	<h2>SITCON 榮獲各界肯定</h2>
 	<div class="news-content" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
 		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930">
 			<span class="news-source">總統府</span><img src={president2026.src} width={president2026.width} height={president2026.height} alt="總統府 · SITCON 2026" class="news-img" loading="lazy" />
@@ -61,15 +61,22 @@ const news: News[] = [
 		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273">
 			<span class="news-source">經濟日報</span><img src={udn2026.src} width={udn2026.width} height={udn2026.height} alt="經濟日報 · SITCON 2026" class="news-img" loading="lazy" />
 		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://ocacnews.net/article/423192">
-			<span class="news-source">僑務電子報</span><img src={ocac2026.src} width={ocac2026.width} height={ocac2026.height} alt="僑務電子報 · SITCON 2026" class="news-img" loading="lazy" />
+		<a target="_blank" rel="noopener noreferrer" href="https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&s=44FFA988115FABF4">
+			<span class="news-source">榮獲第三屆青志獎「志能運用獎」</span><img
+				src={moe2026.src}
+				width={moe2026.width}
+				height={moe2026.height}
+				alt="SITCON 團隊於第 3 屆青志獎獲獎合影"
+				class="news-img"
+				loading="lazy"
+			/>
 		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://techblog.lycorp.co.jp/zh-hant/sitcon2026-sponsorship">
-			<span class="news-source">LY Corporation Tech Blog</span><img
-				src={line2026.src}
-				width={line2026.width}
-				height={line2026.height}
-				alt="LY Corporation Tech Blog · SITCON 2026"
+		<a target="_blank" rel="noopener noreferrer" href="https://act.club.tw/act-taiwan-agile-awards-2026/#winners-agile-org">
+			<span class="news-source">榮獲第四屆 ACT 台灣敏捷大賞「年度敏捷組織」</span><img
+				src={agileAwards2026.src}
+				width={agileAwards2026.width}
+				height={agileAwards2026.height}
+				alt="SITCON 團隊獲 2026 台灣敏捷大賞年度敏捷組織獎合影"
 				class="news-img"
 				loading="lazy"
 			/>

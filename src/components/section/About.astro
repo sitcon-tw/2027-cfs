@@ -257,6 +257,11 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 	}
 
+	.stat-card:nth-child(2) {
+		background-size: auto 125% !important;
+		background-position: center bottom !important;
+	}
+
 	.stat-card::before {
 		content: "";
 		position: absolute;
@@ -314,6 +319,11 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 	}
 
 	@media screen and (max-width: 70rem) {
+		.stat-card:nth-child(2) {
+			background-size: 125% auto !important;
+			background-position: center 65% !important;
+		}
+
 		.space {
 			margin-bottom: 0rem;
 		}
