@@ -1,0 +1,1 @@
+function s(o){const t=o?.trim();if(!t)return null;const n=t.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);if(n){const[,r,u,l]=n.map(Number),e=new Date(r,u-1,l);return e.getFullYear()===r&&e.getMonth()===u-1&&e.getDate()===l?e:null}const a=new Date(t);return Number.isNaN(a.getTime())?null:a}export{s as p};
