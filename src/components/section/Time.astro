@@ -20,8 +20,8 @@ interface PlaceItem {
 interface TeamItem {
 	title: string;
 	name: string;
-	school: string;
-	major: string;
+	school?: string;
+	major?: string;
 }
 ---
 
@@ -87,7 +87,7 @@ interface TeamItem {
 									{item.name}
 								</strong>
 								{item.school}
-								<br />
+								{item.school && item.major && <br />}
 								{item.major}
 							</div>
 						))}
