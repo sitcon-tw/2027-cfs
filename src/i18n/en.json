@@ -124,7 +124,74 @@
 				"description": "A spacious, unobstructed open area with a wall of sunlit floor-to-ceiling windows. Unlike the lecture format in other rooms, this space supports flexible furniture layouts for various activities."
 			}
 		],
-		"teams": [],
+		"teams": [
+			{
+				"title": "Chief Coordinator",
+				"name": "蕭爾西",
+				"school": "National Yang Ming Chiao Tung University",
+				"major": "Computer Science, Year 1"
+			},
+			{
+				"title": "Deputy Chief Coordinator & Development Team Lead",
+				"name": "董兆陽",
+				"school": "Chung Yuan Christian University",
+				"major": "Information and Computer Engineering, Year 1"
+			},
+			{
+				"title": "Administration Team Lead",
+				"name": "馮聖元",
+				"school": "National Ilan University",
+				"major": "Computer Science and Information Engineering, Year 3"
+			},
+			{
+				"title": "Program Team Lead",
+				"name": "詹啟翔",
+				"school": "National Yang Ming Chiao Tung University",
+				"major": "Computer Science, Year 1"
+			},
+			{
+				"title": "Venue Team Lead",
+				"name": "陳奕其",
+				"school": "National Chung Hsing University",
+				"major": "Applied Mathematics, Year 2"
+			},
+			{
+				"title": "Design Team Lead",
+				"name": "賴亭瑜",
+				"school": "National Changhua University of Education",
+				"major": "Graduate Institute of Science Education, Master's Year 1"
+			},
+			{
+				"title": "Activities Team Lead",
+				"name": "黃宥睿",
+				"school": "National Yunlin University of Science and Technology",
+				"major": "Information Management, Year 3"
+			},
+			{
+				"title": "Photography Team Lead",
+				"name": "尤理衡",
+				"school": "National Yang Ming Chiao Tung University",
+				"major": "Institute of Information Security, Master's Year 1"
+			},
+			{
+				"title": "Broadcast Team Lead",
+				"name": "巫奕嶔",
+				"school": "Fu Jen Catholic University",
+				"major": "Bachelor's Program in Medical Informatics and Innovative Applications"
+			},
+			{
+				"title": "Editorial Team Lead",
+				"name": "陳敏家",
+				"school": "National Pingtung University",
+				"major": "Computer Science and Information Engineering, Year 1"
+			},
+			{
+				"title": "Marketing Team Lead",
+				"name": "黃以信",
+				"school": "Fu Jen Catholic University",
+				"major": "Library and Information Science, Year 4"
+			}
+		],
 		"volunteer_alt": "SITCON 2026 all-staff group photo on the main hall stage"
 	},
 	"news": {
