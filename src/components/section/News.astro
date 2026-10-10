@@ -14,7 +14,7 @@ import camp from "@assets/img/camp.webp";
 import type { ImageMetadata } from "astro";
 import community from "@assets/img/news/community-hero.webp";
 
-const { t } = Astro.props;
+const { t, lang } = Astro.props;
 type News = {
 	img: ImageMetadata;
 	title: string;
@@ -50,49 +50,49 @@ const news: News[] = [
 ---
 
 <section id="news">
-	<h2>SITCON 榮獲各界肯定</h2>
+	<h2>{t.recognition_title}</h2>
 	<div class="news-content" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
 		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930">
-			<span class="news-source">總統府</span><img src={president2026.src} width={president2026.width} height={president2026.height} alt="總統府 · SITCON 2026" class="news-img" loading="lazy" />
+			<span class="news-source">{t.coverage[0].source}</span><img src={president2026.src} width={president2026.width} height={president2026.height} alt={t.coverage[0].alt} class="news-img" loading="lazy" />
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx">
-			<span class="news-source">中央社 CNA</span><img src={cna2026.src} width={cna2026.width} height={cna2026.height} alt="中央社 · SITCON 2026" class="news-img" loading="lazy" />
+			<span class="news-source">{t.coverage[1].source}</span><img src={cna2026.src} width={cna2026.width} height={cna2026.height} alt={t.coverage[1].alt} class="news-img" loading="lazy" />
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273">
-			<span class="news-source">經濟日報</span><img src={udn2026.src} width={udn2026.width} height={udn2026.height} alt="經濟日報 · SITCON 2026" class="news-img" loading="lazy" />
+			<span class="news-source">{t.coverage[2].source}</span><img src={udn2026.src} width={udn2026.width} height={udn2026.height} alt={t.coverage[2].alt} class="news-img" loading="lazy" />
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&s=44FFA988115FABF4">
-			<span class="news-source">榮獲第三屆青志獎「志能運用獎」</span><img
+			<span class="news-source">{t.coverage[3].source}</span><img
 				src={moe2026.src}
 				width={moe2026.width}
 				height={moe2026.height}
-				alt="SITCON 團隊於第 3 屆青志獎獲獎合影"
+				alt={t.coverage[3].alt}
 				class="news-img"
 				loading="lazy"
 			/>
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://act.club.tw/act-taiwan-agile-awards-2026/#winners-agile-org">
-			<span class="news-source">榮獲第四屆 ACT 台灣敏捷大賞「年度敏捷組織」</span><img
+			<span class="news-source">{t.coverage[4].source}</span><img
 				src={agileAwards2026.src}
 				width={agileAwards2026.width}
 				height={agileAwards2026.height}
-				alt="SITCON 團隊獲 2026 台灣敏捷大賞年度敏捷組織獎合影"
+				alt={t.coverage[4].alt}
 				class="news-img"
 				loading="lazy"
 			/>
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=zplk0zALtOM">
-			<span class="news-source">年代 MUCH｜台灣新驕點</span><img
+			<span class="news-source">{t.coverage[5].source}</span><img
 				src={muchtv2026.src}
 				width={muchtv2026.width}
 				height={muchtv2026.height}
-				alt="年代新聞 · SITCON 2026"
+				alt={t.coverage[5].alt}
 				class="news-img"
 				loading="lazy"
 			/>
 		</a>
 	</div>
-	<Popup title={t.title} background={community.src} btnText={t.btn} id="news-popup">
+	<Popup title={t.title} background={community.src} btnText={t.btn} id="news-popup" lang={lang}>
 		<div class="things-container">
 			{
 				news.map((item, index) => (

@@ -219,7 +219,16 @@
 				"description": "Since 2014, every July we run a summer camp to help students get started with CS and ignite passion for open source. Students serve as both campers and volunteers. Beyond the core curriculum, we host open-source talks, a community expo, and the Vision Café—so learning is paired with rich opportunities to connect and exchange ideas."
 			}
 		],
-		"coverage_title": "Media coverage"
+		"coverage_title": "Media coverage",
+		"recognition_title": "Recognized across Taiwan",
+		"coverage": [
+			{ "source": "Office of the President, Republic of China (Taiwan)", "alt": "Office of the President, Republic of China (Taiwan) · SITCON 2026" },
+			{ "source": "Central News Agency (CNA)", "alt": "Central News Agency · SITCON 2026" },
+			{ "source": "Economic Daily News", "alt": "Economic Daily News · SITCON 2026" },
+			{ "source": "3rd Youth Volunteer Awards — Volunteer Capability Award", "alt": "SITCON team at the 3rd Youth Volunteer Awards ceremony" },
+			{ "source": "4th ACT Taiwan Agile Awards — Agile Organization of the Year", "alt": "SITCON team receiving the 2026 Taiwan Agile Awards Agile Organization of the Year award" },
+			{ "source": "Much TV", "alt": "Era News · SITCON 2026" }
+		]
 	},
 	"plans": {
 		"title": "Choose the Plan That Fits You",
@@ -705,6 +714,7 @@
 		"collaboration": "Future Collaboration",
 		"description": "We welcome various forms of event or media collaboration—co-hosting workshops, hackathons, podcasts, and more. Reach out with your ideas.",
 		"scan_qrcode": "Scan the QR code (sitcon.org/cfs) to view the online sponsorship prospectus. For collaboration, email contact@sitcon.org.",
+		"qrcode_label": "Online sponsorship prospectus",
 		"contact": "Marketing & Media Contacts",
 		"email": "contact@sitcon.org",
 		"contact_list": ["Yi-Hsin Huang +886-905-709-062", "Denny Huang +886-922-686-223", "Ying-Chi Huang +886-974-003-155"],

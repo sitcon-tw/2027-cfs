@@ -21,6 +21,7 @@ const ogImage = lang === "zh-Hant" ? ogImageZH : ogImageEN;
 const t = await import(`../i18n/${lang}.json`).then(m => m.default);
 const sections = [Nav, Hero, Intro, Time, Highlights, About, News, Plans, Items, OpenDream, ItemsPopup, Form, Sponsors, FAQ, Footer];
 const { title = t.meta.title, description = t.meta.description } = Astro.props;
+const siteName = lang === "en" ? "SITCON Students' Information Technology Conference" : "SITCON 學生計算機年會";
 
 // Default schema for homepage (Organization + WebSite)
 const defaultSchema = {
@@ -28,7 +29,7 @@ const defaultSchema = {
 	"@graph": [
 		{
 			"@type": "Organization",
-			name: "SITCON 學生計算機年會",
+			name: siteName,
 			alternateName: "SITCON",
 			url: "https://sitcon.org",
 			logo: new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/SITCON.svg`, Astro.site).href,
@@ -57,7 +58,7 @@ const defaultSchema = {
 		<meta property="og:type" content="website" />
 		<meta property="og:image" content={ogImage.src} />
 		<meta property="og:description" content={description} />
-		<meta property="og:site_name" content="SITCON 學生計算機年會" />
+		<meta property="og:site_name" content={siteName} />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:image" content={ogImage.src} />
 		<meta name="twitter:card" content="summary_large_image" />

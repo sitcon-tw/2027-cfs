@@ -219,7 +219,16 @@
 				"description": "自 2014 年開始，SITCON 每年 7 月皆會舉辦夏令營，讓有志於資訊領域的學生能夠輕鬆入門並激發對開源精神的熱情。學員與志工皆由學生組成，不僅僅是主線課程，還有開源演講、社群博覽會以及視界咖啡館，讓學生不只是學習，更有許多交流、激盪想法的機會。"
 			}
 		],
-		"coverage_title": "媒體報導"
+		"coverage_title": "媒體報導",
+		"recognition_title": "SITCON 榮獲各界肯定",
+		"coverage": [
+			{ "source": "總統府", "alt": "總統府 · SITCON 2026" },
+			{ "source": "中央社 CNA", "alt": "中央社 · SITCON 2026" },
+			{ "source": "經濟日報", "alt": "經濟日報 · SITCON 2026" },
+			{ "source": "榮獲第三屆青志獎「志能運用獎」", "alt": "SITCON 團隊於第 3 屆青志獎獲獎合影" },
+			{ "source": "榮獲第四屆 ACT 台灣敏捷大賞「年度敏捷組織」", "alt": "SITCON 團隊獲 2026 台灣敏捷大賞年度敏捷組織獎合影" },
+			{ "source": "年代 MUCH｜台灣新驕點", "alt": "年代新聞 · SITCON 2026" }
+		]
 	},
 	"plans": {
 		"title": "選擇適合你的方案",
@@ -696,6 +705,7 @@
 		"collaboration": "後續合作",
 		"description": "我們期待各種形式的活動或媒體合作，如共同舉辦工作坊、黑客松或 Podcast 等，有任何想法都歡迎與我們聯繫。",
 		"scan_qrcode": "掃描 QR Code（sitcon.org/cfs）查看線上贊助徵求書，合作洽詢請寄信至 contact@sitcon.org。",
+		"qrcode_label": "線上贊助徵求書",
 		"contact": "行銷與媒體聯絡人",
 		"email": "contact@sitcon.org",
 		"contact_list": ["黃以信 +886-905-709-062", "黃一晉 +886-922-686-223", "黃映綺 +886-974-003-155"],
