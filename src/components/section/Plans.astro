@@ -1,9 +1,10 @@
 ---
 const { t, lang } = Astro.props;
-import { Container } from "@lucide/astro";
+import { Container, Check } from "@lucide/astro";
+import Button from "../Button.astro";
 import planData from "@data/plan.json";
 import { loadItemsData } from "../../utils/items-loader";
-import { getBenefitLocalizedName } from "../../utils/plan-helper";
+import { getBenefitLocalizedName, resolveBenefitItem } from "../../utils/plan-helper";
 const itemsData = await loadItemsData(lang);
 
 // Create a lookup map for quick item access by ID
@@ -11,7 +12,7 @@ const itemsMap = new Map(itemsData.map(item => [item.id, item]));
 
 // Helper function to get earliest deadline from plan benefits
 const getEarliestDeadline = (benefits: any[]) => {
-	const deadlines = benefits.map(b => (b.item_id ? itemsMap.get(b.item_id)?.deadline : null)).filter((d): d is string => d !== null && d !== undefined && d !== "");
+	const deadlines = benefits.map(b => resolveBenefitItem(b)?.itemData.deadline).filter((d): d is string => d !== null && d !== undefined && d !== "");
 
 	if (deadlines.length === 0) return "";
 
@@ -25,170 +26,137 @@ const tiers = [
 		id: "navigator",
 		name: lang === "en" ? planData.navigator.name_en : planData.navigator.name_zh,
 		price: planData.navigator.price,
-		textColor: "#FF928A",
+		textColor: "#ad443d",
 		deadline: getEarliestDeadline(planData.navigator.benefits)
 	},
 	{
 		id: "deep_cultivation",
 		name: lang === "en" ? planData.deep_cultivation.name_en : planData.deep_cultivation.name_zh,
 		price: planData.deep_cultivation.price,
-		textColor: "#537FF1",
+		textColor: "#426bd1",
 		deadline: getEarliestDeadline(planData.deep_cultivation.benefits)
 	},
 	{
 		id: "visionary",
 		name: lang === "en" ? planData.visionary.name_en : planData.visionary.name_zh,
 		price: planData.visionary.price,
-		textColor: "#6FD195",
+		textColor: "#47762e",
 		deadline: getEarliestDeadline(planData.visionary.benefits)
 	},
 	{
 		id: "new_sprout",
 		name: lang === "en" ? planData.new_sprout.name_en : planData.new_sprout.name_zh,
 		price: planData.new_sprout.price,
-		textColor: "#77B55A",
+		textColor: "#47762e",
 		deadline: getEarliestDeadline(planData.new_sprout.benefits)
 	}
 ];
 
-// Create rows from benefits (assuming all tiers have the same items in same order)
-const maxBenefits = Math.max(planData.navigator.benefits.length, planData.deep_cultivation.benefits.length, planData.visionary.benefits.length, planData.new_sprout.benefits.length);
-
-// Helper function to generate fallback row IDs
-const getFallbackRowId = (index: number) => `row-${index}`;
-
-const rows = [];
-for (let i = 0; i < maxBenefits; i++) {
-	const navBenefit = planData.navigator.benefits[i];
-	const deepBenefit = planData.deep_cultivation.benefits[i];
-	const visBenefit = planData.visionary.benefits[i];
-	const sproutBenefit = planData.new_sprout.benefits[i];
-
-	// Use the first available item_id as the row id
-	const rowId = navBenefit?.item_id || deepBenefit?.item_id || visBenefit?.item_id || sproutBenefit?.item_id || getFallbackRowId(i);
-
-	// Check if the item exists in the items data
-	const itemExists = rowId && rowId !== getFallbackRowId(i) && itemsMap.has(rowId);
-
-	// Check if any tier has a non-empty quantity AND the item exists in items data
-	const hasAnyAvailableItem =
-		itemExists &&
-		!!(
-			(navBenefit?.quantity && navBenefit.quantity !== "") ||
-			(deepBenefit?.quantity && deepBenefit.quantity !== "") ||
-			(visBenefit?.quantity && visBenefit.quantity !== "") ||
-			(sproutBenefit?.quantity && sproutBenefit.quantity !== "")
-		);
-
-	// Get localized names for each benefit
-	const navName = navBenefit ? getBenefitLocalizedName(navBenefit, lang) : "";
-	const deepName = deepBenefit ? getBenefitLocalizedName(deepBenefit, lang) : "";
-	const visName = visBenefit ? getBenefitLocalizedName(visBenefit, lang) : "";
-	const sproutName = sproutBenefit ? getBenefitLocalizedName(sproutBenefit, lang) : "";
-
-	rows.push({
-		id: rowId,
-		name: navName || deepName || visName || sproutName || "",
-		isAvailable: hasAnyAvailableItem,
-		values: [
-			{ itemId: navBenefit?.item_id || "", quantity: navBenefit?.quantity || "", name: navName },
-			{ itemId: deepBenefit?.item_id || "", quantity: deepBenefit?.quantity || "", name: deepName },
-			{ itemId: visBenefit?.item_id || "", quantity: visBenefit?.quantity || "", name: visName },
-			{ itemId: sproutBenefit?.item_id || "", quantity: sproutBenefit?.quantity || "", name: sproutName }
-		]
+// All tiers share benefit order; use the same benefit resolution for display and interaction.
+const tierPlans = tiers.map(tier => planData[tier.id as keyof typeof planData]);
+const maxBenefits = Math.max(...tierPlans.map(tier => tier.benefits.length));
+const rows = Array.from({ length: maxBenefits }, (_, index) => {
+	const values = tierPlans.map(tier => {
+		const benefit = tier.benefits[index];
+		const resolved = benefit ? resolveBenefitItem(benefit) : null;
+		const itemId = resolved?.itemId || "";
+		return {
+			itemId,
+			popupItemId: itemId.split("-sub-")[0],
+			quantity: benefit?.quantity || "",
+			name: benefit ? getBenefitLocalizedName(benefit, lang) : ""
+		};
 	});
-}
-
-// Collect all unique item IDs from plan.json benefits
-const uniqueItemIds = new Set<string>();
-
-[planData.navigator, planData.deep_cultivation, planData.visionary, planData.new_sprout].forEach(tier => {
-	tier.benefits.forEach(benefit => {
-		if (benefit.item_id && benefit.item_id !== "") {
-			uniqueItemIds.add(benefit.item_id);
-		}
-	});
+	const availableValue = values.find(value => value.popupItemId && value.quantity);
+	return {
+		id: values.find(value => value.itemId)?.itemId || `row-${index}`,
+		name: values.find(value => value.name)?.name || "",
+		popupItemId: availableValue?.popupItemId,
+		values
+	};
 });
 ---
 
 <section id="plans">
-	<h2>{t.title}</h2>
-	<div class="container">
-		<div class="plans-table">
-			<div class="plans-content">
-				<div class="plan-row plans-header">
-					{
-						tiers.map((tier: any) => (
-							<div class="tier-column">
-								<div class="tier-name" style={`color: ${tier.textColor}`}>
-									{tier.name}
+	<h2 id="plans-title">{t.title}</h2>
+	<div class="plan-comparison">
+		<div class="container" role="table" aria-labelledby="plans-title">
+			<div class="plans-heading" role="rowgroup">
+				<div class="plans-header-scroll">
+					<div class="plan-row plans-header" role="row">
+						<div class="row-label header-label" role="columnheader">{lang === "en" ? "Benefits" : "贊助品項"}</div>
+						{
+							tiers.map((tier: any) => (
+								<div class="tier-column" role="columnheader">
+									<div class="tier-name" style={`color: ${tier.textColor}`}>
+										{tier.name}
+									</div>
+									<div class="tier-price">{tier.price}</div>
+									<Button variant="outlined" class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
+										{t.interested}
+									</Button>
 								</div>
-								<div class="tier-price">{tier.price}</div>
-								<button class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-deadline={tier.deadline || ""}>
-									{t.interested}
-								</button>
-							</div>
-						))
-					}
+							))
+						}
+					</div>
 				</div>
-				{
-					rows.map((row: any) => (
-						<div class={`plan-row ${!row.isAvailable ? "disabled" : ""}`} data-row-id={row.id} data-is-available={row.isAvailable}>
-							{row.values.map((value: any) => {
-								const isAvailable = value.quantity && value.quantity !== "";
-								const isCheckmark = value.quantity === "O" || value.quantity === "o";
+			</div>
+			<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
+				<div class="plans-content" role="rowgroup">
+					{
+						rows.map(row => (
+							<div class="plan-row" data-row-id={row.id} data-popup-item-id={row.popupItemId} role="row">
+								<div class="row-label" role="rowheader">
+									{row.name}
+								</div>
+								{row.values.map(value => {
+									const isAvailable = value.quantity && value.quantity !== "";
+									const isCheckmark = value.quantity === "O" || value.quantity === "o";
 
-								// Check if quantity is a pure number
-								const isNumeric = isAvailable && !isNaN(Number(value.quantity));
+									// Check if quantity is a pure number
+									const isNumeric = isAvailable && !isNaN(Number(value.quantity));
 
-								// Get item data for unit and name
-								const itemData = value.itemId ? itemsMap.get(value.itemId) : null;
-								const itemUnit = itemData?.unit ? t.unit[itemData.unit] || itemData.unit : "";
+									// Get item data for unit and name
+									const itemData = value.itemId ? itemsMap.get(value.popupItemId) : null;
+									const itemUnit = itemData?.unit ? t.unit[itemData.unit] || itemData.unit : "";
 
-								// Special handling for item ID 28 (booth)
-								const isBoothItem = value.itemId === "28";
-								const shouldShowIcons = isBoothItem && isNumeric;
-								const iconCount = shouldShowIcons ? parseInt(value.quantity, 10) : 0;
+									// Special handling for item ID 28 (booth)
+									const isBoothItem = value.itemId === "28";
+									const shouldShowIcons = isBoothItem && isNumeric;
+									const iconCount = shouldShowIcons ? parseInt(value.quantity, 10) : 0;
 
-								// Build display text with unit
-								let displayText = value.quantity;
-								if (isNumeric && itemUnit) {
-									displayText = `${value.quantity} ${itemUnit}`;
-								} else if (!isAvailable) {
-									displayText = "—";
-								}
+									// Build display text with unit
+									let displayText = value.quantity;
+									if (isNumeric && itemUnit) {
+										displayText = `${value.quantity} ${itemUnit}`;
+									} else if (!isAvailable) {
+										displayText = "—";
+									}
 
-								return (
-									<div class="plan-cell" data-item-id={value.itemId}>
-										{isCheckmark ? (
-											<>{value.name && <div class="cell-sub">{value.name}</div>}</>
-										) : shouldShowIcons ? (
-											<>
+									return (
+										<div class="plan-cell" data-item-id={value.itemId} role="cell">
+											{isCheckmark ? (
+												<div class="cell-main cell-check">
+													<Check />
+												</div>
+											) : shouldShowIcons ? (
 												<div class="cell-icon cell-main">
 													{Array.from({ length: iconCount }).map((_, i) => (
 														<Container key={i} />
 													))}
 												</div>
-												{value.name && <div class="cell-sub">{value.name}</div>}
-											</>
-										) : (
-											<>
-												{isAvailable ? (
-													<>
-														<div class="cell-main cell-text">{displayText}</div>
-														{value.name && <div class="cell-sub">{value.name}</div>}
-													</>
-												) : (
-													<div class="cell-sub">{displayText}</div>
-												)}
-											</>
-										)}
-									</div>
-								);
-							})}
-						</div>
-					))
-				}
+											) : isAvailable ? (
+												<div class="cell-main cell-text">{displayText}</div>
+											) : (
+												<div class="cell-sub cell-none">{displayText}</div>
+											)}
+										</div>
+									);
+								})}
+							</div>
+						))
+					}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -198,11 +166,51 @@ const uniqueItemIds = new Set<string>();
 	import { isItemInterested, addInterestedItem, removeInterestedItem, isDeadlinePassed, type InterestedItem } from "../../utils/local-storage.ts";
 	import { openVenueDetails } from "../../utils/venue-linkify.ts";
 
+	const plans = document.getElementById("plans");
+	const headerScroll = plans?.querySelector<HTMLElement>(".plans-header-scroll");
+	const benefitScroll = plans?.querySelector<HTMLElement>(".plans-table");
+	if (headerScroll && benefitScroll) {
+		// Keep both horizontal viewports aligned, without changing vertical page scrolling.
+		for (const [source, target] of [
+			[headerScroll, benefitScroll],
+			[benefitScroll, headerScroll]
+		]) {
+			source.addEventListener(
+				"scroll",
+				() => {
+					if (Math.abs(target.scrollLeft - source.scrollLeft) > 0.5) target.scrollLeft = source.scrollLeft;
+				},
+				{ passive: true }
+			);
+		}
+		const container = plans?.querySelector<HTMLElement>(".container");
+		let previousWidth = benefitScroll.clientWidth;
+		let previousTierWidth = headerScroll.querySelector(".tier-column")!.getBoundingClientRect().width;
+		if (container) {
+			new ResizeObserver(() => {
+				if (Math.abs(benefitScroll.clientWidth - previousWidth) < 0.5) return;
+				const column = Math.round(benefitScroll.scrollLeft / previousTierWidth);
+				const tierWidth = headerScroll.querySelector(".tier-column")!.getBoundingClientRect().width;
+				// Keep complete plan columns visible when rotating the phone or resizing.
+				benefitScroll.scrollLeft = column * tierWidth;
+				headerScroll.scrollLeft = benefitScroll.scrollLeft;
+				previousWidth = benefitScroll.clientWidth;
+				previousTierWidth = tierWidth;
+			}).observe(container);
+		}
+	}
+	const navbar = document.querySelector<HTMLElement>(".navbar");
+	if (navbar && plans) {
+		const updateHeaderOffset = () => plans.style.setProperty("--plans-nav-offset", `${navbar.getBoundingClientRect().height}px`);
+		updateHeaderOffset();
+		new ResizeObserver(updateHeaderOffset).observe(navbar);
+	}
+
 	// Attach openVenueDetails to window for inline onclick handlers
 	window.openVenueDetails = openVenueDetails;
 
 	function updateHighlighting() {
-		const planCells = document.querySelectorAll(".plan-cell");
+		const planCells = document.querySelectorAll("#plans .plan-cell");
 		planCells.forEach(cell => {
 			const itemId = (cell as HTMLElement).getAttribute("data-item-id");
 			if (itemId && itemId !== "") {
@@ -222,20 +230,12 @@ const uniqueItemIds = new Set<string>();
 	}
 
 	function addRowClickHandlers() {
-		const planRows = document.querySelectorAll(".plan-row") as NodeListOf<HTMLElement>;
+		const planRows = document.querySelectorAll<HTMLElement>("#plans [data-popup-item-id]");
 		planRows.forEach(row => {
-			const rowIdStr = row.getAttribute("data-row-id");
-			const isAvailable = row.getAttribute("data-is-available") === "true";
-
-			// Only add click handlers and cursor to available rows
-			if (rowIdStr && isAvailable) {
-				row.style.cursor = "pointer";
-				row.addEventListener("click", function (e) {
-					e.stopPropagation();
-					const popupId = `item-popup-${rowIdStr}`;
-					window.popupCtrl(popupId, "open");
-				});
-			}
+			row.addEventListener("click", e => {
+				e.stopPropagation();
+				window.popupCtrl(`item-popup-${row.dataset.popupItemId}`, "open");
+			});
 		});
 	}
 
@@ -249,7 +249,7 @@ const uniqueItemIds = new Set<string>();
 	}
 
 	function addTierInterestHandlers() {
-		const tierButtons = document.querySelectorAll(".tier-interest-button");
+		const tierButtons = document.querySelectorAll("#plans .tier-interest-button");
 		tierButtons.forEach(button => {
 			const tierName = button.getAttribute("data-tier-name");
 			const tierTitle = button.getAttribute("data-tier-title");
@@ -264,10 +264,7 @@ const uniqueItemIds = new Set<string>();
 						return; // Don't allow adding expired plans
 					}
 
-					// Get the tier price from the tier-price element
-					const tierColumn = button.closest(".tier-column");
-					const tierPriceElement = tierColumn?.querySelector(".tier-price");
-					const tierPrice = tierPriceElement?.textContent || "";
+					const tierPrice = button.getAttribute("data-tier-price") || "";
 
 					const tierItem = {
 						id: `tier-${tierName}`,
@@ -294,7 +291,7 @@ const uniqueItemIds = new Set<string>();
 	}
 
 	function updateTierButtonStates() {
-		const tierButtons = document.querySelectorAll(".tier-interest-button");
+		const tierButtons = document.querySelectorAll("#plans .tier-interest-button");
 		tierButtons.forEach(button => {
 			const tierName = button.getAttribute("data-tier-name");
 			const tierDeadline = button.getAttribute("data-tier-deadline") || "";
@@ -311,6 +308,7 @@ const uniqueItemIds = new Set<string>();
 
 			if (tierName) {
 				const tierId = `tier-${tierName}`;
+				button.setAttribute("aria-pressed", String(isItemInterested(tierId)));
 				if (isItemInterested(tierId)) {
 					button.classList.add("interested");
 				} else {
@@ -340,356 +338,229 @@ const uniqueItemIds = new Set<string>();
 <style>
 	section {
 		background-color: var(--items-bg);
-		padding: 5rem 2rem;
+		padding: 4rem 2rem;
 		break-inside: avoid;
 	}
+	#plans-title {
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+		margin-bottom: 1.5rem;
+	}
 	.container {
-		max-width: min(1200px, 100%);
-		width: fit-content;
-		border-radius: 2rem;
-		background-color: var(--white);
+		container-type: inline-size;
+		width: 100%;
+		max-width: 1200px;
 		margin: 0 auto;
-		padding: 2rem;
-		flex: auto;
-		display: flex;
-		justify-content: center;
+		background: var(--white);
+		border-radius: 1rem;
+		--label-width: clamp(10rem, 24cqw, 15rem);
+		--tier-width: calc((100cqw - var(--label-width)) / 4);
 	}
-
+	.plans-table,
+	.plans-header-scroll {
+		width: 100%;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+	}
 	.plans-table {
-		background-color: var(--white);
-		border-radius: 2rem;
-		overflow: hidden;
-		padding: 2rem;
+		border-radius: 0 0 1rem 1rem;
+	}
+	.plans-heading {
+		position: sticky;
+		top: var(--plans-nav-offset, 4rem);
+		z-index: 3;
+		background: var(--white);
+		border-radius: 1rem 1rem 0 0;
+		box-shadow: 0 1px 0 var(--border-light);
+	}
+	.plans-header-scroll {
+		border-radius: inherit;
+		scrollbar-width: none;
+	}
+	.plans-header-scroll::-webkit-scrollbar {
+		display: none;
 	}
 
+	.plans-table:focus-visible {
+		outline: 2px solid #74bf50;
+		outline-offset: 3px;
+	}
+	.plans-content,
 	.plans-header {
-		padding-bottom: 1rem;
-		align-items: stretch;
+		width: calc(var(--label-width) + 4 * var(--tier-width));
 	}
-
-	.plans-header:hover {
-		background-color: transparent !important;
-	}
-
-	.tier-column {
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid var(--border-light);
-		gap: 0.5rem;
-	}
-
-	.tier-name {
-		font-size: 2.3rem;
-		font-weight: 700;
-		margin-bottom: 0.5rem;
-		line-height: 1.2;
-		flex-grow: 1;
-		display: flex;
-		align-items: center;
-	}
-
-	.tier-price {
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: var(--black);
-		margin-bottom: 1rem;
-	}
-
-	.tier-interest-button {
-		background: transparent;
-		border: 1px solid var(--black);
-		cursor: pointer;
-		padding: 0.5rem 1rem;
-		border-radius: 25px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: all 0.2s ease;
-		margin: 0 auto;
-		font-size: 0.9rem;
-		color: var(--black);
-		white-space: nowrap;
-	}
-
-	.tier-interest-button:hover {
-		background-color: var(--gray-container);
-		transform: scale(1.02);
-	}
-
-	.tier-interest-button.interested {
-		background-color: var(--items-green);
-		border-color: var(--items-green);
-		color: var(--white);
-	}
-
-	.tier-interest-button.interested:hover {
-		background-color: var(--items-green);
-		opacity: 0.9;
-	}
-
-	.tier-interest-button:disabled,
-	.tier-interest-button.disabled {
-		background-color: var(--gray);
-		border-color: var(--gray);
-		cursor: not-allowed;
-		opacity: 0.5;
-		color: var(--white);
-	}
-
-	.tier-interest-button:disabled:hover,
-	.tier-interest-button.disabled:hover {
-		transform: none;
-		background-color: var(--gray);
-	}
-
-	.plans-content {
-		display: grid;
-		gap: 1rem;
-	}
-
 	.plan-row {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 2rem;
-		padding: 1rem 2rem;
+		grid-template-columns: var(--label-width) repeat(4, var(--tier-width));
+		align-items: stretch;
+		border-bottom: 1px solid #e8e8ec;
 	}
-
-	.plan-cell {
-		text-align: center;
+	.plan-row:last-child {
+		border-bottom: 0;
+	}
+	.row-label {
+		position: sticky;
+		left: 0;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		padding: 0.875rem 1.25rem;
+		background: var(--white);
+		box-shadow: 1px 0 0 var(--border-light);
+		font-size: 0.9375rem;
+		font-weight: 500;
+		line-height: 1.5;
+		color: var(--black);
+		text-align: left;
+		overflow-wrap: anywhere;
+	}
+	.header-label {
+		font-weight: 700;
+		align-items: flex-start;
+		padding-top: 1.25rem;
+	}
+	.tier-column {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		gap: 0.5rem;
-		min-height: 4rem;
+		padding: 1.25rem 0.75rem;
+		text-align: center;
+		min-width: 0;
 	}
-
-	.plan-cell.highlighted .cell-main,
-	.plan-cell.highlighted .cell-sub,
-	.plan-cell.highlighted .cell-icon {
-		color: var(--items-green);
+	.tier-name {
+		font-size: 1.75rem;
+		font-weight: 700;
+		line-height: 1.25;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		overflow-wrap: anywhere;
+	}
+	.tier-price {
+		font-size: 1.125rem;
 		font-weight: 600;
+		white-space: nowrap;
 	}
-
+	#plans :global(.site-button.tier-interest-button:disabled) {
+		background: var(--gray);
+		border-color: var(--gray);
+		color: white;
+	}
+	.plan-cell {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.875rem 0.5rem;
+		min-height: 3.5rem;
+		min-width: 0;
+		text-align: center;
+	}
+	.cell-main {
+		line-height: 1.4;
+	}
+	.cell-text {
+		font-size: 1.0625rem;
+		font-weight: 600;
+		overflow-wrap: anywhere;
+	}
+	.cell-check svg {
+		width: 1.25rem;
+		height: 1.25rem;
+		stroke-width: 3;
+	}
 	.cell-icon {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.25rem;
 		justify-content: center;
-		margin-bottom: 0.5rem;
 	}
-
 	.cell-icon svg {
 		width: 1.25rem;
 		height: 1.25rem;
 	}
-
-	.cell-main {
-		line-height: 1.3;
+	.cell-none {
+		color: var(--gray);
 	}
-
-	.cell-number {
-		font-size: 2rem;
-		font-weight: bold;
-		color: var(--black);
-	}
-
-	.cell-text {
-		font-size: 1.75rem;
+	.plan-cell.highlighted {
+		color: #74bf50;
 		font-weight: 600;
-		color: var(--black);
 	}
-
-	.cell-sub {
-		font-size: 1rem;
-		color: var(--black);
-		line-height: 1.5;
-		text-wrap: balance;
+	.plan-row[data-popup-item-id]:hover,
+	.plan-row[data-popup-item-id]:hover .row-label {
+		background: #eff6ee;
 	}
-
-	@media screen and (max-width: 1024px) {
-		.plans-table {
-			width: (100% - 2rem);
-			overflow-x: auto;
-			padding: 1.5rem;
-		}
-
-		.tier-name {
-			font-size: 2rem;
-		}
-
-		.tier-price {
-			font-size: 1.5rem;
-		}
-
-		.tier-interest-button {
-			font-size: 0.8rem;
-			padding: 0.4rem 0.8rem;
-		}
-
-		.plans-header,
-		.plan-row {
-			min-width: 800px;
-		}
+	.plan-row[data-popup-item-id] {
+		cursor: pointer;
 	}
-
-	@media screen and (max-width: 768px) {
-		.container {
-			padding: 2rem 1rem;
-		}
-
-		.plans-table {
-			padding: 1rem;
-		}
-
-		.tier-name {
-			font-size: 1.2rem;
-		}
-
-		.tier-price {
-			font-size: 1rem;
-		}
-
-		.tier-interest-button {
-			font-size: 0.7rem;
-			padding: 0.3rem 0.6rem;
-		}
-
-		.plans-header,
-		.plan-row {
-			gap: 1rem;
-			min-width: 600px;
-		}
-
-		.cell-main {
-			font-size: 0.9rem;
-		}
-
-		.cell-sub {
-			font-size: 0.8rem;
-		}
-	}
-
-	@media screen and (max-width: 480px) {
+	@media screen and (max-width: 900px) {
 		section {
-			padding: 0 1rem;
+			padding: 3rem 1rem;
 		}
 		.container {
-			padding: 1.5rem;
+			--label-width: clamp(6.25rem, 30cqw, 8rem);
+			--tier-width: calc((100cqw - var(--label-width)) / 2);
 		}
-
-		.plans-table {
-			padding: 0rem;
+		.row-label {
+			font-size: 0.875rem;
+			padding: 0.75rem 0.625rem 0.75rem 0.875rem;
+		}
+		:global(html[lang="en"]) .row-label {
+			font-size: 0.8125rem;
+			hyphens: auto;
+		}
+		.header-label {
+			padding-top: 1rem;
+		}
+		.tier-column {
+			padding: 0.875rem 0.375rem;
+			gap: 0.4rem;
+		}
+		.tier-name {
+			font-size: clamp(0.875rem, 4cqw, 1.125rem);
+		}
+		.tier-price {
+			font-size: 0.8125rem;
+		}
+		:global(.tier-interest-button) {
+			font-size: 0.8125rem;
+			padding: 0.25rem 0.625rem;
+		}
+		.plan-cell {
+			padding: 0.75rem 0.375rem;
+		}
+		.cell-text {
+			font-size: 0.9375rem;
 		}
 	}
-
-	/* Plan row hover effect */
-	.plan-row:not(.disabled):hover {
-		background-color: var(--items-bg);
-		border-radius: 0.5rem;
-		transition: background-color 0.2s ease;
-	}
-
-	/* Disabled row styles */
-	.plan-row.disabled {
-		cursor: default !important;
-	}
-
-	.plan-row.disabled .plan-cell {
-		pointer-events: none;
-	}
-
 	@media print {
 		section {
 			padding: 2rem;
 		}
-
 		.container {
-			width: 100%;
-			padding: 16pt;
-			background-color: transparent;
+			--label-width: 24cqw;
+			--tier-width: 19cqw;
 		}
-		.plans-table {
-			max-width: unset;
-			padding: 24pt;
+		.plans-table,
+		.plans-header-scroll {
+			overflow: visible;
 		}
-
-		.tier-name {
-			font-size: 16pt;
-			margin-bottom: 0;
-			line-height: 1;
+		.plans-heading,
+		.row-label {
+			position: static;
+			box-shadow: none;
 		}
-
-		.tier-price {
-			font-size: 12pt;
-		}
-
-		.tier-interest-button {
+		:global(.tier-interest-button) {
 			display: none;
 		}
-
-		.tier-column {
-			padding-bottom: 0;
+		.tier-name {
+			font-size: 16pt;
 		}
-
-		.plan-row {
-			padding: 0;
-		}
-
+		.tier-price,
 		.cell-text {
-			font-size: 18pt;
+			font-size: 12pt;
 		}
-		.cell-sub {
+		.row-label {
 			font-size: 10pt;
-		}
-
-		.plans-content {
-			gap: 8pt;
-		}
-	}
-</style>
-
-<style is:global>
-	/* Venue link styles */
-	.venue-link {
-		color: #0171e3;
-		text-decoration: underline;
-		text-decoration-style: dotted;
-		text-underline-offset: 2px;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-weight: 600;
-	}
-
-	.venue-link:hover {
-		color: var(--items-green);
-		text-decoration-style: solid;
-	}
-
-	/* Venue highlight animation */
-	.venue-highlight {
-		animation: venue-pulse 2s ease-in-out;
-	}
-
-	@keyframes venue-pulse {
-		0%,
-		100% {
-			background-color: transparent;
-		}
-		50% {
-			background-color: var(--items-green);
-			color: var(--white);
-			padding: 0.25rem 0.5rem;
-			border-radius: 4px;
-		}
-	}
-
-	@media print {
-		.venue-link {
-			text-decoration: none;
-			font-weight: inherit;
 		}
 	}
 </style>

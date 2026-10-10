@@ -1,46 +1,47 @@
 ---
 import Popup from "../Popup.astro";
-import { X, Plus, ChevronLeft, ChevronRight, Check } from "@lucide/astro";
+import Button from "../Button.astro";
+import ItemAddButton from "./ItemAddButton.astro";
+import ItemPrice from "./ItemPrice.astro";
+import { isItemInAnyPlan } from "../../utils/plan-helper";
+import { X, ChevronLeft, ChevronRight, Check } from "@lucide/astro";
 import planData from "@data/plan.json";
 import { marked } from "marked";
-import { linkifyVenueCodes } from "../../utils/venue-linkify";
+import { linkifyVenueCodes } from "../../utils/venue-linkify.ts";
 
-import type { SubItem } from "../../utils/items-loader";
+import { getItemOptions, type SubItem } from "../../utils/items-loader";
+import { formatDeadline } from "../../utils/deadline";
 
 const { item, t, lang, popupId } = Astro.props;
+const displayDeadline = formatDeadline(item.deadline);
 
-// Calculate total remaining for items with sub-items
-const hasSubItems = item.sub && item.sub.length > 0;
-const totalRemaining = hasSubItems
-	? item.sub.reduce((sum: number, sub: SubItem) => {
-			const remaining = sub.remaining === "" ? null : parseInt(sub.remaining, 10);
-			return sum + (remaining === null || isNaN(remaining) ? 0 : remaining);
-		}, 0)
-	: parseInt(item.remaining, 10) || 0;
-const isSoldOut = item.remaining === "0" || (hasSubItems && item.sub.every((sub: SubItem) => sub.remaining === "0") && item.sub.length > 0);
+const options = getItemOptions(item);
+const planPrice = isItemInAnyPlan(item.id) ? (lang === "en" ? "Plan Included Item" : "方案包含項目") : "";
+const totalRemaining = options.reduce((sum, option) => sum + (parseInt(option.remaining, 10) || 0), 0);
+const isSoldOut = item.remaining === "0" || options.every(option => option.remaining === "0");
 const tiers = [
 	{
 		id: "navigator",
 		name: lang === "en" ? planData.navigator.name_en : planData.navigator.name_zh,
-		textColor: "#FF928A",
+		textColor: "#ad443d",
 		data: planData.navigator
 	},
 	{
 		id: "deep_cultivation",
 		name: lang === "en" ? planData.deep_cultivation.name_en : planData.deep_cultivation.name_zh,
-		textColor: "#537FF1",
+		textColor: "#426bd1",
 		data: planData.deep_cultivation
 	},
 	{
 		id: "visionary",
 		name: lang === "en" ? planData.visionary.name_en : planData.visionary.name_zh,
-		textColor: "#6FD195",
+		textColor: "#47762e",
 		data: planData.visionary
 	},
 	{
 		id: "new_sprout",
 		name: lang === "en" ? planData.new_sprout.name_en : planData.new_sprout.name_zh,
-		textColor: "#77B55A",
+		textColor: "#47762e",
 		data: planData.new_sprout
 	}
 ];
@@ -58,8 +59,8 @@ const tierBenefits = tiers.map(tier => {
 const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 ---
 
-<Popup id={popupId || `plan-popup-${item.id}`} button={false} hero={false}>
-	<div class="popup-content" data-item-id={item.id}>
+<Popup id={popupId || `plan-popup-${item.id}`} button={false} hero={false} variant="item" lang={lang}>
+	<div class="popup-content" data-item-id={item.id} data-is-sold-out={isSoldOut ? "true" : "false"}>
 		<div class="item-image">
 			{
 				(() => {
@@ -74,7 +75,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 								<div class="carousel-images">
 									{/* Main item image as first slide */}
 									<div class="carousel-slide active" data-slide-index={0} data-description={item.image_description || ""}>
-										<img src={`/2027/cfs/items/${item.image}`} alt={item.image_description || item.name} />
+										<img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${item.image}`} alt={item.image_description || item.name} />
 									</div>
 									{/* Sub-item images */}
 									{subItemsWithImages.map((subItem: SubItem, index: number) => {
@@ -83,15 +84,15 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 
 										return (
 											<div class="carousel-slide" data-slide-index={slideIndex} data-description={subImageDescription || ""}>
-												<img src={`/2027/cfs/items/${subItem.image}`} alt={subImageDescription || subItem.name} />
+												<img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${subItem.image}`} alt={subImageDescription || subItem.name} />
 											</div>
 										);
 									})}
 								</div>
-								<button class="carousel-btn carousel-prev" aria-label="Previous image">
+								<button class="carousel-btn carousel-prev" aria-label={lang === "en" ? "Previous image" : "上一張圖片"}>
 									<ChevronLeft />
 								</button>
-								<button class="carousel-btn carousel-next" aria-label="Next image">
+								<button class="carousel-btn carousel-next" aria-label={lang === "en" ? "Next image" : "下一張圖片"}>
 									<ChevronRight />
 								</button>
 								<div class="carousel-description" />
@@ -99,7 +100,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 						);
 					} else {
 						// Show only main item image (no carousel needed)
-						return <img src={`/2027/cfs/items/${item.image}`} alt={item.image_description || item.name} />;
+						return <img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${item.image}`} alt={item.image_description || item.name} />;
 					}
 				})()
 			}
@@ -116,55 +117,41 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 						</span>
 					)
 				}
-				<span class="category">{`${new Date(item.deadline).getMonth() + 1}/${new Date(item.deadline).getDate()}`} {t.deadline}</span>
+				{
+					displayDeadline && (
+						<span class="category">
+							{displayDeadline} {t.deadline}
+						</span>
+					)
+				}
 			</div>
+			{
+				item.id === "22" && (
+					<aside class="venue-summary">
+						<strong>{lang === "en" ? "Compare venues" : "會議廳規模比較"}</strong>
+						<p>{lang === "en" ? "R0: 426 seats, opening and keynote venue. R1 / R2: 112 seats each." : "R0：426 席，開場與 Keynote 主會場。R1／R2：各 112 席。"}</p>
+						<Button color="transparent" hoverColor="transparent" textColor="#74bf50" size="compact" class="venue-detail-action" type="button">
+							{lang === "en" ? "View venue details" : "查看場地詳情"}
+						</Button>
+					</aside>
+				)
+			}
 			<div class="title-row">
 				<h3>{item.name}</h3>
 			</div>
-			{
-				item.price && (
-					<div class="item-price">
-						<span class="price-value">{item.price}</span>
-					</div>
-				)
-			}
-
-			{
-				item.sub && item.sub.length > 0 && (
-					<div class="sub-items-section">
-						{item.sub.map((subItem: SubItem, index: number) => {
-							const subItemId = `${item.id}-sub-${index}`;
-							const isSubItemSoldOut = subItem.remaining === "0";
-
-							return (
-								<div class={"sub-item"} data-sub-item-id={subItemId}>
-									<span class={"sub-item-name" + (subItem.name.length > 8 ? " long" : "")}>{subItem.name}</span>
-									<span class="sub-item-price">{subItem.price}</span>
-									{isSubItemSoldOut && <span class="sub-item-sold-out">{t.sold_out}</span>}
-									{!isSubItemSoldOut && (
-										<button
-											type="button"
-											class="sub-add-button"
-											data-sub-item-id={subItemId}
-											data-sub-item-name={subItem.name}
-											data-sub-item-price={subItem.price}
-											data-item-deadline={item.deadline || ""}
-											aria-label={`Add ${subItem.name}`}
-										>
-											<span class="add-icon">
-												<Plus />
-											</span>
-											<span class="added-icon">
-												<Check />
-											</span>
-										</button>
-									)}
-								</div>
-							);
-						})}
-					</div>
-				)
-			}
+			<div class="sub-items-section">
+				{
+					options.map(option => (
+						<div class="sub-item" data-option-id={option.id}>
+							<span class="sub-item-name">{option.name}</span>
+							<span class="item-option-line" aria-hidden="true" />
+							<ItemPrice price={option.price || planPrice} class="sub-item-price" />
+							{option.remaining === "0" && <span class="sub-item-sold-out">{t.sold_out}</span>}
+							{option.remaining !== "0" && <ItemAddButton id={option.id} title={option.name} image={item.image || ""} price={option.price} deadline={item.deadline || ""} lang={lang} />}
+						</div>
+					))
+				}
+			</div>
 
 			{
 				shouldShowPlanTiers && (
@@ -233,31 +220,32 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 <style is:global>
 	.popup-content {
 		display: grid;
-		grid-template-columns: 2fr 3fr;
-		height: calc(100dvh - 9rem);
-		min-height: 600px;
+		grid-template-columns: 5fr 7fr;
 	}
 
 	.item-details {
-		padding: 3rem;
+		padding: 2rem;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		gap: 1rem;
-		overflow-y: auto;
-		height: 100%;
+		gap: 0.75rem;
+		font-size: 1rem;
+		line-height: 1.6;
 		break-inside: avoid;
 	}
 
-	.title-row {
+	.item-popup-bg .title-row {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: 1rem;
+		padding-right: 4rem;
 	}
 
 	.item-details h3 {
-		font-size: 2.5rem;
+		font-size: 1.75rem;
+		line-height: 1.3;
 		color: var(--black);
 		flex: 1;
 	}
@@ -267,13 +255,6 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		line-height: 1.6;
 		color: var(--black);
 		margin-bottom: 1.5rem;
-	}
-
-	.price-value {
-		font-size: 1.4rem;
-		color: var(--black);
-		font-weight: 700;
-		font-family: FiraCode, monospace;
 	}
 
 	.quantity-controls {
@@ -320,7 +301,9 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		text-align: center;
 	}
 
-	.item-meta {
+	.item-popup-bg .item-meta {
+		padding-right: 4rem;
+		min-height: 1.75rem;
 		display: flex;
 		gap: 0.8rem;
 		align-items: center;
@@ -352,7 +335,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	}
 
 	.category {
-		background-color: #69f147;
+		background-color: #74bf50;
 		padding: 0.1rem 0.7rem;
 		border-radius: 20px;
 		font-size: 0.9rem;
@@ -433,7 +416,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		transition:
 			background-color 0.2s ease,
 			transform 0.2s ease;
-		z-index: 10;
+		z-index: 3;
 	}
 
 	.carousel-btn:hover:not(:disabled) {
@@ -466,7 +449,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		font-size: 1rem;
 		font-weight: 500;
 		max-width: 80%;
-		z-index: 10;
+		z-index: 2;
 		backdrop-filter: blur(40px) saturate(180%);
 		-webkit-backdrop-filter: blur(40px) saturate(180%);
 		line-height: 1.4;
@@ -481,25 +464,25 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 	.tier-item {
 		display: flex;
 		align-items: center;
-		font-size: 1.3rem;
+		font-size: 1rem;
 		font-weight: 600;
 	}
 
 	.tier-name {
 		font-weight: 700;
-		font-size: 1.4rem;
+		font-size: 1.125rem;
 	}
 
 	.tier-arrow {
-		margin: 0 1.5rem;
+		margin: 0 0.75rem;
 		font-weight: 700;
 		opacity: 0.7;
-		font-size: 1.3rem;
+		font-size: 1rem;
 	}
 
 	.tier-value {
 		font-weight: 700;
-		font-size: 1.5rem;
+		font-size: 1.125rem;
 		display: flex;
 		align-items: center;
 	}
@@ -516,34 +499,41 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		height: 24px;
 	}
 
-	.sub-items-section h4 {
-		font-size: 2rem;
-		margin-bottom: 1rem;
-		font-weight: 700;
-		color: var(--black);
-	}
-
 	.sub-item {
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(0, auto) minmax(1rem, 1fr) auto auto;
 		align-items: center;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin-bottom: 0.5rem;
-		font-family: FiraCode, monospace;
+		gap: 0.5rem;
+		padding: 0.5rem 0;
 	}
 
 	.sub-item-name {
-		font-size: 1.3rem;
+		font-size: 1rem;
 		font-weight: 700;
 		color: var(--black);
-		flex: 1;
+		min-width: 0;
+		line-height: 1.5;
+		overflow-wrap: anywhere;
 	}
 
-	.sub-item-price {
-		color: rgba(0, 0, 0, 0.6);
-		font-size: 1.1rem;
+	@media screen and (min-width: 901px) {
+		.sub-item-name {
+			font-size: 1.25rem;
+		}
 	}
 
+	.item-option-line {
+		height: 3px;
+		background-image: radial-gradient(circle, #b8b8bf 1.5px, transparent 1.5px);
+		background-size: 8px 3px;
+		background-repeat: repeat-x;
+		background-position: center;
+		opacity: 0.65;
+	}
+
+	.sub-item .sponsorship-price {
+		text-align: right;
+	}
 	.sub-item-sold-out {
 		color: #999;
 		font-size: 0.9rem;
@@ -553,79 +543,14 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		border-radius: 12px;
 	}
 
-	.sub-add-button {
-		width: 2rem;
-		aspect-ratio: 1 / 1;
-		border-radius: 50%;
-		background-color: var(--black);
-		color: var(--white);
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: transform 0.2s ease;
-		flex-shrink: 0;
-	}
-
-	.sub-add-button svg {
-		width: 20px;
-		height: 20px;
-	}
-
-	.sub-add-button .add-icon,
-	.sub-add-button .added-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		line-height: 1;
-	}
-
-	.sub-add-button .added-icon {
-		display: none;
-	}
-
-	.sub-add-button.added .added-icon {
-		display: flex;
-	}
-
-	.sub-add-button.added .add-icon {
-		display: none;
-	}
-
-	.sub-add-button:hover {
-		transform: scale(1.1);
-	}
-
-	.sub-add-button.added {
-		background-color: var(--items-progress);
-	}
-
-	.sub-add-button.added:hover {
-		background-color: var(--items-progress);
-	}
-
-	.sub-add-button:disabled,
-	.sub-add-button.disabled {
-		background-color: var(--gray);
-		cursor: not-allowed;
-		opacity: 0.5;
-	}
-
-	.sub-add-button:disabled:hover,
-	.sub-add-button.disabled:hover {
-		transform: none;
-		background-color: var(--gray);
-	}
-
 	.structured-descriptions {
-		margin-top: 1rem;
+		margin-top: 0.25rem;
 	}
 
 	.structured-descriptions h2 {
-		font-size: 1.5rem;
+		font-size: 1.125rem;
 		margin-bottom: 0.3rem;
-		margin-top: 1.2rem;
+		margin-top: 1rem;
 		text-align: left;
 	}
 
@@ -633,6 +558,9 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		margin-top: 0;
 	}
 
+	:global(.site-button.venue-detail-action) {
+		text-decoration: underline;
+	}
 	@media screen and (max-width: 900px) {
 		.popup-content {
 			grid-template-columns: 1fr;
@@ -653,12 +581,6 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 			padding: 2rem 2rem 7rem;
 		}
 	}
-	@media screen and (max-width: 40rem) {
-		.sub-item-name.long {
-			flex: 1 1 100%;
-			margin-bottom: 0.5rem;
-		}
-	}
 
 	@media print {
 		.popup-content {
@@ -667,7 +589,6 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		}
 
 		.carousel-btn,
-		.sub-add-button,
 		.quantity-controls {
 			display: none;
 		}
@@ -694,126 +615,80 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		.tier-name,
 		.tier-arrow,
 		.tier-value,
-		.sub-item-name,
-		.sub-item-price {
+		.sub-item-name {
 			font-size: 12pt;
-		}
-
-		.price-value {
-			font-size: 14pt;
 		}
 
 		.item-details {
 			gap: 7pt;
 		}
 	}
+
+	@media screen {
+		.popup-content {
+			min-height: 36rem;
+			border-radius: 25px;
+			overflow: hidden;
+		}
+	}
+
+	.venue-summary {
+		padding: 1rem;
+		background: #e4efe5;
+		border-radius: 0.7rem;
+		line-height: 1.7;
+	}
+	@media screen and (max-width: 900px) {
+		.popup-content {
+			display: block;
+			min-height: 0;
+		}
+		.item-image {
+			height: clamp(10rem, 28dvh, 16rem);
+		}
+		.popup-bg.item-popup-bg .item-image img {
+			object-fit: cover;
+		}
+		.item-details {
+			height: auto;
+			overflow: visible;
+			padding: 1.25rem;
+		}
+		.item-details h3 {
+			font-size: 1.5rem;
+		}
+		.item-popup-bg .item-meta {
+			padding-right: 0;
+			gap: 0.5rem;
+		}
+	}
 </style>
 
 <script>
-	import { addInterestedItem, removeInterestedItem, isItemInterested, isDeadlinePassed } from "../../utils/local-storage.ts";
-	import { getItemDisplayPrice } from "../../utils/plan-helper.ts";
-
 	document.addEventListener("DOMContentLoaded", function () {
-		// Sync sub-item button state with localStorage and deadline
-		function syncSubItemButton(subItemId: string) {
-			try {
-				const button = document.querySelector(`.sub-add-button[data-sub-item-id="${subItemId}"]`) as HTMLElement;
-				if (!button) return;
-
-				// Check deadline
-				const deadline = button.getAttribute("data-item-deadline") || "";
-				const expired = isDeadlinePassed(deadline);
-
-				if (expired) {
-					button.setAttribute("disabled", "true");
-					button.classList.add("disabled");
-				} else {
-					button.removeAttribute("disabled");
-					button.classList.remove("disabled");
-				}
-
-				const isAdded = isItemInterested(subItemId);
-				if (isAdded) {
-					button.classList.add("added");
-				} else {
-					button.classList.remove("added");
-				}
-			} catch (error) {
-				if (import.meta.env.DEV) console.error("Error syncing sub-item button:", error);
+		// Reclaim unused space after wrapping so the dotted guide follows the text.
+		const optionRows = document.querySelectorAll<HTMLElement>(".sub-item");
+		const rowWidths = new WeakMap<Element, number>();
+		function fitOptionName(row: HTMLElement) {
+			const name = row.querySelector<HTMLElement>(".sub-item-name");
+			if (!name || row.getBoundingClientRect().width === 0) return;
+			name.style.width = "";
+			const range = document.createRange();
+			range.selectNodeContents(name);
+			const lines = Array.from(range.getClientRects());
+			if (lines.length > 0) {
+				name.style.width = `${Math.ceil(Math.max(...lines.map(line => line.width)))}px`;
 			}
 		}
-
-		// Handle sub-item add button clicks
-		document.addEventListener("click", function (e) {
-			const target = e.target as Element;
-
-			// Sub-item add button
-			if (target.closest(".sub-add-button")) {
-				e.preventDefault();
-				e.stopPropagation();
-
-				const btn = target.closest(".sub-add-button") as HTMLButtonElement;
-				const subItemId = btn.getAttribute("data-sub-item-id");
-				if (!subItemId) return;
-
-				// Check if deadline has passed
-				const deadline = btn.getAttribute("data-item-deadline") || "";
-				if (isDeadlinePassed(deadline)) {
-					return; // Don't allow adding expired items
-				}
-
-				const isAdded = isItemInterested(subItemId);
-
-				if (isAdded) {
-					// Remove from interested items
-					removeInterestedItem(subItemId);
-				} else {
-					// Add to interested items
-					const subItemName = btn.getAttribute("data-sub-item-name") || "";
-					const subItemPrice = btn.getAttribute("data-sub-item-price") || "";
-
-					// Get popup data for image and deadline
-					const popup = btn.closest(".popup-content");
-					const img = popup?.querySelector(".item-image img");
-					const itemImage = img?.getAttribute("src") || "";
-					const deadlineEl = popup?.querySelector(".category");
-					const itemDeadline = deadlineEl?.textContent || "";
-
-					// Get display price (either actual price or plan inclusion info)
-					const displayPrice = getItemDisplayPrice(subItemId, subItemPrice);
-
-					addInterestedItem({
-						id: subItemId,
-						title: subItemName,
-						category: "all",
-						image: itemImage,
-						deadline: itemDeadline,
-						price: displayPrice
-					});
-				}
-
-				syncSubItemButton(subItemId);
-			}
-		});
-
-		// Listen to itemsChange events from localStorage
-		window.addEventListener("itemsChange", function () {
-			// Sync all sub-item buttons
-			document.querySelectorAll(".sub-add-button").forEach(button => {
-				const subItemId = button.getAttribute("data-sub-item-id");
-				if (subItemId) {
-					syncSubItemButton(subItemId);
-				}
+		const optionObserver = new ResizeObserver(entries => {
+			entries.forEach(({ target, contentRect }) => {
+				if (rowWidths.get(target) === contentRect.width) return;
+				rowWidths.set(target, contentRect.width);
+				fitOptionName(target as HTMLElement);
 			});
 		});
-
-		// Initial sync for sub-items on page load
-		document.querySelectorAll(".sub-add-button").forEach(button => {
-			const subItemId = button.getAttribute("data-sub-item-id");
-			if (subItemId) {
-				syncSubItemButton(subItemId);
-			}
-		});
+		optionRows.forEach(row => optionObserver.observe(row));
+		document.fonts.ready.then(() => optionRows.forEach(fitOptionName));
 
 		// Carousel functionality
 		function initCarousels() {
@@ -914,4 +789,9 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		// Initialize carousels on page load
 		initCarousels();
 	});
+</script>
+
+<script>
+	import { openVenueDetails } from "../../utils/venue-linkify.ts";
+	document.querySelectorAll(".venue-detail-action").forEach(button => button.addEventListener("click", () => openVenueDetails("R0")));
 </script>

@@ -1,5 +1,6 @@
 import { isItemInterested, addInterestedItem, removeInterestedItem, getInterestedItems, isDeadlinePassed, type InterestedItem } from "./local-storage.js";
 import { getItemDisplayPrice } from "./plan-helper.js";
+import { parseDeadline } from "./deadline.js";
 
 declare global {
 	interface Window {
@@ -18,25 +19,23 @@ export function handleAddButtonClick(button: HTMLElement, event: Event): void {
 
 	const id = button.getAttribute("data-item-id") || "";
 	const itemDeadline = button.getAttribute("data-item-deadline") || "";
-	const card = button.closest(".card") || button.closest(".addon-card");
+	const card = button.closest(".card, .addon-card, .popup-content");
 	const isSoldOut = card?.getAttribute("data-is-sold-out") === "true";
 
 	// Disallow interactions for sold-out or expired items
-	if (isSoldOut || isDeadlinePassed(itemDeadline)) {
+	if (button.hasAttribute("disabled") || isSoldOut || isDeadlinePassed(itemDeadline)) {
 		return; // Don't allow adding expired items
 	}
 
-	// Check if this item has sub-items
-	const hasSubItems = card?.getAttribute("data-has-sub-items") === "true" || button.getAttribute("data-has-sub-items") === "true";
+	const popupId = button.getAttribute("data-popup-id");
 
-	if (hasSubItems) {
-		// Open the popup for items with sub-items
-		const popupId = `item-popup-${id}`;
+	if (popupId) {
+		// Catalog controls always open the same option selector.
 		if (typeof window.popupCtrl === "function") {
 			window.popupCtrl(popupId, "open");
 		}
 	} else {
-		// Toggle interested state for items without sub-items
+		// Every option uses the same saved-item toggle, regardless of option count.
 		const itemTitle = button.getAttribute("data-item-title") || button.getAttribute("data-item-name") || "";
 		const itemImage = button.getAttribute("data-item-image") || "";
 		const itemPrice = button.getAttribute("data-item-price") || "";
@@ -46,8 +45,7 @@ export function handleAddButtonClick(button: HTMLElement, event: Event): void {
 			removeInterestedItem(id);
 		} else {
 			// Add to interested items
-			const deadlineEl = card?.querySelector(".deadline-tag");
-			const displayDeadline = deadlineEl?.textContent || "";
+			const deadline = parseDeadline(itemDeadline) ? itemDeadline.trim() : "";
 
 			// Get user's language preference (default to zh-Hant if not available)
 			const userLang = document.documentElement.lang || navigator.language || "zh-Hant";
@@ -60,7 +58,7 @@ export function handleAddButtonClick(button: HTMLElement, event: Event): void {
 				title: itemTitle,
 				category: "all",
 				image: itemImage,
-				deadline: displayDeadline,
+				deadline,
 				price: displayPrice
 			});
 		}
@@ -78,7 +76,7 @@ export function updateAddButtonStates(): void {
 	addButtons.forEach(button => {
 		const itemId = button.getAttribute("data-item-id");
 		const deadline = button.getAttribute("data-item-deadline") || "";
-		const card = button.closest(".card, .addon-card") as HTMLElement | null;
+		const card = button.closest(".card, .addon-card, .popup-content") as HTMLElement | null;
 		const soldOut = card?.getAttribute("data-is-sold-out") === "true";
 
 		// Check if deadline has passed or item sold out
@@ -106,6 +104,7 @@ export function updateAddButtonStates(): void {
 				}
 			}
 
+			button.setAttribute("aria-pressed", String(hasItemInCart));
 			if (hasItemInCart) {
 				button.classList.add("added");
 			} else {

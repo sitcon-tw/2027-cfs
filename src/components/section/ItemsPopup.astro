@@ -17,6 +17,7 @@ const items = itemsUnsorted.sort((a, b) => {
 <script>
 	import { getInterestedItems, removeInterestedItem, isItemInterested, isDeadlinePassed } from "../../utils/local-storage.ts";
 	import { initializeAddToCart, updateAddButtonStates } from "../../utils/add-to-cart-handler.ts";
+	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
 
 	// Wait for DOM to be ready before initializing add-to-cart functionality
 	document.addEventListener("DOMContentLoaded", function () {
@@ -36,11 +37,11 @@ const items = itemsUnsorted.sort((a, b) => {
 	const arrow = expandButton ? expandButton.querySelector(".arrow") : null;
 
 	let isExpanded = false,
-		canExpand = true,
-		isInitialLoad = true;
+		canExpand = true;
 
 	const applyExpandState = () => {
 		const shouldShowExpandedUI = !canExpand || isExpanded;
+		expandButton?.setAttribute("aria-expanded", String(shouldShowExpandedUI));
 
 		if (shouldShowExpandedUI) {
 			cardsContainer!.classList.remove("fade-active");
@@ -54,73 +55,66 @@ const items = itemsUnsorted.sort((a, b) => {
 			(showText as HTMLElement).style.display = "inline";
 			(hideText as HTMLElement).style.display = "none";
 			(arrow as HTMLElement).style.transform = "rotate(0deg)";
-
-			// Only scroll when collapsing via button click, not on initial page load
-			if (!isInitialLoad) {
-				const itemsSection = document.getElementById("items");
-				if (itemsSection) {
-					const yOffset = -20;
-					const y = itemsSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-					window.scrollTo({ top: y, behavior: "smooth" });
-				}
-			}
 		}
 	};
 
 	if (expandButton)
 		expandButton.addEventListener("click", () => {
+			const collapsing = isExpanded;
+			const buttonTop = expandButton.getBoundingClientRect().top;
+			// Collapse in one layout update so the control stays under the pointer.
+			if (collapsing) cardsContainer!.classList.add("is-collapsing");
 			isExpanded = !isExpanded;
-			isInitialLoad = false; // Mark that user has interacted
 			applyExpandState();
+			if (collapsing) {
+				const target = window.scrollY + expandButton.getBoundingClientRect().top - buttonTop;
+				window.scrollPageTo(target);
+				requestAnimationFrame(() => cardsContainer!.classList.remove("is-collapsing"));
+			}
 		});
 
-	const getVisibleCards = (cards: HTMLElement[]): HTMLElement[] => cards.filter(card => !card.classList.contains("package-exclusive-item"));
+	const getVisibleCards = (cards: HTMLElement[]): HTMLElement[] => cards.filter(card => !card.hidden);
 
-	const isCardInactive = (card: HTMLElement) => {
-		const soldOut = card.getAttribute("data-is-sold-out") === "true";
-		const deadline = card.getAttribute("data-deadline") || "";
-		return soldOut || isDeadlinePassed(deadline);
+	const cards = Array.from(document.querySelectorAll<HTMLElement>("#item-catalog [data-card-id]"));
+	let selectedPurpose = "all";
+	const selectedFormats = new Set<string>();
+	const filterButtons = document.querySelectorAll<HTMLButtonElement>("[data-filter-group]");
+	const applyFilters = () => {
+		cards.forEach(card => {
+			card.hidden = selectedFormats.size > 0 && !selectedFormats.has(card.dataset.format || "");
+			updateCardDescription(card, selectedPurpose);
+		});
+		const orderAttribute = selectedPurpose === "all" ? "data-order" : `data-${selectedPurpose.replaceAll("_", "-")}-order`;
+		const inactive = (card: HTMLElement) => card.dataset.isSoldOut === "true" || isDeadlinePassed(card.dataset.deadline || "");
+		const rank = (card: HTMLElement) => Number(card.getAttribute(orderAttribute) || (selectedPurpose === "all" ? "0" : "999999"));
+		cards.sort((a, b) => Number(inactive(a)) - Number(inactive(b)) || rank(a) - rank(b));
+		const grid = document.querySelector("#item-catalog .cards-grid");
+		cards.forEach(card => grid?.appendChild(card));
+		filterButtons.forEach(button => {
+			const selected = button.dataset.filterGroup === "purpose" ? selectedPurpose === button.dataset.filterValue : selectedFormats.has(button.dataset.filterValue!);
+			button.setAttribute("aria-pressed", String(selected));
+		});
+		const visibleCount = getVisibleCards(cards).length;
+		const count = document.querySelector<HTMLElement>("[data-filter-count]");
+		if (count) {
+			count.textContent = (count.dataset.template || "{count}").replace("{count}", String(visibleCount));
+			count.style.visibility = selectedFormats.size ? "visible" : "hidden";
+		}
+		const empty = document.querySelector<HTMLElement>(".filter-empty");
+		if (empty) empty.hidden = visibleCount !== 0;
+		updateExpandButtonVisibility(visibleCount);
 	};
 
-	const sortCards = (selectedCategory: string) => {
-		const cardsGrid = document.querySelector(".cards-grid");
-		if (!cardsGrid) return;
-
-		const cards = Array.from(cardsGrid.querySelectorAll(".card")) as HTMLElement[];
-		// Count only visible cards (exclude package-exclusive-item)
-		let visibleCount = getVisibleCards(cards).length;
-
-		let orderAttr = "data-order";
-		if (selectedCategory === "talent_recruitment") {
-			orderAttr = "data-talent-recruitment-order";
-		} else if (selectedCategory === "brand_exposure") {
-			orderAttr = "data-brand-exposure-order";
-		} else if (selectedCategory === "product_promotion") {
-			orderAttr = "data-product-promotion-order";
+	const updateCardDescription = (card: HTMLElement, purpose: string) => {
+		const description = card.querySelector<HTMLElement>(".description");
+		const descriptionData = card.dataset.descriptions;
+		if (!description || !descriptionData) return;
+		try {
+			const descriptions = JSON.parse(descriptionData);
+			description.textContent = descriptions[purpose] || descriptions.all || "";
+		} catch {
+			// Keep the rendered description if stored data is invalid.
 		}
-
-		cards.sort((a, b) => {
-			const aInactive = isCardInactive(a);
-			const bInactive = isCardInactive(b);
-
-			// Inactive items (sold out or deadline passed) should always go last
-			if (aInactive && !bInactive) return 1;
-			if (!aInactive && bInactive) return -1;
-
-			const orderA = parseInt(a.getAttribute(orderAttr) || (selectedCategory === "all" ? "0" : "999999"));
-			const orderB = parseInt(b.getAttribute(orderAttr) || (selectedCategory === "all" ? "0" : "999999"));
-			return orderA - orderB;
-		});
-
-		// Update ItemCard descriptions based on selected category
-		cards.forEach(card => {
-			updateCardDescription(card, selectedCategory);
-		});
-
-		// Reorder cards in the DOM
-		cards.forEach(card => cardsGrid.appendChild(card));
-
-		updateExpandButtonVisibility(visibleCount);
 	};
 
 	const getCardsPerRowThreshold = () => {
@@ -131,23 +125,6 @@ const items = itemsUnsorted.sort((a, b) => {
 			return 4;
 		} else {
 			return 6;
-		}
-	};
-
-	const updateCardDescription = (card: HTMLElement, selectedCategory: string) => {
-		const descriptionElement = card.querySelector(".description");
-		if (!descriptionElement) return;
-
-		// Get stored description data from card attributes
-		const descriptionData = card.getAttribute("data-descriptions");
-		if (descriptionData) {
-			try {
-				const descriptions = JSON.parse(descriptionData);
-				const newDescription = descriptions[selectedCategory] || descriptions["all"] || "";
-				descriptionElement.textContent = newDescription;
-			} catch (e) {
-				// Fallback to original description if JSON parsing fails
-			}
 		}
 	};
 
@@ -168,29 +145,29 @@ const items = itemsUnsorted.sort((a, b) => {
 		}
 	};
 
-	const tabButtons = document.querySelectorAll(".tab");
-	tabButtons.forEach(button => {
+	filterButtons.forEach(button => {
 		button.addEventListener("click", () => {
-			const buttonElement = button;
-
-			tabButtons.forEach(tab => tab.classList.remove("active"));
-
-			buttonElement.classList.add("active");
-
-			const category = buttonElement.getAttribute("data-category") || "all";
-
-			sortCards(category);
+			const value = button.dataset.filterValue!;
+			if (button.dataset.filterGroup === "purpose") selectedPurpose = selectedPurpose === value ? "all" : value;
+			else if (selectedFormats.has(value)) selectedFormats.delete(value);
+			else selectedFormats.add(value);
+			applyFilters();
 		});
 	});
-
-	const totalCards = getVisibleCards(Array.from(document.querySelectorAll(".card")) as HTMLElement[]).length;
-	updateExpandButtonVisibility(totalCards);
-	applyExpandState();
-
-	window.addEventListener("resize", () => {
-		const allCards = getVisibleCards(Array.from(document.querySelectorAll(".card")) as HTMLElement[]);
-		updateExpandButtonVisibility(allCards.length);
+	document.querySelector("[data-clear-filters]")?.addEventListener("click", () => {
+		selectedFormats.clear();
+		applyFilters();
+		document.querySelector<HTMLButtonElement>('[data-filter-group="purpose"]')?.focus();
 	});
+	document.querySelectorAll<HTMLAnchorElement>("[data-item-category]").forEach(link => {
+		link.addEventListener("click", () => {
+			selectedFormats.clear();
+			if (link.dataset.itemCategory) selectedPurpose = link.dataset.itemCategory;
+			applyFilters();
+		});
+	});
+	applyFilters();
+	window.addEventListener("resize", () => updateExpandButtonVisibility(getVisibleCards(cards).length));
 
 	// Use the shared utility function for syncing add buttons
 	const syncAllAddButtons = updateAddButtonStates;
@@ -223,7 +200,7 @@ const items = itemsUnsorted.sort((a, b) => {
 	};
 
 	const renderInterestItemsList = () => {
-		const items = getInterestedItems();
+		const items = getInterestedItems().map(item => localizeInterestedItem(item, document.documentElement.lang));
 		const listContainer = document.getElementById("interestItemsList");
 
 		if (!listContainer) return;
@@ -250,7 +227,9 @@ const items = itemsUnsorted.sort((a, b) => {
 			titleSpan.textContent = item.title;
 
 			const removeButton = document.createElement("button");
-			removeButton.className = "remove-item";
+			removeButton.type = "button";
+			removeButton.className = "site-button site-button--normal site-button--icon remove-item";
+			removeButton.setAttribute("aria-label", document.documentElement.lang === "en" ? `Remove ${item.title}` : `移除${item.title}`);
 			removeButton.setAttribute("data-item-id", item.id);
 
 			if (removeIconTemplate) {
@@ -259,10 +238,27 @@ const items = itemsUnsorted.sort((a, b) => {
 			}
 
 			contentDiv.appendChild(titleSpan);
+			if (item.price) {
+				const priceSpan = document.createElement("span");
+				priceSpan.className = "item-price-tag";
+				priceSpan.textContent = item.price;
+				contentDiv.appendChild(priceSpan);
+			}
 			contentDiv.appendChild(removeButton);
 			itemDiv.appendChild(contentDiv);
 			listContainer.appendChild(itemDiv);
 		});
+
+		// Subtotal of numeric prices (plan-included items and TBD prices are skipped)
+		const subtotal = items.reduce((sum, item) => {
+			const price = item.price || "";
+			return price.startsWith("$") || price.startsWith("NT$") ? sum + (parseInt(price.replace(/[NT$,]/g, ""), 10) || 0) : sum;
+		}, 0);
+		const subtotalLabel = document.querySelector("[data-i18n-subtotal]")?.textContent || "";
+		const subtotalDiv = document.createElement("div");
+		subtotalDiv.className = "interest-subtotal";
+		subtotalDiv.innerHTML = `<span>${subtotalLabel}</span><span>NT$${subtotal.toLocaleString("en-US")}</span>`;
+		listContainer.appendChild(subtotalDiv);
 
 		const removeButtons = listContainer.querySelectorAll(".remove-item");
 		removeButtons.forEach(button => {
@@ -293,7 +289,9 @@ const items = itemsUnsorted.sort((a, b) => {
 			currentCount = getInterestedItems().length;
 		}
 
-		if (currentCount > previousInterestCount) {
+		// Keep selection uninterrupted while any item popup is open.
+		const isSelecting = document.querySelector(".item-popup-bg.show");
+		if (currentCount > previousInterestCount && !isSelecting) {
 			setTimeout(() => openPopover(), 0);
 		}
 
@@ -343,7 +341,8 @@ const items = itemsUnsorted.sort((a, b) => {
 		// Handle download quote button
 		if (target.closest(".download-quote-btn")) {
 			e.preventDefault();
-			const quotationUrl = window.location.origin + "/2027/cfs/quotation";
+			const languagePath = document.documentElement.lang === "en" ? "en/" : "";
+			const quotationUrl = window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${languagePath}quotation`;
 			window.open(quotationUrl, "_blank");
 			closePopover();
 			return;
@@ -357,14 +356,14 @@ const items = itemsUnsorted.sort((a, b) => {
 				// Navigate to Form section if user has already visited Plans
 				const formSection = document.getElementById("form");
 				if (formSection) {
-					formSection.scrollIntoView({ behavior: "smooth" });
+					window.scrollPageTo(formSection, { immediate: false, offset: -32 });
 					closePopover();
 				}
 			} else {
 				// Navigate to Plans section if user hasn't visited Plans yet
 				const plansSection = document.getElementById("plans");
 				if (plansSection) {
-					plansSection.scrollIntoView({ behavior: "smooth" });
+					window.scrollPageTo(plansSection, { immediate: false, offset: -32 });
 					closePopover();
 					// Mark that user has visited plans
 					hasVisitedPlans = true;
@@ -384,14 +383,14 @@ const items = itemsUnsorted.sort((a, b) => {
 	updateInterestButton();
 	syncAllAddButtons();
 
-	const targetSections = ["items", "plans", "addons", "form"];
+	const targetSections = ["plans", "items", "opendream", "form"];
 	let currentSection = "";
 	let hasVisitedPlans = false;
 	let isButtonVisible = false;
 
 	// Store text constants for JavaScript access
 	const viewPlanDetailsText = document.getElementById("viewPlanBtnText")?.textContent || "檢視方案詳情";
-	const contactUsText = "聯絡我們";
+	const contactUsText = document.documentElement.lang === "en" ? "Contact us" : "聯絡我們";
 
 	const updateViewPlanButtonText = () => {
 		const viewPlanBtnText = document.getElementById("viewPlanBtnText");

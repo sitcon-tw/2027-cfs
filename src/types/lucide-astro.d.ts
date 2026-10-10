@@ -3,10 +3,18 @@ declare module "@lucide/astro" {
 	export const Plus: any;
 	export const Check: any;
 	export const Heart: any;
+	export const Circle: any;
+	export const CircleDot: any;
 	export const Flag: any;
 	export const Minus: any;
 	export const Container: any;
 	export const ChevronDown: any;
 	export const ChevronLeft: any;
 	export const ChevronRight: any;
+	export const ArrowRight: any;
+	export const Ticket: any;
+	export const Globe: any;
+	export const Newspaper: any;
+	export const Megaphone: any;
+	export const FileChartColumn: any;
 }

@@ -1,8 +1,10 @@
 ---
-import { X, Heart } from "@lucide/astro";
-import { loadItemsData } from "../../utils/items-loader";
+import { X, Heart, Plus, Check, Circle, CircleDot } from "@lucide/astro";
+import Button from "../Button.astro";
+import { loadItemsData, translateType } from "../../utils/items-loader";
 import { isInactive } from "../../utils/item-status";
-import shopConfig from "@data/shop_config.json";
+import { purposes } from "../../utils/item-filters";
+import "../../assets/item-filters.css";
 import ItemCard from "@components/items/ItemCard.astro";
 
 const { t, lang } = Astro.props;
@@ -22,41 +24,113 @@ const items = itemsUnsorted.sort((a, b) => {
 	const orderB = b.order || 0;
 	return orderA - orderB;
 });
-const config = shopConfig;
+const formatOrder = ["現場實體曝光", "數位媒體曝光", "紀念品配件曝光", "獨家議程", "更多曝光方式"];
+const formats = [...new Set(items.map(item => item.format))].sort((a, b) => {
+	const rank = (format: string) => {
+		const index = formatOrder.indexOf(format);
+		return index === -1 ? formatOrder.length : index;
+	};
+	return rank(a) - rank(b);
+});
+const groups = [
+	{ id: "purpose", label: t.filters.purpose, options: purposes.map(id => ({ id, label: t.item_categories[id] })) },
+	{ id: "format", label: t.filters.format, options: formats.map(id => ({ id, label: translateType(id, lang).replaceAll("曝光", "") })) }
+];
 ---
 
 <section id="items">
 	<div class="container">
 		<h2>{t.title}</h2>
-		<p class="subtitle">{t.subtitle}</p>
 
-		<div class="tabs">
+		<div class="filters">
+			<p class="filter-question" style="text-align: center; font-size: 1.25rem; font-weight: 600;">{t.filters.question}</p>
 			{
-				config.categories.map((category: string, index: number) => (
-					<button class={`tab ${index === 0 ? "active" : ""}`} data-category={category}>
-						{t.item_categories[category]}
-					</button>
+				groups.map(group => (
+					<fieldset class="filter-row" aria-label={group.label}>
+						{group.id === "format" && (
+							<p class="filter-question" style="text-align: center; font-size: 1.25rem; font-weight: 600;">
+								{t.filters.formatQuestion}
+							</p>
+						)}
+						<div class="filter-options">
+							{group.options.map(option => (
+								<Button
+									type="button"
+									variant="normal"
+									color="var(--white)"
+									textColor="var(--black)"
+									hoverColor="var(--filter-bg, var(--gray-container))"
+									class="filter-toggle"
+									data-filter-group={group.id}
+									data-filter-value={option.id}
+									data-filter-tone={group.id}
+									aria-pressed="false"
+									aria-controls="item-catalog"
+								>
+									{group.id === "purpose" ? (
+										<span class="filter-radio-indicator" aria-hidden="true">
+											<span class="filter-unselected-icon">
+												<Circle size={16} />
+											</span>
+											<span class="filter-selected-icon">
+												<CircleDot size={16} />
+											</span>
+										</span>
+									) : (
+										<span class="filter-multi-indicator" aria-hidden="true">
+											<span class="filter-unselected-icon">
+												<Plus size={16} />
+											</span>
+											<span class="filter-selected-icon">
+												<Check size={16} />
+											</span>
+										</span>
+									)}
+									<span>{option.label}</span>
+								</Button>
+							))}
+						</div>
+					</fieldset>
 				))
 			}
 		</div>
+		<p class="filter-results" style="visibility: hidden;" role="status" aria-live="polite" data-filter-count data-template={t.filters.count}>
+			{t.filters.count.replace("{count}", String(items.length))}
+		</p>
+		<div class="filter-empty" hidden>
+			<p>{t.filters.empty}</p>
+			<Button type="button" variant="normal" color="var(--white)" textColor="var(--black)" hoverColor="var(--gray-container)" size="compact" class="filter-toggle" data-clear-filters
+				>{t.filters.clear}</Button
+			>
+		</div>
 
-		<div class="cards-container fade-active">
+		<div class="cards-container fade-active" id="item-catalog">
 			<div class="cards-grid">
-				{items.map(card => <ItemCard t={t} card={card} shopConfig={config} selectedCategory="all" />)}
+				{items.map(card => <ItemCard t={t} card={card} lang={lang} />)}
 			</div>
 			<div class="fade-overlay"></div>
 		</div>
 
-		<button class="expand-button" id="expandButton">
+		<button class="expand-button" id="expandButton" aria-expanded="false" aria-controls="item-catalog">
 			<span class="show-text">{t.expandAll}</span>
 			<span class="hide-text" style="display: none;">{t.showLess}</span>
 			<span class="arrow">▼</span>
 		</button>
 
-		<button class="interest-button" id="interestButton">
+		<Button
+			variant="outlined"
+			color="var(--white)"
+			textColor="var(--black)"
+			borderColor="var(--items-green)"
+			size="icon"
+			class="interest-button"
+			id="interestButton"
+			type="button"
+			aria-label={t.interestedItems}
+		>
 			<span class="heart-icon"><Heart /></span>
 			<span class="interest-count">0</span>
-		</button>
+		</Button>
 
 		<div class="interest-popover lenis-scroll" id="interestPopover">
 			<div class="popover-header">
@@ -68,12 +142,12 @@ const config = shopConfig;
 			<div class="popover-footer">
 				<p class="footer-text">{t.shareInterestedItemsText}</p>
 				<div class="action-buttons">
-					<button class="action-button download-quote-btn">
+					<Button size="compact" hoverColor="#404040" class="action-button download-quote-btn" type="button">
 						{t.downloadQuote}
-					</button>
-					<button class="action-button view-plan-btn" id="viewPlanBtn">
+					</Button>
+					<Button size="compact" hoverColor="#404040" class="action-button view-plan-btn" id="viewPlanBtn" type="button">
 						<span id="viewPlanBtnText">{t.viewPlanDetails}</span>
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -82,6 +156,7 @@ const config = shopConfig;
 			<X />
 		</template>
 		<div data-i18n-no-items style="display: none;">{t.noInterestedItems}</div>
+		<div data-i18n-subtotal style="display: none;">{t.subtotal}</div>
 	</div>
 </section>
 
@@ -98,38 +173,39 @@ const config = shopConfig;
 		padding: 0 2rem;
 	}
 
-	.subtitle {
-		color: var(--black);
-		text-align: center;
-		margin-bottom: 3rem;
-		font-size: 1.1rem;
+	.filters {
+		margin: 0 0 1.5rem;
 	}
-
-	.tabs {
+	.filter-question {
+		text-align: center;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--black);
+		margin: 0 0 0.75rem;
+	}
+	.filter-row {
+		border: 0;
+		padding: 0;
+		margin: 0 0 1rem;
+		min-width: 0;
+	}
+	.filter-options {
 		display: flex;
 		justify-content: center;
-		gap: 0;
-		margin-bottom: 3rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 	}
-
-	.tab {
-		padding: 0.75rem 1.5rem;
-		border: none;
-		background-color: var(--white);
+	.filter-results {
+		font-size: 0.9rem;
 		color: var(--black);
-		cursor: pointer;
-		border-radius: 25px;
-		margin: 0 0.25rem;
-		font-size: 1rem;
-		transition: background-color 0.3s ease;
 	}
-
-	.tab.active {
-		background-color: var(--gray-container);
+	.filter-results {
+		text-align: center;
+		margin-bottom: 1rem;
 	}
-
-	.tab:hover {
-		background-color: var(--gray-container);
+	.filter-empty {
+		text-align: center;
+		padding: 2rem 1rem;
 	}
 
 	.cards-container {
@@ -137,6 +213,10 @@ const config = shopConfig;
 		margin-bottom: 3rem;
 		transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 		overflow: hidden;
+	}
+
+	.cards-container.is-collapsing {
+		transition: none;
 	}
 
 	.cards-container.fade-active {
@@ -198,30 +278,23 @@ const config = shopConfig;
 		font-size: 0.8rem;
 	}
 
-	.interest-button {
+	:global(.site-button.interest-button) {
+		border-width: 2px;
 		position: fixed;
 		bottom: 2rem;
 		right: 2rem;
 		width: 3.5rem;
-		aspect-ratio: 1 / 1;
-		border-radius: 50%;
-		background-color: var(--white);
-		border: none;
-		cursor: pointer;
+		height: 3.5rem;
 		display: none;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-		transition: all 0.2s ease;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 		z-index: 1000;
 	}
 
-	.interest-button:hover {
-		transform: scale(1.05);
+	:global(.interest-button:hover) {
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 	}
 
-	.interest-button .heart-icon {
+	:global(.interest-button .heart-icon) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -229,13 +302,11 @@ const config = shopConfig;
 		transition: all 0.2s ease;
 	}
 
-	.interest-button .heart-icon svg {
-		width: 20px;
-		height: 20px;
+	:global(.interest-button .heart-icon svg) {
 		stroke-width: 2;
 	}
 
-	.interest-button .interest-count {
+	:global(.interest-button .interest-count) {
 		position: absolute;
 		top: -4px;
 		right: -4px;
@@ -255,7 +326,7 @@ const config = shopConfig;
 		transition: all 0.2s ease;
 	}
 
-	.interest-button .interest-count:not(:empty) {
+	:global(.interest-button .interest-count:not(:empty)) {
 		opacity: 1;
 		transform: scale(1);
 	}
@@ -265,7 +336,8 @@ const config = shopConfig;
 		z-index: 1000;
 		bottom: 6.5rem;
 		right: 2rem;
-		width: 16rem;
+		width: 20rem;
+		max-width: calc(100vw - 4rem);
 		max-height: 60rem;
 		background-color: var(--white);
 		border-radius: 1rem;
@@ -355,37 +427,31 @@ const config = shopConfig;
 	}
 
 	:global(.item-price-tag) {
-		font-size: 0.8rem;
-		color: #0171e3;
-		font-weight: 400;
-		margin-top: 0.25rem;
-		display: inline-block;
+		font-size: 0.85rem;
+		color: var(--gray);
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	:global(.interest-subtotal) {
+		display: flex;
+		justify-content: space-between;
+		padding: 0.75rem 1rem;
+		font-size: 0.9rem;
+		font-weight: 700;
+		border-top: 1px solid rgba(0, 0, 0, 0.08);
 	}
 
 	:global(.remove-item) {
-		background: none;
-		border: none;
-		color: rgba(0, 0, 0, 0.4);
-		cursor: pointer;
-		width: 32px;
-		height: 32px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 50%;
-		transition: all 0.2s ease;
+		--site-button-background: transparent;
+		--site-button-color: rgba(0, 0, 0, 0.4);
+		--site-button-hover-background: rgba(0, 0, 0, 0.06);
+		--site-button-hover-color: rgba(0, 0, 0, 0.8);
 		flex-shrink: 0;
 	}
 
 	:global(.remove-item svg) {
-		width: 18px;
-		height: 18px;
-		stroke-width: 1.5;
-	}
-
-	:global(.remove-item:hover) {
-		background-color: rgba(0, 0, 0, 0.06);
-		color: rgba(0, 0, 0, 0.8);
+		stroke-width: 2;
 	}
 
 	.action-buttons {
@@ -394,25 +460,11 @@ const config = shopConfig;
 		margin-top: 1rem;
 	}
 
-	.action-button {
+	:global(.action-button) {
 		flex: 1;
-		padding: 0.2rem;
-		background-color: var(--button-dark);
-		color: var(--white);
-		border: none;
-		border-radius: 25px;
-		font-size: 0.9rem;
 		font-weight: 400;
-		cursor: pointer;
-		transition: all 0.2s ease;
 		text-align: center;
 		white-space: nowrap;
-	}
-
-	.action-button:hover {
-		background-color: #404040;
-		transform: translateY(-1px);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	}
 
 	@media screen and (max-width: 1024px) {
@@ -430,29 +482,14 @@ const config = shopConfig;
 			padding: 0 1rem;
 		}
 
-		.tabs {
-			flex-wrap: wrap;
-			gap: 0.5rem;
-		}
-
-		.tab {
-			padding: 0.5rem 1rem;
-			font-size: 0.9rem;
-		}
-
-		.interest-button {
+		:global(.site-button.interest-button) {
 			bottom: 1rem;
 			right: 1rem;
 			width: 50px;
 			height: 50px;
 		}
 
-		.interest-button .heart-icon svg {
-			width: 18px;
-			height: 18px;
-		}
-
-		.interest-button .interest-count {
+		:global(.interest-button .interest-count) {
 			font-size: 0.7rem;
 			min-width: 16px;
 			height: 16px;

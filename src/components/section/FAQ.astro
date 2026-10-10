@@ -1,6 +1,7 @@
 ---
 const { t } = Astro.props;
 import { ChevronDown } from "@lucide/astro";
+import { marked } from "marked";
 ---
 
 <section id="faq">
@@ -16,7 +17,7 @@ import { ChevronDown } from "@lucide/astro";
 						</button>
 
 						<div class="faq-answer" data-answer={index + 1}>
-							<p>{question.answer}</p>
+							<div class="answer-body" set:html={marked.parseInline(question.answer)} />
 						</div>
 					</div>
 				))
@@ -127,8 +128,15 @@ import { ChevronDown } from "@lucide/astro";
 		padding: 0 0 24px 0;
 	}
 
-	.faq-answer p {
+	.faq-answer p,
+	.faq-answer .answer-body {
 		margin: 0;
+	}
+
+	.faq-answer a {
+		color: #0171e3;
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	@media screen {

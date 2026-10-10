@@ -1,6 +1,7 @@
 ---
 import { X, Plus } from "@lucide/astro";
-const { title, background, btnText, hero = true, id = Math.random().toString(36).slice(2, 9), button = true } = Astro.props;
+import Button from "./Button.astro";
+const { title, background, btnText, hero = true, id = Math.random().toString(36).slice(2, 9), button = true, variant = "default", lang = "zh-Hant" } = Astro.props;
 ---
 
 {
@@ -16,18 +17,25 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	)
 }
 
-<div class="popup-bg lenis-scroll">
+<div class:list={["popup-bg lenis-scroll", `variant-${variant}`, { "item-popup-bg": variant === "item" }]}>
 	<div class={"popup " + (hero ? "" : "no-hero")}>
 		{
 			hero && (
 				<div class="popup-hero">
 					{title && <h2>{title}</h2>}
+					<slot name="hero-message" />
 					{background && <img src={background} alt="Popup Background" />}
 				</div>
 			)
 		}
 		<slot />
-		<div class="close-btn"><X stroke-width={3.5} /></div>
+		{
+			(
+				<Button class="close-btn" size="icon" color="var(--black)" type="button" aria-label={lang === "en" ? "Close" : "關閉"}>
+					<X stroke-width={3.5} />
+				</Button>
+			)
+		}
 	</div>
 </div>
 <style is:global>
@@ -42,8 +50,7 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	}
 </style>
 <style>
-	.detail-btn,
-	.close-btn {
+	.detail-btn {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -64,14 +71,11 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		margin: auto;
 	}
 
-	.close-btn {
-		width: 2.8rem;
-		aspect-ratio: 1 / 1;
+	:global(.close-btn) {
 		position: absolute;
 		top: 2rem;
 		right: 2rem;
-		background-color: var(--black);
-		color: var(--white);
+		z-index: 5;
 	}
 
 	.detail-btn .plus {
@@ -87,6 +91,8 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	}
 
 	.popup-bg {
+		/* The backdrop click handler must not highlight non-interactive content. */
+		-webkit-tap-highlight-color: transparent;
 		position: fixed;
 		inset: 0;
 		width: 100%;
@@ -121,6 +127,12 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		padding-bottom: 2rem;
 		cursor: auto;
 	}
+
+	.popup :global(a),
+	.popup :global(button),
+	.popup :global(summary) {
+		-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+	}
 	.no-hero.popup {
 		padding-bottom: 0;
 	}
@@ -128,6 +140,12 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 	.show .popup {
 		opacity: 1;
 		transform: translateY(0rem);
+	}
+
+	.popup-bg.is-switching,
+	.popup-bg.is-switching .popup {
+		transition: none;
+		transform: none;
 	}
 
 	.popup-hero {
@@ -163,7 +181,6 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		z-index: 1;
 		text-align: left;
 	}
-
 	@media screen and (max-width: 45rem) {
 		.popup-hero {
 			height: 20rem;
@@ -177,7 +194,7 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 
 	@media print {
 		.detail-btn,
-		.close-btn {
+		:global(.close-btn) {
 			display: none !important;
 		}
 

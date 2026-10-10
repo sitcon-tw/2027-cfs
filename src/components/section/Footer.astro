@@ -29,8 +29,8 @@ const { t } = Astro.props;
 				<div class="contact-section">
 					<h3>{t.contact}</h3>
 					<p>
-						<a href="mailto:contact@sitcon.org" class="contact-email">contact@sitcon.org</a><br />
-						<span set:html={t.contact_list.join("<br>")} />
+						<a href="mailto:contact@sitcon.org" class="contact-email">contact@sitcon.org</a>
+						{t.contact_list.length > 0 && <span set:html={"<br>" + t.contact_list.join("<br>")} />}
 					</p>
 				</div>
 				<div>

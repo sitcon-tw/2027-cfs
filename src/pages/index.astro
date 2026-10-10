@@ -5,11 +5,11 @@ import Intro from "@components/section/Intro.astro";
 import About from "@components/section/About.astro";
 import News from "@components/section/News.astro";
 import Sponsors from "@components/section/Sponsors.astro";
-import Cycle from "@components/section/Cycle.astro";
 import Time from "@components/section/Time.astro";
 import Items from "@components/section/Items.astro";
 import Plans from "@components/section/Plans.astro";
-import Addons from "@components/section/Addons.astro";
+import Highlights from "@components/section/Highlights.astro";
+import OpenDream from "@components/section/OpenDream.astro";
 import Form from "@components/section/Form.astro";
 import FAQ from "@components/section/FAQ.astro";
 import Footer from "@components/section/Footer.astro";
@@ -19,7 +19,7 @@ import ItemsPopup from "@components/section/ItemsPopup.astro";
 const { lang = "zh-Hant" } = Astro.props;
 const ogImage = lang === "zh-Hant" ? ogImageZH : ogImageEN;
 const t = await import(`../i18n/${lang}.json`).then(m => m.default);
-const sections = [Nav, Hero, Intro, About, News, Sponsors, Cycle, Time, Items, Plans, Addons, ItemsPopup, Form, FAQ, Footer];
+const sections = [Nav, Hero, Intro, Time, Highlights, About, News, Plans, Items, OpenDream, ItemsPopup, Form, Sponsors, FAQ, Footer];
 const { title = t.meta.title, description = t.meta.description } = Astro.props;
 
 // Default schema for homepage (Organization + WebSite)
@@ -31,14 +31,14 @@ const defaultSchema = {
 			name: "SITCON 學生計算機年會",
 			alternateName: "SITCON",
 			url: "https://sitcon.org",
-			logo: "https://sitcon.org/2027/cfs/SITCON.svg",
+			logo: new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/SITCON.svg`, Astro.site).href,
 			description: description,
 			sameAs: ["https://www.facebook.com/SITCONtw", "https://twitter.com/sitcontw"]
 		},
 		{
 			"@type": "WebSite",
 			name: title,
-			url: "https://sitcon.org/2027/cfs/",
+			url: new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/`, Astro.site).href,
 			description: description,
 			inLanguage: lang
 		}
@@ -64,12 +64,12 @@ const defaultSchema = {
 		<slot name="schema">
 			<script type="application/ld+json" set:html={JSON.stringify(defaultSchema)} is:inline />
 		</slot>
-		<link rel="icon" type="image/png" href="/2027/cfs/favicon/favicon-96x96.png" sizes="96x96" />
-		<link rel="icon" type="image/svg+xml" href="/2027/cfs/SITCON.svg" />
-		<link rel="shortcut icon" href="/2027/cfs/favicon/favicon.ico" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/2027/cfs/favicon/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon/favicon-96x96.png`} sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/SITCON.svg`} />
+		<link rel="shortcut icon" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon/favicon.ico`} />
+		<link rel="apple-touch-icon" sizes="180x180" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon/apple-touch-icon.png`} />
 		<meta name="apple-mobile-web-app-title" content="SITCON" />
-		<link rel="manifest" href="/2027/cfs/favicon/site.webmanifest" />
+		<link rel="manifest" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon/site.webmanifest`} />
 		<meta name="theme-color" content="#77B55A" />
 		<script is:inline>
 			(function (w, d, s, l, i) {
@@ -96,22 +96,36 @@ const defaultSchema = {
 			import Lenis from "lenis";
 
 			const originalTitle = document.body.getAttribute("data-title") || document.title;
-			const originalSite = " - " + originalTitle.split(" - ")[0] || "SITCON 2026 贊助徵求書";
+			const originalSite = " - " + originalTitle.split(" - ")[0] || "SITCON 2027 贊助徵求書";
 
 			declare global {
 				interface Window {
 					popupCtrl: (id?: string, action?: "open" | "close", updateUrl?: boolean, find?: Element | null) => void;
 					dataLayer: any[];
+					scrollPageTo: (target: number | HTMLElement, options?: { immediate?: boolean; offset?: number }) => void;
 				}
 			}
 
 			window.dataLayer = window.dataLayer || [];
 
 			// Initialize Lenis for smooth scrolling (runs automatically with autoRaf: true)
-			const _lenis = new Lenis({
+			const lenis = new Lenis({
 				autoRaf: true,
-				prevent: node => node.classList.contains("lenis-scroll")
+				prevent: node => node.classList.contains("lenis-scroll"),
+				virtualScroll: ({ deltaX, deltaY }) => {
+					if (Math.abs(deltaX) <= Math.abs(deltaY)) return true;
+					// Horizontal tracks stay native without retaining an old document animation.
+					lenis.scrollTo(lenis.actualScroll, { immediate: true, force: true });
+					return false;
+				}
 			});
+
+			// Keep layout jumps immediate by default; smooth document navigation uses the same animator.
+			window.scrollPageTo = (target, options = {}) => {
+				const immediate = options.immediate ?? true;
+				lenis.resize();
+				lenis.scrollTo(target, { ...options, immediate, force: immediate });
+			};
 
 			const observer = new IntersectionObserver(
 				entries => {
@@ -140,29 +154,40 @@ const defaultSchema = {
 			window.popupCtrl = (id = "", action = "open", updateUrl = true, find = null) => {
 				const popupBg = find || (document.querySelector(`#${id} + .popup-bg`) as HTMLElement | null);
 				if (!popupBg || !(popupBg instanceof HTMLElement)) return;
+				const isItem = popupBg.classList.contains("item-popup-bg");
 				if (action === "open") {
+					const switchingItem = isItem && !!document.querySelector(".item-popup-bg.show");
+					popupBg.classList.toggle("is-switching", switchingItem);
+					if (isItem) {
+						document.querySelectorAll<HTMLElement>(".item-popup-bg.show").forEach(previous => {
+							if (previous !== popupBg) window.popupCtrl("", "close", false, previous);
+						});
+					}
+					lenis.stop();
 					popupBg.style.overflow = "hidden";
 					popupBg.style.display = "flex";
-					setTimeout(() => {
-						popupBg.scrollTo({
-							top: 0
-						});
+					const reveal = () => {
+						popupBg.scrollTo({ top: 0, behavior: "instant" });
+						popupBg.querySelectorAll(".popup-content, .item-details").forEach(content => content.scrollTo({ top: 0, behavior: "instant" }));
 						popupBg.classList.add("show");
 						document.dispatchEvent(new CustomEvent("popupOpened", { detail: { id } }));
-					}, 0);
+					};
+					if (switchingItem) reveal();
+					else setTimeout(reveal, 0);
+					popupBg.querySelector<HTMLButtonElement>(".close-btn")?.focus({ preventScroll: true });
 					if (updateUrl) {
 						if (id.startsWith("item-popup-")) {
 							const itemId = id.replace("item-popup-", "");
 							const itemName = popupBg.querySelector(".title-row h3")?.textContent || "";
 							document.title = itemName + originalSite;
-							history.pushState({ popupId: id, type: "item" }, "", `/2027/cfs/item/${itemId}/`);
+							history.pushState({ popupId: id, type: "item" }, "", `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${document.documentElement.lang === "en" ? "en/" : ""}item/${itemId}/`);
 							const price = parseInt(popupBg.querySelector(".sub-item-price")?.textContent || "0");
 							window.dataLayer.push({
 								event: "view_item",
 								ecommerce: {
 									currency: "TWD",
 									value: price,
-									items: [{ item_id: itemId, price, item_name: itemName || "unknown", item_category: "2026 CFS" }]
+									items: [{ item_id: itemId, price, item_name: itemName || "unknown", item_category: "2027 CFS" }]
 								},
 								page_path: window.location.pathname
 							});
@@ -173,27 +198,34 @@ const defaultSchema = {
 					popupBg.style.overflow = "auto";
 				} else {
 					popupBg.classList.remove("show");
-					setTimeout(() => {
+					const hide = () => {
 						popupBg.style.display = "none";
 						// dispatch popupClosed after it's hidden
 						const closingPopup = popupBg.previousElementSibling as HTMLElement | null;
 						const closingId = closingPopup ? closingPopup.id : id;
 						document.dispatchEvent(new CustomEvent("popupClosed", { detail: { id: closingId } }));
-					}, 300);
+						if (!document.querySelector(".popup-bg.show")) lenis.start();
+					};
+					if (isItem && !updateUrl) hide();
+					else setTimeout(hide, 300);
 					if (updateUrl) {
-						history.pushState(null, "", window.location.origin + "/2027/cfs/");
+						history.pushState(null, "", window.location.origin + `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${document.documentElement.lang === "en" ? "en/" : ""}`);
 						document.title = originalTitle;
 					}
 				}
 			};
 
 			let touchStartX = 0;
-			let touchEndX = 0;
+			let touchStartY = 0;
+			let swipeAllowed = false;
 			let activePopupId = "";
 			const SWIPE_THRESHOLD = 50; // px
 
 			function getItemPopupIds() {
-				return Array.from(document.querySelectorAll("[id^=item-popup-]")).map(el => el.id);
+				const cards = Array.from(document.querySelectorAll<HTMLElement>("#items .cards-grid .card"));
+				const ids = cards.map(card => `item-popup-${card.dataset.cardId}`);
+				// Plan-exclusive items can still be opened directly; fall back to the complete catalog.
+				return ids.includes(activePopupId) ? ids : Array.from(document.querySelectorAll("[id^=item-popup-]")).map(el => el.id);
 			}
 
 			function navigateToAdjacent(direction: "next" | "prev") {
@@ -202,45 +234,41 @@ const defaultSchema = {
 				const idx = ids.indexOf(activePopupId);
 				if (idx === -1) return;
 				let nextIdx = direction === "next" ? idx + 1 : idx - 1;
-				const currentBg = document.getElementById(activePopupId)?.nextElementSibling as HTMLElement | null;
-				if (nextIdx < 0 || nextIdx >= ids.length) {
-					if (!currentBg) return;
-					currentBg.classList.add("shake");
-					setTimeout(() => currentBg.classList.remove("shake"), 300);
-					return;
-				} // no wrap
+				if (nextIdx < 0 || nextIdx >= ids.length) return; // no wrap
 				const nextId = ids[nextIdx];
 				const nextEl = document.getElementById(nextId);
 				if (nextEl) window.popupCtrl(nextId, "open", true);
-				if (currentBg) window.popupCtrl(activePopupId, "close", false, currentBg);
 			}
 
 			function onKeyDown(e: KeyboardEvent) {
-				if (!activePopupId) return;
+				if (!activePopupId || !(e.target instanceof Element) || e.target.closest("input, textarea, select, [contenteditable], .image-carousel")) return;
 				if (e.key === "ArrowRight") {
+					e.preventDefault();
 					navigateToAdjacent("next");
 				} else if (e.key === "ArrowLeft") {
+					e.preventDefault();
 					navigateToAdjacent("prev");
 				}
 			}
 
 			function onTouchStart(e: TouchEvent) {
-				const t = e.touches && e.touches[0];
-				if (t) touchStartX = t.clientX;
+				const target = e.target as Element;
+				swipeAllowed = e.touches.length === 1 && !target.closest(".image-carousel, input, textarea, select, button, a");
+				const touch = e.touches[0];
+				if (touch) {
+					touchStartX = touch.clientX;
+					touchStartY = touch.clientY;
+				}
 			}
 
 			function onTouchEnd(e: TouchEvent) {
-				const t = e.changedTouches && e.changedTouches[0];
-				if (t) touchEndX = t.clientX;
-				const dx = touchEndX - touchStartX;
-				if (Math.abs(dx) > SWIPE_THRESHOLD) {
-					if (dx < 0) {
-						// swipe left -> next
-						navigateToAdjacent("next");
-					} else {
-						// swipe right -> prev
-						navigateToAdjacent("prev");
-					}
+				const touch = e.changedTouches[0];
+				if (!swipeAllowed || !touch) return;
+				swipeAllowed = false;
+				const dx = touch.clientX - touchStartX;
+				const dy = touch.clientY - touchStartY;
+				if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.5) {
+					navigateToAdjacent(dx < 0 ? "next" : "prev");
 				}
 			}
 
@@ -262,6 +290,8 @@ const defaultSchema = {
 				// Only attach for item popups
 				if (activePopupId && activePopupId.startsWith("item-popup-")) {
 					attachHandlers();
+				} else {
+					detachHandlers();
 				}
 			});
 
@@ -277,6 +307,8 @@ const defaultSchema = {
 
 			// Handle browser back/forward buttons
 			window.addEventListener("popstate", event => {
+				// Release an in-flight target before the browser restores its history position.
+				lenis.scrollTo(lenis.actualScroll, { immediate: true, force: true });
 				// Close all open popups
 				document.querySelectorAll(".popup-bg.show").forEach(popupBg => {
 					const popup = popupBg.previousElementSibling;
@@ -292,7 +324,7 @@ const defaultSchema = {
 					if (event.state.type === "item") {
 						const itemsSection = document.getElementById("items");
 						if (itemsSection) {
-							itemsSection.scrollIntoView({ behavior: "instant" });
+							window.scrollPageTo(itemsSection);
 						}
 					}
 					window.popupCtrl(event.state.popupId, "open", false);
@@ -311,7 +343,7 @@ const defaultSchema = {
 						if (popupElement) {
 							const itemsSection = document.getElementById("items");
 							if (itemsSection) {
-								itemsSection.scrollIntoView({ behavior: "instant" });
+								window.scrollPageTo(itemsSection);
 							}
 							window.popupCtrl(popupId, "open", false);
 						}
@@ -336,7 +368,7 @@ const defaultSchema = {
 							// Scroll to Items section first, then open popup
 							const itemsSection = document.getElementById("items");
 							if (itemsSection) {
-								itemsSection.scrollIntoView({ behavior: "instant" });
+								window.scrollPageTo(itemsSection);
 							}
 							setTimeout(() => window.popupCtrl(popupId, "open", false), 100);
 						}
@@ -390,7 +422,7 @@ const defaultSchema = {
 				--items-bg: #f1f3fb;
 				--items-remaining-tag: #ffe9a8;
 				--items-deadline-tag: #c1ffb1;
-				--items-green: #00d959;
+				--items-green: #74bf50;
 				--items-progress: var(--items-green);
 				--items-progress-bg: #e2e2e2;
 				--border-light: #d2d2d7;
@@ -407,6 +439,11 @@ const defaultSchema = {
 			html {
 				scroll-behavior: smooth;
 				scroll-padding-top: 2rem;
+			}
+
+			/* Native smooth scrolling must not compete with Lenis' animation loop. */
+			html.lenis {
+				scroll-behavior: auto;
 			}
 
 			body {

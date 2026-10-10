@@ -1,28 +1,16 @@
 ---
-const { t } = Astro.props;
+import DistributionChart from "@components/DistributionChart.astro";
+const { t, lang } = Astro.props;
 import Popup from "@components/Popup.astro";
-import Volunteer from "@assets/img/sitcon-volunteer.webp";
+import Volunteer from "@assets/img/about-popup-2026.webp";
 import SchoolsText from "@assets/img/schools-text-2025.svg";
 import AttendeeImg from "@assets/img/stat/attendee-stat.webp";
 import SpeakerImg from "@assets/img/stat/speaker-stat.webp";
 import EventsImg from "@assets/img/stat/events-stat.webp";
 import VolunteerImg from "@assets/img/stat/volunteer-stat.webp";
 
-const chartData = JSON.stringify({
-	attenderRole: t.popup.chart.attender_role,
-	programmingLevel: t.popup.chart.programming_level,
-	unit: t.popup.chart.unit,
-	attenderRoleTitle: t.popup.chart.attender_role_title,
-	programmingLevelTitle: t.popup.chart.programming_level_title,
-	fbAge: t.popup.chart.social_media.facebook.age,
-	fbGender: t.popup.chart.social_media.facebook.gender,
-	igAge: t.popup.chart.social_media.instagram.age,
-	igGender: t.popup.chart.social_media.instagram.gender,
-	fbAgeTitle: `${t.popup.chart.social_media.facebook.name} ${t.popup.chart.social_media.facebook.labels.age_distribution}`,
-	fbGenderTitle: `${t.popup.chart.social_media.facebook.name} ${t.popup.chart.social_media.facebook.labels.gender_ratio}`,
-	igAgeTitle: `${t.popup.chart.social_media.instagram.name} ${t.popup.chart.social_media.instagram.labels.age_distribution}`,
-	igGenderTitle: `${t.popup.chart.social_media.instagram.name} ${t.popup.chart.social_media.instagram.labels.gender_ratio}`
-});
+const colors = ["#6CE5E8", "#40B8D5", "#2C8BBA", "#2F5F98", "#31356E", "#5E3967", "#895273", "#B97286", "#E28385"];
+const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
 ---
 
 <section id="about" class="about-section">
@@ -46,8 +34,8 @@ const chartData = JSON.stringify({
 					image: VolunteerImg.src,
 					data: [t.stats[4]]
 				}
-			].map(card => (
-				<div class="stat-card" style={`background: url(${card.image}) lightgray 50% / cover no-repeat;`}>
+			].map((card, i) => (
+				<div class="stat-card" role="img" aria-label={t.stats_alt?.[i]} style={`background: url(${card.image}) lightgray 50% / cover no-repeat;`}>
 					<div class={"card-content aos aos-fadeIn" + (card.data[0].label == "meetups and talks" ? " space" : "")}>
 						{card.data.map(stat => (
 							<div>
@@ -65,19 +53,30 @@ const chartData = JSON.stringify({
 		{
 			t.review.stats.map((stat: { label: string; number: string; note: string }) => (
 				<div class="review-item aos aos-fadeIn">
-					{stat.label && <span>{stat.label}</span>}
+					{stat.label && <span class="review-label">{stat.label}</span>}
 					<span class="review-number">{stat.number}</span>
-					{stat.note && <span>{stat.note}</span>}
+					{stat.note && <span class="review-text">{stat.note}</span>}
 				</div>
 			))
 		}
+		{t.review.note && <p class="review-note aos aos-fadeIn">{t.review.note}</p>}
 	</div>
-	<Popup btnText={t.detail} title={t.detail} background={Volunteer.src} id="stat-popup" class="popup">
+	<Popup btnText={t.detail_btn} title={t.detail} background={Volunteer.src} id="stat-popup" class="popup">
 		<div class="container">
+			<p class="data-note">{t.popup.chart.source_note}</p>
 			<div class="chart-area">
-				<div id="role-chart" class="chart-container"></div>
+				<DistributionChart id="role-chart" title={t.popup.chart.attender_role_title} data={t.popup.chart.attender_role} colors={colors} unit={t.popup.chart.unit} />
 				<div class="level">
-					<div id="level-chart" class="chart-container"></div>
+					<DistributionChart id="level-chart" title={t.popup.chart.programming_level_title} data={t.popup.chart.programming_level} colors={colors} unit={t.popup.chart.unit} />
+					<details class="mobile-level-info">
+						<summary>{lang === "en" ? "About development levels" : "軟體開發程度的定義"}</summary>{
+							Object.entries(t.popup.chart.level_info).map(([key, value]) => (
+								<p>
+									<strong>{key}</strong>：{String(value)}
+								</p>
+							))
+						}
+					</details>
 					<div id="level-info">
 						{
 							Object.entries(t.popup.chart.level_info).map(([key, value]) => (
@@ -89,12 +88,15 @@ const chartData = JSON.stringify({
 					</div>
 				</div>
 			</div>
-			<div id="schools-text-container">
-				<h3>{t.popup.chart.schools_text_title}</h3>
+			<section id="schools-text-container" aria-labelledby="schools-title">
+				<h3 id="schools-title">{t.popup.chart.schools_text_title}</h3>
+
 				<img src={SchoolsText.src} alt="Schools" id="schools-text" />
-			</div>
-			<div class="social-media-section">
-				<h3>{t.popup.chart.social_media.title}</h3>
+			</section>
+			<section class="social-media-section" aria-labelledby="social-media-title">
+				<h3 id="social-media-title">{t.popup.chart.social_media.title}</h3>
+
+				{t.popup.chart.social_media.note && <p class="data-note">{t.popup.chart.social_media.note}</p>}
 				<div class="social-platforms">
 					<div class="platform-section">
 						<h4>{t.popup.chart.social_media.facebook.name}</h4>
@@ -116,8 +118,13 @@ const chartData = JSON.stringify({
 								</div>
 							</div>
 							<div class="charts-container">
-								<div id="fb-age-chart" class="chart-container"></div>
-								<div id="fb-gender-chart" class="chart-container"></div>
+								<DistributionChart id="fb-age-chart" title={t.popup.chart.social_media.facebook.labels.age_distribution} data={t.popup.chart.social_media.facebook.age} colors={socialMediaColors} />
+								<DistributionChart
+									id="fb-gender-chart"
+									title={t.popup.chart.social_media.facebook.labels.gender_ratio}
+									data={t.popup.chart.social_media.facebook.gender}
+									colors={["#4FC3F7", "#FFB74D"]}
+								/>
 							</div>
 						</div>
 					</div>
@@ -141,271 +148,22 @@ const chartData = JSON.stringify({
 								</div>
 							</div>
 							<div class="charts-container">
-								<div id="ig-age-chart" class="chart-container"></div>
-								<div id="ig-gender-chart" class="chart-container"></div>
+								<DistributionChart id="ig-age-chart" title={t.popup.chart.social_media.instagram.labels.age_distribution} data={t.popup.chart.social_media.instagram.age} colors={socialMediaColors} />
+								<DistributionChart
+									id="ig-gender-chart"
+									title={t.popup.chart.social_media.instagram.labels.gender_ratio}
+									data={t.popup.chart.social_media.instagram.gender}
+									colors={["#4FC3F7", "#FFB74D"]}
+								/>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 		</div>
 	</Popup>
-	<div style="display:none" id="chart-data">{chartData}</div>
 </section>
 
-<script>
-	// @ts-ignore - echarts esm interop
-	import * as echarts from "echarts";
-	type EChartsInstance = ReturnType<typeof echarts.init>;
-
-	const colors = ["#6CE5E8", "#40B8D5", "#2C8BBA", "#2F5F98", "#31356E", "#5E3967", "#895273", "#B97286", "#E28385"];
-	const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
-
-	const chartDataElement = document.getElementById("chart-data");
-	const chartData = chartDataElement ? JSON.parse(chartDataElement.textContent || "{}") : {};
-	// Store chart instances
-	let roleChart: EChartsInstance | null = null;
-	let levelChart: EChartsInstance | null = null;
-	let fbAgeChart: EChartsInstance | null = null;
-	let fbGenderChart: EChartsInstance | null = null;
-	let igAgeChart: EChartsInstance | null = null;
-	let igGenderChart: EChartsInstance | null = null;
-
-	function createPieData(data: Record<string, number>, colors: string[]) {
-		return Object.entries(data).map(([name, value], index) => ({
-			name,
-			value,
-			itemStyle: { color: colors[index % colors.length] }
-		}));
-	}
-
-	function createPieOption(title: string, data: Array<{ name: string; value: number; itemStyle: { color: string } }>, showPercentage = true) {
-		const total = data.reduce((sum: number, item: { name: string; value: number; itemStyle: { color: string } }) => sum + item.value, 0);
-
-		const windowWidth = window.innerWidth;
-		const isMobile = windowWidth <= 768;
-		const isSmallMobile = windowWidth <= 480;
-
-		const titleFontSize = isSmallMobile ? 14 : isMobile ? 16 : 24;
-		const labelFontSize = isSmallMobile ? 9 : isMobile ? 10 : 12;
-		const legendFontSize = isSmallMobile ? 9 : isMobile ? 10 : 12;
-		const legendItemSize = isSmallMobile ? 12 : isMobile ? 15 : 20;
-		const legendBottom = isSmallMobile ? 5 : isMobile ? 8 : 10;
-		const pieRadius = isSmallMobile ? ["25%", "45%"] : isMobile ? ["28%", "50%"] : ["35%", "65%"];
-		const pieCenter = isMobile ? ["50%", "48%"] : ["50%", "55%"];
-		const titleTop = isSmallMobile ? 5 : isMobile ? 8 : 10;
-
-		return {
-			title: {
-				text: title,
-				left: "center",
-				top: titleTop,
-				textStyle: {
-					fontSize: titleFontSize,
-					fontWeight: "bold",
-					color: "#48484A"
-				},
-				padding: [5, 0, isSmallMobile ? 8 : isMobile ? 12 : 20, 0]
-			},
-			tooltip: {
-				trigger: "item",
-				formatter: "{b}: {c} ({d}%)"
-			},
-			legend: {
-				orient: "horizontal",
-				bottom: legendBottom,
-				left: "center",
-				itemWidth: legendItemSize,
-				itemHeight: legendItemSize,
-				textStyle: {
-					fontSize: legendFontSize
-				}
-			},
-			series: [
-				{
-					type: "pie",
-					radius: pieRadius,
-					center: pieCenter,
-					avoidLabelOverlap: true,
-					itemStyle: {
-						borderRadius: 8,
-						borderColor: "#fff",
-						borderWidth: 2
-					},
-					label: {
-						show: true,
-						formatter: (params: any) => {
-							const percentage = ((params.value / total) * 100).toFixed(0);
-							if (showPercentage) {
-								return `${params.name}\n${percentage}%`;
-							}
-							return `${params.name}`;
-						},
-						fontSize: labelFontSize,
-						fontWeight: "bold",
-						overflow: "break"
-					},
-					emphasis: {
-						label: {
-							show: true,
-							fontSize: labelFontSize + 2,
-							fontWeight: "bold"
-						},
-						itemStyle: {
-							shadowBlur: 10,
-							shadowOffsetX: 0,
-							shadowColor: "rgba(0, 0, 0, 0.5)"
-						}
-					},
-					data: data
-				}
-			]
-		};
-	}
-
-	// Initialize main charts
-	function initMainCharts() {
-		const roleElement = document.getElementById("role-chart");
-		const levelElement = document.getElementById("level-chart");
-
-		if (roleElement && levelElement) {
-			// Calculate available width based on window size
-			const windowWidth = window.innerWidth;
-			let chartWidth, chartHeight;
-
-			if (windowWidth > 1000) {
-				// Desktop: popup max-width is 1200px, with padding, 2 columns
-				chartWidth = Math.min((window.innerWidth - 150) / 2, 480); // 480
-				chartHeight = 540;
-			} else if (windowWidth > 768) {
-				// Tablet: single column
-				chartWidth = Math.min(windowWidth - 100, 480);
-				chartHeight = 400;
-			} else {
-				// Mobile: single column, smaller
-				chartWidth = windowWidth - 80;
-				chartHeight = 280;
-			}
-
-			// Set explicit dimensions
-			roleElement.style.width = `${chartWidth}px`;
-			roleElement.style.height = `${chartHeight}px`;
-			levelElement.style.width = `${chartWidth}px`;
-			levelElement.style.height = `${chartHeight}px`;
-
-			// Role chart
-			roleChart = echarts.init(roleElement, null, { width: chartWidth, height: chartHeight });
-			const roleData = createPieData(chartData.attenderRole, colors);
-			roleChart.setOption(createPieOption(chartData.attenderRoleTitle, roleData));
-
-			// Level chart
-			levelChart = echarts.init(levelElement, null, { width: chartWidth, height: chartHeight });
-			const levelData = createPieData(chartData.programmingLevel, colors);
-			levelChart.setOption(createPieOption(chartData.programmingLevelTitle, levelData));
-		}
-	}
-
-	// Initialize social media charts
-	function initializeSocialMediaCharts() {
-		if (fbAgeChart && fbGenderChart && igAgeChart && igGenderChart) return;
-
-		// Calculate available width for social media charts
-		const windowWidth = window.innerWidth;
-		let chartWidth, chartHeight;
-
-		if (windowWidth > 1200) {
-			// Desktop: 2 columns in social media section
-			chartWidth = Math.min((1200 - 100) / 2, 400);
-			chartHeight = 350;
-		} else if (windowWidth > 768) {
-			// Tablet: 2 columns but narrower
-			chartWidth = Math.min((windowWidth - 100) / 2, 350);
-			chartHeight = 350;
-		} else {
-			// Mobile: single column
-			chartWidth = windowWidth - 80;
-			chartHeight = 250;
-		}
-
-		setTimeout(() => {
-			const fbAgeElement = document.getElementById("fb-age-chart");
-			const fbGenderElement = document.getElementById("fb-gender-chart");
-			const igAgeElement = document.getElementById("ig-age-chart");
-			const igGenderElement = document.getElementById("ig-gender-chart");
-
-			if (fbAgeElement && !fbAgeChart) {
-				fbAgeElement.style.width = `${chartWidth}px`;
-				fbAgeElement.style.height = `${chartHeight}px`;
-				fbAgeChart = echarts.init(fbAgeElement, null, { width: chartWidth, height: chartHeight });
-				const fbAgeData = createPieData(chartData.fbAge, socialMediaColors);
-				fbAgeChart.setOption(createPieOption(chartData.fbAgeTitle, fbAgeData, false));
-			}
-
-			if (fbGenderElement && !fbGenderChart) {
-				fbGenderElement.style.width = `${chartWidth}px`;
-				fbGenderElement.style.height = `${chartHeight}px`;
-				fbGenderChart = echarts.init(fbGenderElement, null, { width: chartWidth, height: chartHeight });
-				const fbGenderData = createPieData(chartData.fbGender, ["#4FC3F7", "#FFB74D"]);
-				fbGenderChart.setOption(createPieOption(chartData.fbGenderTitle, fbGenderData));
-			}
-
-			if (igAgeElement && !igAgeChart) {
-				igAgeElement.style.width = `${chartWidth}px`;
-				igAgeElement.style.height = `${chartHeight}px`;
-				igAgeChart = echarts.init(igAgeElement, null, { width: chartWidth, height: chartHeight });
-				const igAgeData = createPieData(chartData.igAge, socialMediaColors);
-				igAgeChart.setOption(createPieOption(chartData.igAgeTitle, igAgeData, false));
-			}
-
-			if (igGenderElement && !igGenderChart) {
-				igGenderElement.style.width = `${chartWidth}px`;
-				igGenderElement.style.height = `${chartHeight}px`;
-				igGenderChart = echarts.init(igGenderElement, null, { width: chartWidth, height: chartHeight });
-				const igGenderData = createPieData(chartData.igGender, ["#4FC3F7", "#FFB74D"]);
-				igGenderChart.setOption(createPieOption(chartData.igGenderTitle, igGenderData));
-			}
-		}, 100);
-	}
-
-	// Initialize main charts on load
-	initMainCharts();
-
-	// Listen for popup open events
-	document.addEventListener("popupOpened", (event: Event) => {
-		const customEvent = event as CustomEvent;
-		if (customEvent.detail && customEvent.detail.id === "stat-popup") {
-			setTimeout(initializeSocialMediaCharts, 200);
-		}
-	});
-
-	// Handle window resize
-	let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
-	window.addEventListener("resize", () => {
-		clearTimeout(resizeTimeout);
-		resizeTimeout = setTimeout(() => {
-			[roleChart, levelChart, fbAgeChart, fbGenderChart, igAgeChart, igGenderChart].forEach(chart => {
-				if (chart) {
-					chart.resize();
-				}
-			});
-		}, 200);
-	});
-
-	// Also handle print event - reinitialize charts for proper sizing
-	window.addEventListener("beforeprint", () => {
-		// Reinitialize to ensure proper sizing for print
-		setTimeout(() => {
-			[roleChart, levelChart, fbAgeChart, fbGenderChart, igAgeChart, igGenderChart].forEach(chart => {
-				if (chart) {
-					chart.resize();
-				}
-			});
-		}, 0);
-	});
-
-	// Initialize social media charts when popup is already open
-	initializeSocialMediaCharts();
-</script>
 <style>
 	#about {
 		padding: 8rem 2rem 4rem;
@@ -416,6 +174,21 @@ const chartData = JSON.stringify({
 		font-weight: 700;
 		text-align: center;
 		font-size: 2.5rem;
+	}
+
+	.review-note {
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: #a1a1aa;
+		margin-top: 1rem;
+		line-height: 1.5;
+	}
+
+	.data-note {
+		font-size: 0.85rem;
+		color: var(--gray);
+		text-align: center;
+		margin: 0.5rem 0 2rem;
 	}
 
 	#schools-text {
@@ -435,20 +208,25 @@ const chartData = JSON.stringify({
 		padding: 2rem;
 	}
 
+	.chart-area,
+	.charts-container {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: start;
+		gap: 2rem;
+		width: 100%;
+	}
 	.chart-area {
 		margin: 2rem 0;
-		display: flex;
-		justify-content: center;
-		align-items: start;
-		flex-wrap: wrap;
-		width: 100%;
-		gap: 2rem;
 	}
-
-	.chart-container {
-		width: auto;
-		min-height: 350px;
-		padding: 1rem 0; /* Add vertical padding for breathing room */
+	.level {
+		min-width: 0;
+	}
+	@media screen and (max-width: 900px) {
+		.chart-area,
+		.charts-container {
+			grid-template-columns: minmax(0, 1fr);
+		}
 	}
 	#level-info {
 		margin-top: 1rem;
@@ -460,8 +238,7 @@ const chartData = JSON.stringify({
 		gap: 1rem;
 	}
 
-	.stats-cards,
-	.charts-container {
+	.stats-cards {
 		display: flex;
 		justify-content: center;
 		flex-wrap: wrap;
@@ -478,6 +255,11 @@ const chartData = JSON.stringify({
 		border-radius: 1.75rem;
 		padding: 15rem 1rem 3rem;
 		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	}
+
+	.stat-card:nth-child(2) {
+		background-size: auto 125% !important;
+		background-position: center bottom !important;
 	}
 
 	.stat-card::before {
@@ -526,11 +308,6 @@ const chartData = JSON.stringify({
 		font-size: 1.5em;
 	}
 
-	canvas,
-	.chart-container {
-		page-break-inside: avoid;
-	}
-
 	.space .stat-label {
 		max-width: 5rem;
 		margin: 0 auto;
@@ -542,6 +319,11 @@ const chartData = JSON.stringify({
 	}
 
 	@media screen and (max-width: 70rem) {
+		.stat-card:nth-child(2) {
+			background-size: 125% auto !important;
+			background-position: center 65% !important;
+		}
+
 		.space {
 			margin-bottom: 0rem;
 		}
@@ -645,14 +427,6 @@ const chartData = JSON.stringify({
 		font-weight: 500;
 	}
 
-	.charts-container .chart-container {
-		width: auto;
-		height: auto;
-		min-height: 300px;
-		margin: 0 auto;
-		padding: 1rem 0; /* Add vertical padding */
-	}
-
 	.stats-cards-wrapper {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -697,32 +471,67 @@ const chartData = JSON.stringify({
 		h2 span {
 			display: inline;
 		}
+	}
 
-		.chart-container,
-		.level {
-			width: 0 !important;
-			flex: 1;
+	summary {
+		cursor: pointer;
+		padding: 1rem;
+		font-weight: bold;
+		font-size: 1.15rem;
+	}
+	.mobile-level-info {
+		display: none;
+	}
+	@media screen and (max-width: 768px) {
+		.review-item {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0.25rem;
+			padding: 1rem;
+			margin: 0.6rem 0;
+			border-radius: 0.75rem;
+			background: #f5f5f7;
+			font-size: 1.1rem;
+			line-height: 1.5;
 		}
-
-		.chart-container > :global(div),
-		.level > :global(div),
-		.chart-area :global(canvas) {
-			width: 100% !important;
-			height: unset !important;
+		.review-number {
+			font-size: 2rem;
+			white-space: nowrap;
 		}
-
-		.chart-container :global(canvas) {
-			position: static !important;
-			margin: auto !important;
+		.review-label {
+			font-size: 1rem;
+		}
+		.review-title {
+			margin-top: 2.5rem;
+		}
+		.mobile-level-info {
 			display: block;
+			width: 100%;
 		}
-
-		.chart-area {
-			flex-wrap: nowrap;
+		#level-info {
+			display: none;
 		}
-
-		.chart-area {
-			gap: 0;
+		#schools-text-container,
+		.social-media-section {
+			margin-top: 1rem;
+			padding: 0;
+		}
+		.stats-cards-wrapper {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.4rem;
+		}
+		.stats-card-item p {
+			font-size: 0.8rem;
+		}
+		.stats-card-item p.stats-value {
+			font-size: 1rem;
+		}
+		#about :global(.popup-hero) {
+			height: 10rem;
+			padding: 3.5rem 1.5rem 1rem;
+		}
+		#about :global(.popup-hero h2) {
+			font-size: 1.7rem;
 		}
 	}
 </style>

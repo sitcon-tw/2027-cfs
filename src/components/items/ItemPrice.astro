@@ -1,0 +1,28 @@
+---
+interface Props {
+	price: string;
+	class?: string;
+}
+
+const { price, class: className } = Astro.props;
+---
+
+<span class:list={["sponsorship-price", className]}>{price}</span>
+
+<style>
+	.sponsorship-price {
+		display: block;
+		color: #0171e3;
+		font-size: 1rem;
+		font-weight: 600;
+		font-family: inherit;
+		line-height: 1.5;
+		white-space: nowrap;
+	}
+
+	@media print {
+		.sponsorship-price {
+			font-size: 12pt;
+		}
+	}
+</style>
