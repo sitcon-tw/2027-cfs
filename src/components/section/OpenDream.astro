@@ -110,23 +110,6 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 				<p class="section-note">{t.popup.impact.note}</p>
 			</section>
 
-			<section class="dream-section" aria-labelledby="dream-plan-title">
-				<h3 id="dream-plan-title">{t.popup.plan_value.title}</h3>
-				<p>{t.popup.plan_value.value_statement}</p>
-				<div class="fund-layout">
-					<div class="fund-highlight">
-						<ItemPrice price={t.popup.plan_value.direct_value} />
-						<span>{t.popup.plan_value.direct_label}</span>
-					</div>
-					<div>
-						<ul class="support-details">
-							{t.popup.plan_value.support_items.map((item: string) => <li>{item}</li>)}
-						</ul>
-						<p class="section-note">{t.popup.plan_value.note}</p>
-					</div>
-				</div>
-			</section>
-
 			<section class="dream-section" aria-labelledby="dream-benefits-title">
 				<h3 id="dream-benefits-title">{t.popup.sponsor_benefits.title}</h3>
 				<p>{t.popup.sponsor_benefits.description}</p>
@@ -499,33 +482,6 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		font-size: 0.95rem;
 	}
 
-	.fund-layout {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-		gap: 2rem;
-		align-items: center;
-		margin-top: 1rem;
-		padding: 1.5rem;
-		border-radius: 1rem;
-		background: var(--white);
-	}
-
-	.fund-highlight {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		line-height: 1.6;
-	}
-
-	.fund-highlight :global(.sponsorship-price) {
-		font-size: clamp(1.4rem, 3vw, 2rem);
-	}
-
-	.fund-layout .support-details {
-		margin-top: 0;
-	}
-
-	.support-details,
 	.review-steps,
 	.comparison-grid ul {
 		padding-left: 1.25rem;
@@ -555,8 +511,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	@container (max-width: 20rem) {
-		.benefit-card,
-		.fund-layout {
+		.benefit-card {
 			padding: 1rem;
 		}
 
@@ -569,10 +524,6 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		.benefit-card svg {
 			position: static;
 			flex-shrink: 0;
-		}
-
-		.fund-highlight :global(.sponsorship-price) {
-			font-size: 1.125rem;
 		}
 	}
 
@@ -592,7 +543,6 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		}
 
 		.plans,
-		.fund-layout,
 		.benefit-grid,
 		.comparison-grid {
 			grid-template-columns: minmax(0, 1fr);

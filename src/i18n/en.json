@@ -231,14 +231,6 @@
 				"title": "Students supported and plan pricing",
 				"note": "The final number of students supported depends on funding and applications."
 			},
-			"plan_value": {
-				"title": "What's included in the plan?",
-				"value_statement": "Student participation support + exclusive partner benefits",
-				"direct_value": "About NT$3,000",
-				"direct_label": "estimated travel and lodging per student",
-				"note": "Per-student expenses are estimates. Final support is based on verified actual expenses.",
-				"support_items": ["Travel subsidy for bus, train or high-speed rail under program rules", "Lodging the night before the event, arranged by SITCON"]
-			},
 			"sponsor_benefits": {
 				"title": "Sponsor-exclusive benefits",
 				"description": "These planned benefits are exclusive to Open Dream sponsors. Formats, placement and timing will be confirmed when partnering.",
