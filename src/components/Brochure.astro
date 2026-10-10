@@ -43,7 +43,9 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		<div class="toolbar">
 			<a href={site}>← {label("返回贊助網站", "Back to website")}</a><span>
 				{label("建議選擇 A4、關閉頁首及頁尾，另存為 PDF。", "Choose A4, disable headers and footers, and save as PDF.")}
-			</span><Button id="print" size="compact" color="#226c44" hoverColor="#226c44">{label("下載／列印 PDF", "Save / print PDF")}</Button>
+			</span><Button id="print" size="compact" color="#74bf50" hoverColor="color-mix(in srgb, #74bf50 85%, black)" textColor="var(--black, #1d1d1f)"
+				>{label("下載／列印 PDF", "Save / print PDF")}</Button
+			>
 		</div>
 		<main>
 			<section class="page cover">
@@ -289,7 +291,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		font-size: 0.9rem;
 	}
 	a {
-		color: #226c44;
+		color: #74bf50;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.2em;
 		overflow-wrap: anywhere;
@@ -311,7 +313,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		font-size: 9pt;
 	}
 	header {
-		border-bottom: 2px solid #226c44;
+		border-bottom: 2px solid #74bf50;
 		padding-bottom: 3mm;
 		font-weight: bold;
 		letter-spacing: 0.06em;
@@ -382,7 +384,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 	.metrics strong {
 		display: block;
 		font-size: 26pt;
-		color: #226c44;
+		color: #74bf50;
 	}
 	.metrics span {
 		display: block;

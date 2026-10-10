@@ -16,7 +16,9 @@ import Button from "../Button.astro";
 			<a href="#time" class="nav-link">{t.info}</a>
 			<a href="#plans" class="nav-link">{t.plan}</a>
 			<a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/` + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
-			<Button href="mailto:contact@sitcon.org" size="compact" color="#00d959" hoverColor="#00bb4b" textColor="var(--black)" class="nav-link contact-btn">{t.contact}</Button>
+			<Button href="mailto:contact@sitcon.org" size="compact" color="#74bf50" hoverColor="color-mix(in srgb, #74bf50 85%, black)" textColor="var(--black)" class="nav-link contact-btn"
+				>{t.contact}</Button
+			>
 			<Button
 				color="#e8e8ed"
 				hoverColor="#d0d0d5"
@@ -78,22 +80,29 @@ import Button from "../Button.astro";
 
 	/* Hamburger Menu */
 	:global(.site-button.hamburger) {
+		--hamburger-line-height: 0.15rem;
+		--hamburger-line-gap: 0.3rem;
 		display: none;
 		flex-direction: column;
-		justify-content: space-around;
+		justify-content: center;
+		gap: var(--hamburger-line-gap);
 		z-index: 1001;
 	}
 
 	.hamburger-line {
+		flex: none;
 		width: 1.5rem;
-		height: 0.15rem;
+		height: var(--hamburger-line-height);
 		background-color: #000000;
-		transition: all 0.3s ease;
+		transition:
+			transform 0.3s ease,
+			opacity 0.3s ease;
 		transform-origin: center;
 	}
 
+	/* Move the outer lines onto the middle line before rotating so they cross at the center. */
 	:global(.hamburger.active .hamburger-line:nth-child(1)) {
-		transform: rotate(45deg) translate(0.35rem, 0.35rem);
+		transform: translateY(calc(var(--hamburger-line-height) + var(--hamburger-line-gap))) rotate(45deg);
 	}
 
 	:global(.hamburger.active .hamburger-line:nth-child(2)) {
@@ -101,7 +110,7 @@ import Button from "../Button.astro";
 	}
 
 	:global(.hamburger.active .hamburger-line:nth-child(3)) {
-		transform: rotate(-45deg) translate(0.35rem, -0.35rem);
+		transform: translateY(calc(-1 * (var(--hamburger-line-height) + var(--hamburger-line-gap)))) rotate(-45deg);
 	}
 
 	@media screen and (max-width: 72rem) {
@@ -170,6 +179,29 @@ import Button from "../Button.astro";
 </style>
 
 <script>
+	document.querySelectorAll<HTMLAnchorElement>('nav a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener("click", event => {
+			if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+			const href = anchor.getAttribute("href")!;
+			const target = href === "#" ? 0 : document.getElementById(href.slice(1));
+			if (target === null) return;
+			event.preventDefault();
+			const oldURL = window.location.href;
+			const destinationURL = new URL(href, oldURL).href;
+			if (destinationURL !== oldURL) {
+				history.pushState(null, "", destinationURL);
+				window.dispatchEvent(new HashChangeEvent("hashchange", { oldURL, newURL: destinationURL }));
+			}
+			window.scrollPageTo(target, { immediate: false, offset: target === 0 ? 0 : -32 });
+			if (target instanceof HTMLElement) {
+				const hadTabindex = target.hasAttribute("tabindex");
+				if (!hadTabindex) target.setAttribute("tabindex", "-1");
+				target.focus({ preventScroll: true });
+				if (!hadTabindex) target.addEventListener("blur", () => target.removeAttribute("tabindex"), { once: true });
+			}
+		});
+	});
+
 	const hamburger = document.querySelector(".hamburger") as HTMLButtonElement;
 	const navMenu = document.querySelector(".nav-menu") as HTMLDivElement;
 	hamburger.addEventListener("click", () => {

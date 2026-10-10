@@ -26,28 +26,28 @@ const tiers = [
 		id: "navigator",
 		name: lang === "en" ? planData.navigator.name_en : planData.navigator.name_zh,
 		price: planData.navigator.price,
-		textColor: "#FF928A",
+		textColor: "#ad443d",
 		deadline: getEarliestDeadline(planData.navigator.benefits)
 	},
 	{
 		id: "deep_cultivation",
 		name: lang === "en" ? planData.deep_cultivation.name_en : planData.deep_cultivation.name_zh,
 		price: planData.deep_cultivation.price,
-		textColor: "#537FF1",
+		textColor: "#426bd1",
 		deadline: getEarliestDeadline(planData.deep_cultivation.benefits)
 	},
 	{
 		id: "visionary",
 		name: lang === "en" ? planData.visionary.name_en : planData.visionary.name_zh,
 		price: planData.visionary.price,
-		textColor: "#6FD195",
+		textColor: "#47762e",
 		deadline: getEarliestDeadline(planData.visionary.benefits)
 	},
 	{
 		id: "new_sprout",
 		name: lang === "en" ? planData.new_sprout.name_en : planData.new_sprout.name_zh,
 		price: planData.new_sprout.price,
-		textColor: "#77B55A",
+		textColor: "#47762e",
 		deadline: getEarliestDeadline(planData.new_sprout.benefits)
 	}
 ];
@@ -82,7 +82,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	<div class="plan-comparison">
 		<div class="container" role="table" aria-labelledby="plans-title">
 			<div class="plans-heading" role="rowgroup">
-				<div class="plans-header-scroll lenis-scroll">
+				<div class="plans-header-scroll">
 					<div class="plan-row plans-header" role="row">
 						<div class="row-label header-label" role="columnheader">{lang === "en" ? "Benefits" : "贊助品項"}</div>
 						{
@@ -101,7 +101,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 					</div>
 				</div>
 			</div>
-			<div class="plans-table lenis-scroll" role="region" aria-labelledby="plans-title" tabindex="0">
+			<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
 				<div class="plans-content" role="rowgroup">
 					{
 						rows.map(row => (
@@ -381,7 +381,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	}
 
 	.plans-table:focus-visible {
-		outline: 2px solid #14693e;
+		outline: 2px solid #74bf50;
 		outline-offset: 3px;
 	}
 	.plans-content,
@@ -482,7 +482,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		color: var(--gray);
 	}
 	.plan-cell.highlighted {
-		color: #14693e;
+		color: #74bf50;
 		font-weight: 600;
 	}
 	.plan-row[data-popup-item-id]:hover,

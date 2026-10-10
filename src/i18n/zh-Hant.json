@@ -88,6 +88,7 @@
 		"date": "2027 年 3 月 13 日（六）",
 		"location": "中央研究院 人文社會科學館",
 		"popup_label": "活動詳情與籌備團隊",
+		"popup_btn": "查看活動詳情與籌備團隊",
 		"activity_schedule": "活動時程",
 		"place_detail": "場地詳情",
 		"location_name": "中央研究院<br />人文社會科學館",
@@ -128,6 +129,7 @@
 	},
 	"news": {
 		"title": "我們做過的事",
+		"btn": "看看我們做過的事",
 		"things": [
 			{
 				"title": "東亞最大學生資訊年會",
@@ -398,6 +400,7 @@
 	},
 	"about": {
 		"detail": "受眾與統計",
+		"detail_btn": "了解受眾與統計資料",
 		"subtitle": "14 年來全東亞",
 		"title": "最大的學生社群",
 		"stats": [
@@ -636,7 +639,7 @@
 		"scan_qrcode": "掃描 QR Code（sitcon.org/cfs）查看線上贊助徵求書，合作洽詢請寄信至 contact@sitcon.org。",
 		"contact": "行銷與媒體聯絡人",
 		"email": "contact@sitcon.org",
-		"contact_list": [],
+		"contact_list": ["黃以信 +886-905-709-062", "黃一晉 +886-922-686-223", "黃映綺 +886-974-003-155"],
 		"contact_us": "聯繫我們",
 		"contact_us_description": "合作聯繫：",
 		"contact_us_description2": "報名事宜：",

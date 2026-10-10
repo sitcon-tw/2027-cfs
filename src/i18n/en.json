@@ -21,7 +21,7 @@
 		"image_alt": "SITCON 2026 main hall packed with attendees facing the stage"
 	},
 	"intro": {
-		"sentence1": "SITCON is a student community dedicated to computing education and championing open-source culture.",
+		"sentence1": "SITCON is a student community dedicated to computing education and championing open-source culture. ",
 		"sentence2": "It's also a student-run conference that offers a stage for students to share and discuss technology."
 	},
 	"highlights": {
@@ -88,6 +88,7 @@
 		"date": "Saturday, March 13, 2027",
 		"location": "Academia Sinica, Humanities and Social Sciences Building",
 		"popup_label": "View event details and the organizing team",
+		"popup_btn": "View event details and the organizing team",
 		"activity_schedule": "Event Schedule",
 		"place_detail": "Venue Details",
 		"location_name": "Academia Sinica<br />Humanities and Social Sciences Building",
@@ -128,6 +129,7 @@
 	},
 	"news": {
 		"title": "What We've Done",
+		"btn": "See what we've done",
 		"things": [
 			{
 				"title": "The largest student CS conference in East Asia",
@@ -403,6 +405,7 @@
 	},
 	"about": {
 		"detail": "Audience & Statistics",
+		"detail_btn": "Explore audience & statistics",
 		"subtitle": "The largest student community",
 		"title": "in East Asia for 14 years",
 		"stats": [
@@ -645,7 +648,7 @@
 		"scan_qrcode": "Scan the QR code (sitcon.org/cfs) to view the online sponsorship prospectus. For collaboration, email contact@sitcon.org.",
 		"contact": "Marketing & Media Contacts",
 		"email": "contact@sitcon.org",
-		"contact_list": [],
+		"contact_list": ["Yi-Hsin Huang +886-905-709-062", "Denny Huang +886-922-686-223", "Ying-Chi Huang +886-974-003-155"],
 		"contact_us": "Contact Us",
 		"contact_us_description": "For collaboration:",
 		"contact_us_description2": "For registration:",
