@@ -53,7 +53,14 @@ const news: News[] = [
 	<h2>{t.recognition_title}</h2>
 	<div class="news-content" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
 		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930">
-			<span class="news-source">{t.coverage[0].source}</span><img src={president2026.src} width={president2026.width} height={president2026.height} alt={t.coverage[0].alt} class="news-img" loading="lazy" />
+			<span class="news-source">{t.coverage[0].source}</span><img
+				src={president2026.src}
+				width={president2026.width}
+				height={president2026.height}
+				alt={t.coverage[0].alt}
+				class="news-img"
+				loading="lazy"
+			/>
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx">
 			<span class="news-source">{t.coverage[1].source}</span><img src={cna2026.src} width={cna2026.width} height={cna2026.height} alt={t.coverage[1].alt} class="news-img" loading="lazy" />
@@ -62,14 +69,7 @@ const news: News[] = [
 			<span class="news-source">{t.coverage[2].source}</span><img src={udn2026.src} width={udn2026.width} height={udn2026.height} alt={t.coverage[2].alt} class="news-img" loading="lazy" />
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&s=44FFA988115FABF4">
-			<span class="news-source">{t.coverage[3].source}</span><img
-				src={moe2026.src}
-				width={moe2026.width}
-				height={moe2026.height}
-				alt={t.coverage[3].alt}
-				class="news-img"
-				loading="lazy"
-			/>
+			<span class="news-source">{t.coverage[3].source}</span><img src={moe2026.src} width={moe2026.width} height={moe2026.height} alt={t.coverage[3].alt} class="news-img" loading="lazy" />
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://act.club.tw/act-taiwan-agile-awards-2026/#winners-agile-org">
 			<span class="news-source">{t.coverage[4].source}</span><img
@@ -82,14 +82,7 @@ const news: News[] = [
 			/>
 		</a>
 		<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=zplk0zALtOM">
-			<span class="news-source">{t.coverage[5].source}</span><img
-				src={muchtv2026.src}
-				width={muchtv2026.width}
-				height={muchtv2026.height}
-				alt={t.coverage[5].alt}
-				class="news-img"
-				loading="lazy"
-			/>
+			<span class="news-source">{t.coverage[5].source}</span><img src={muchtv2026.src} width={muchtv2026.width} height={muchtv2026.height} alt={t.coverage[5].alt} class="news-img" loading="lazy" />
 		</a>
 	</div>
 	<Popup title={t.title} background={community.src} btnText={t.btn} id="news-popup" lang={lang}>
