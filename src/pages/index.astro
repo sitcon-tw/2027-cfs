@@ -10,6 +10,7 @@ import Items from "@components/section/Items.astro";
 import Plans from "@components/section/Plans.astro";
 import Highlights from "@components/section/Highlights.astro";
 import OpenDream from "@components/section/OpenDream.astro";
+import Cycle from "@components/section/Cycle.astro";
 import Form from "@components/section/Form.astro";
 import FAQ from "@components/section/FAQ.astro";
 import Footer from "@components/section/Footer.astro";
@@ -19,7 +20,7 @@ import ItemsPopup from "@components/section/ItemsPopup.astro";
 const { lang = "zh-Hant" } = Astro.props;
 const ogImage = lang === "zh-Hant" ? ogImageZH : ogImageEN;
 const t = await import(`../i18n/${lang}.json`).then(m => m.default);
-const sections = [Nav, Hero, Intro, Time, Highlights, About, News, Plans, Items, OpenDream, ItemsPopup, Form, Sponsors, FAQ, Footer];
+const sections = [Nav, Hero, Intro, Time, Highlights, About, News, Plans, Items, OpenDream, Cycle, ItemsPopup, Form, Sponsors, FAQ, Footer];
 const { title = t.meta.title, description = t.meta.description } = Astro.props;
 const siteName = lang === "en" ? "SITCON Students' Information Technology Conference" : "SITCON 學生計算機年會";
 
