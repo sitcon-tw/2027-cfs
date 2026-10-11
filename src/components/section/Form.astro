@@ -5,34 +5,44 @@ const en = lang === "en";
 ---
 
 <section id="form" data-contact-lang={lang}>
-	<h2>{en ? "Let's build SITCON 2027 together" : "一起成就 SITCON 2027"}</h2>
-	<p class="intro">{en ? "Leave a way to reach you and we'll discuss a suitable partnership together." : "留下方便聯絡您的方式，我們會與您一起討論適合的合作方式。"}</p>
-	<form id="sponsor-form" data-error={t.messages.error}>
-		<div class="identity">
-			<div><label for="organization">{t.fields.organization.title} <span aria-hidden="true">*</span></label><input id="organization" name="organization" autocomplete="organization" required /></div>
-			<div><label for="contact-name">{t.fields.name.title} <span aria-hidden="true">*</span></label><input id="contact-name" name="name" autocomplete="name" required /></div>
+	<h2 class="title"><span>{t.titleLine1}</span> <span>{t.titleLine2}</span></h2>
+	<div class="columns">
+		<div class="corporate">
+			<h3>{t.corporateTitle}</h3>
+			<p class="intro">{en ? "Leave a way to reach you and we'll discuss a suitable partnership together." : "留下方便聯絡您的方式，我們會與您一起討論適合的合作方式。"}</p>
+			<form id="sponsor-form" data-error={t.messages.error}>
+				<div class="identity">
+					<div>
+						<label for="organization">{t.fields.organization.title} <span aria-hidden="true">*</span></label><input id="organization" name="organization" autocomplete="organization" required />
+					</div>
+					<div><label for="contact-name">{t.fields.name.title} <span aria-hidden="true">*</span></label><input id="contact-name" name="name" autocomplete="name" required /></div>
+				</div>
+				<label for="contact">{t.fields.contact.title} <span aria-hidden="true">*</span></label>
+				<p id="contact-help" class="help">{t.fields.contact.description}</p>
+				<input id="contact" name="contact" type="text" aria-describedby="contact-help" placeholder={t.fields.contact.placeholder} required />
+				<label for="inquiry-text">{en ? "Ideas or questions (optional)" : "合作想法或問題（選填）"}</label>
+				<textarea
+					id="inquiry-text"
+					name="message"
+					rows="3"
+					placeholder={en ? "For example: recruiting, brand exposure, budget, or a good time to call." : "例如：徵才、品牌曝光、預算，或方便聯絡的時段。"}
+				>
+				</textarea>
+				<div class="selection"><p>{en ? "Plans / items of interest" : "感興趣的方案／品項"}</p><p id="inquiry-selection"></p></div>
+				<div class="submit-wrap">
+					<Button id="submit" type="submit" size="default" color="var(--form-accent)" hoverColor="color-mix(in srgb, var(--form-accent) 85%, black)">{en ? "Let's talk" : "送出合作洽詢"}</Button>
+					<p class="alternative">{en ? "or email us at" : "也歡迎直接來信"} <a href="mailto:contact@sitcon.org">contact@sitcon.org</a></p>
+				</div>
+				<p id="form-message" role="status" aria-live="polite"></p>
+			</form>
 		</div>
-		<label for="contact">{t.fields.contact.title} <span aria-hidden="true">*</span></label>
-		<p id="contact-help" class="help">{t.fields.contact.description}</p>
-		<input id="contact" name="contact" type="text" aria-describedby="contact-help" placeholder={t.fields.contact.placeholder} required />
-		<label for="inquiry-text">{en ? "Ideas or questions (optional)" : "合作想法或問題（選填）"}</label>
-		<textarea
-			id="inquiry-text"
-			name="message"
-			rows="4"
-			placeholder={en ? "For example: recruiting, brand exposure, budget, or a good time to call." : "例如：徵才、品牌曝光、預算，或方便聯絡的時段。"}
-		>
-		</textarea>
-		<div class="selection"><p>{en ? "Plans / items of interest" : "感興趣的方案／品項"}</p><p id="inquiry-selection"></p></div>
-		<div class="submit-wrap">
-			<Button id="submit" type="submit" size="default" color="#74bf50" hoverColor="color-mix(in srgb, #74bf50 85%, black)" textColor="var(--black, #1d1d1f)"
-				>{en ? "Let's talk" : "送出合作洽詢"}</Button
+		<aside class="personal" aria-labelledby="personal-title">
+			<p id="personal-title" class="personal-title">{t.personal.title}</p>
+			<Button href="https://sitcon.org/donate" target="_blank" rel="noopener" size="default" color="var(--form-accent)" hoverColor="color-mix(in srgb, var(--form-accent) 85%, black)"
+				>{t.personal.cta}</Button
 			>
-		</div>
-		<p id="form-message" role="status" aria-live="polite"></p>
-	</form>
-	<p class="alternative">{en ? "You can also email us at" : "也歡迎直接來信"} <a href="mailto:contact@sitcon.org">contact@sitcon.org</a></p>
-	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
+		</aside>
+	</div>
 </section>
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
@@ -89,54 +99,70 @@ const en = lang === "en";
 </script>
 <style>
 	section {
+		--form-accent: #0171e3;
 		padding: 4rem 1.5rem;
-		text-align: center;
 		background: var(--white);
 	}
-	h2 {
-		font-size: clamp(1.8rem, 5vw, 3rem);
-		margin-bottom: 1rem;
+	.title {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		column-gap: 0.35em;
+		font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+		line-height: 1.3;
+		margin: 0 auto 2.5rem;
+		text-align: center;
+	}
+	/* Form on the left, personal sponsorship on the right, as on the previous site, but with tighter field spacing so the whole block stays short. */
+	.columns {
+		display: grid;
+		grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+		column-gap: 3rem;
+		max-width: 64rem;
+		margin: 0 auto;
+	}
+	h3 {
+		font-size: clamp(1.4rem, 3vw, 1.75rem);
+		margin: 0 0 0.5rem;
 	}
 	.intro {
-		margin: 0 auto 2rem;
-		max-width: 42rem;
-		line-height: 1.7;
-	}
-	form {
-		max-width: 42rem;
-		margin: 0 auto 1.5rem;
-		text-align: left;
+		margin: 0 0 1.25rem;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: var(--gray);
 	}
 	.identity {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 1rem;
+		column-gap: 1rem;
 	}
 	.identity > div {
 		min-width: 0;
 	}
 	label {
 		display: block;
-		margin-bottom: 0.4rem;
+		margin-bottom: 0.3rem;
+		font-size: 0.95rem;
 		font-weight: 600;
 	}
 	label span {
 		color: #a12b23;
 	}
 	.help {
-		font-size: 0.9rem;
-		line-height: 1.6;
-		margin-bottom: 0.5rem;
+		margin: 0 0 0.4rem;
+		font-size: 0.85rem;
+		line-height: 1.5;
+		color: var(--gray);
 	}
 	input,
 	textarea {
 		box-sizing: border-box;
 		width: 100%;
-		padding: 0.75rem;
-		margin-bottom: 1.25rem;
+		padding: 0.6rem 0.75rem;
+		margin-bottom: 1rem;
 		font: inherit;
 		font-size: 1rem;
-		line-height: 1.6;
+		line-height: 1.5;
 		color: #1d1d1f;
 		background: white;
 		border: 1px solid var(--border-light);
@@ -144,52 +170,91 @@ const en = lang === "en";
 	}
 	textarea {
 		resize: vertical;
-		min-height: 7rem;
+		min-height: 5.5rem;
 	}
 	.selection {
 		background: var(--container);
-		padding: 1rem;
+		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
-		margin-bottom: 1.25rem;
-		font-size: 0.95rem;
+		margin-bottom: 1rem;
+		font-size: 0.9rem;
 		line-height: 1.6;
+	}
+	.selection p {
+		margin: 0;
 	}
 	#inquiry-selection {
 		white-space: pre-line;
 		overflow-wrap: anywhere;
-		margin-top: 0.4rem;
+		margin-top: 0.25rem;
 	}
 	.submit-wrap {
 		display: flex;
-		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.75rem 1.25rem;
+	}
+	.alternative {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.6;
 	}
 	input:focus-visible,
 	textarea:focus-visible {
-		outline: 2px solid #74bf50;
+		outline: 2px solid var(--form-accent);
 		outline-offset: 3px;
 	}
 	#form-message {
-		margin-top: 0.75rem;
+		margin: 0.75rem 0 0;
 		line-height: 1.6;
 		overflow-wrap: anywhere;
 	}
-	a {
-		color: #74bf50;
+	#form-message:empty {
+		display: none;
+	}
+	.alternative a {
+		color: var(--form-accent);
 		text-underline-offset: 0.2em;
 	}
-	.alternative,
+	.alternative a:hover {
+		color: color-mix(in srgb, var(--form-accent) 85%, black);
+	}
 	.personal {
-		font-size: 0.9rem;
-		line-height: 1.7;
-		margin: 0.5rem auto;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1.5rem;
+		padding: 2rem 1rem;
+		border-left: 1px solid var(--black);
+		text-align: center;
+	}
+	.personal-title {
+		margin: 0;
+		font-size: clamp(1.5rem, 3vw, 2.25rem);
+		font-weight: 700;
+		line-height: 1.35;
+		text-wrap: balance;
+	}
+	@media (max-width: 48rem) {
+		.columns {
+			grid-template-columns: 1fr;
+			row-gap: 2.5rem;
+		}
+		.personal {
+			padding: 2.5rem 0 0;
+			border-left: 0;
+			border-top: 1px solid var(--black);
+		}
 	}
 	@media (max-width: 35rem) {
 		.identity {
 			grid-template-columns: 1fr;
-			gap: 0;
 		}
 		.submit-wrap {
-			width: 100%;
+			flex-direction: column;
+			align-items: stretch;
+			text-align: center;
 		}
 		.submit-wrap :global(.site-button) {
 			width: 100%;
