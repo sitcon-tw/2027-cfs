@@ -38,8 +38,8 @@ const en = lang === "en";
 	import { getInterestedItems } from "../../utils/local-storage.ts";
 	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
 
-	// Legacy endpoint: the development team must confirm the 2027 recipient/form before launch.
-	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse";
+	// SITCON 2027 贊助洽談表單 (https://forms.gle/TwFBtr83AJKmkfFQA)
+	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSd3qhkNzSvIAeUJtbDJAcVnK82kkLb2W8dl_i9TFtsJNd-QnA/formResponse";
 	const form = document.querySelector<HTMLFormElement>("#sponsor-form");
 	const button = document.querySelector<HTMLButtonElement>("#submit");
 	const status = document.querySelector<HTMLElement>("#form-message");
