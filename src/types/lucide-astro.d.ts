@@ -18,4 +18,6 @@ declare module "@lucide/astro" {
 	export const Newspaper: any;
 	export const Megaphone: any;
 	export const FileChartColumn: any;
+	export const TrainFront: any;
+	export const BedDouble: any;
 }

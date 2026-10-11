@@ -1,11 +1,14 @@
 ---
-import Cycle from "./Cycle.astro";
-const { t, lang } = Astro.props;
 import Popup from "@components/Popup.astro";
-import { Check, Ticket, Globe, Newspaper, Megaphone, FileChartColumn } from "@lucide/astro";
 import Button from "../Button.astro";
 import ItemPrice from "../items/ItemPrice.astro";
-import volunteer from "@assets/img/opendream-2026.webp";
+import { Ticket, Globe, Newspaper, Megaphone, FileChartColumn, ArrowUpRight } from "@lucide/astro";
+import popupHero from "@assets/img/opendream-2026.webp";
+// 背景照片：SITCON Camp 2026，工作人員俯身協助學員（Flickr 55385955415，攝影：康喔），出處見 src/data/photo-credits.json 的 opendream_band。
+import backdrop from "@assets/img/opendream-bg.webp";
+import backdropSm from "@assets/img/opendream-bg-sm.webp";
+
+const { t, lang } = Astro.props;
 
 interface OpenDreamPlan {
 	id: string;
@@ -21,21 +24,47 @@ interface PopupBenefit {
 	description: string;
 }
 
-const colors = ["#47762e", "#426bd1"];
-const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
+interface Stat {
+	number: string;
+	note: string;
+}
+
+const tierColors = ["#47762e", "#426bd1"];
 ---
 
-<section id="opendream">
-	<h2><span>{t.subtitle}</span>{t.title}</h2>
-	<div class="container">
-		<p class="description">{t.description}</p>
-		<div class="plans">
+<section id="opendream" aria-labelledby="opendream-title">
+	<!-- Screen 1: dark photo band with the program name, the original subtitle and three numbers. -->
+	<header class="od-hero aos">
+		<div class="backdrop" aria-hidden="true">
+			<img src={backdrop.src} srcset={`${backdropSm.src} 960w, ${backdrop.src} 1920w`} sizes="100vw" width={backdrop.width} height={backdrop.height} alt="" loading="lazy" decoding="async" />
+		</div>
+		<div class="od-hero-inner">
+			<h2 id="opendream-title"><span class="od-title">{t.title}</span><span class="od-slogan">{t.subtitle1}{lang === "en" ? " " : ""}<br />{t.subtitle2}</span></h2>
+			<ul class="od-stats" role="list">
+				{
+					t.hero.stats.map((stat: Stat) => (
+						<li class="od-stat">
+							<span class="od-stat-number">{stat.number}</span>
+							<span class="od-stat-note">{stat.note}</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</header>
+
+	<!-- Screen 2: plans and sponsor benefits. Everything else lives in the popup. -->
+	<div class="od-main" id="opendream-plans">
+		<div class="od-head aos">
+			<h3 id="od-plans-title">{t.popup.impact.title}</h3>
+			<p class="od-lead">{t.description}</p>
+		</div>
+
+		<div class="od-tiers">
 			{
 				t.plans.map((plan: OpenDreamPlan, index: number) => (
-					<div class="tier-column">
-						<div class="tier-name" style={`color: ${colors[index % colors.length]}`}>
-							{plan.name}
-						</div>
+					<div class="od-tier" style={`--tier-color: ${tierColors[index % tierColors.length]}`}>
+						<h4 class="od-tier-name">{plan.name}</h4>
 						<ItemPrice price={plan.price} />
 						<Button
 							variant="outlined"
@@ -54,74 +83,44 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 				))
 			}
 		</div>
-		<h3>{t.benefits_title}</h3>
-		<ul class="benefits">
+
+		<p class="od-benefits-label">{t.benefits_title}</p>
+		<ul class="od-benefits" role="list">
 			{
-				t.benefits.map((benefit: string) => (
-					<li>
-						<Check size={20} />
-						{benefit}
-					</li>
-				))
+				t.popup.sponsor_benefits.items.map((benefit: PopupBenefit) => {
+					const Icon = benefitIcons[benefit.icon];
+					return (
+						<li>
+							<span class="od-benefit-icon">
+								<Icon size={22} stroke-width={1.8} aria-hidden="true" />
+							</span>
+							<h4>{benefit.title}</h4>
+							<p>{benefit.description}</p>
+						</li>
+					);
+				})
 			}
 		</ul>
-		<p class="note">{t.exclusive_note}</p>
-		<p class="note">{t.price_note}</p>
 	</div>
-	<div class="aos spacer"></div>
-	<Popup btnText={t.popup_label} title={t.popup.title} id="opendream-popup" background={volunteer.src} lang={lang}>
+	<Popup btnText={t.popup_label} title={t.popup.title} id="opendream-popup" background={popupHero.src} lang={lang}>
 		<div class="popup-body" lang={lang}>
-			<section class:list={["dream-section purpose-section", { "purpose-section-en": lang === "en" }]} aria-labelledby="dream-purpose-title">
+			<section class="dream-section" aria-labelledby="dream-purpose-title">
 				<h3 id="dream-purpose-title">{t.popup.hero.headline}</h3>
 				<p>{t.popup.hero.description}</p>
-			</section>
-
-			<section class="dream-section impact-section" aria-labelledby="dream-impact-title">
-				<h3 id="dream-impact-title">{t.popup.impact.title}</h3>
-				<div class="impact-grid">
-					{
-						t.plans.map((plan: OpenDreamPlan, index: number) => (
-							<div class="impact-plan" style={`--impact-color: ${colors[index % colors.length]}`}>
-								<h4 aria-label={plan.name}>
-									{plan.name.split(/(\d+)/).map(part => (
-										<span class:list={{ "impact-count": /^\d+$/.test(part) }} aria-hidden="true">
-											{part.trim()}
-										</span>
-									))}
-								</h4>
-								<ItemPrice price={plan.price} />
-								<Button
-									variant="outlined"
-									size="default"
-									class="tier-interest-button"
-									data-tier-name={plan.id}
-									data-tier-title={`${t.title}｜${plan.name}`}
-									data-tier-price={plan.price}
-									data-default-label={t.interested}
-									data-selected-label={t.popup.cta.selected}
-									aria-pressed="false"
-								>
-									{t.interested}
-								</Button>
-							</div>
-						))
-					}
-				</div>
-				<p class="section-note">{t.popup.impact.note}</p>
 			</section>
 
 			<section class="dream-section" aria-labelledby="dream-benefits-title">
 				<h3 id="dream-benefits-title">{t.popup.sponsor_benefits.title}</h3>
 				<p>{t.popup.sponsor_benefits.description}</p>
-				<dl class="benefit-grid">
+				<dl class="dream-perks">
 					{
 						t.popup.sponsor_benefits.items.map((benefit: PopupBenefit) => {
 							const Icon = benefitIcons[benefit.icon];
 							return (
-								<div class="benefit-card">
+								<div class="dream-perk">
 									<dt>
-										<Icon size={28} stroke-width={1.7} aria-hidden="true" />
-										{benefit.title}
+										<Icon size={22} stroke-width={1.8} aria-hidden="true" />
+										<span>{benefit.title}</span>
 									</dt>
 									<dd>{benefit.description}</dd>
 								</div>
@@ -131,7 +130,7 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 				</dl>
 			</section>
 
-			<section class="dream-section details-section" aria-labelledby="dream-eligibility-title">
+			<section class="dream-section" aria-labelledby="dream-eligibility-title">
 				<h3 id="dream-eligibility-title">{t.popup.eligibility.title}</h3>
 				<p>{t.popup.eligibility.description}</p>
 				<ol class="review-steps">{t.popup.eligibility.steps.map((step: string) => <li>{step}</li>)}</ol>
@@ -158,13 +157,13 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 
 			<section class="dream-section" aria-labelledby="dream-links-title">
 				<h3 id="dream-links-title">{t.popup.links_title}</h3>
-				<p class="section-note">{t.popup.links_description}</p>
 				<ul class="popup-links">
 					{
 						t.popup.links.map((link: { name: string; url: string }) => (
 							<li>
 								<a href={link.url} target="_blank" rel="noopener noreferrer">
-									{link.name} ↗
+									{link.name}
+									<ArrowUpRight size={16} aria-hidden="true" />
 								</a>
 							</li>
 						))
@@ -173,7 +172,6 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 			</section>
 		</div>
 	</Popup>
-	<details class="impact-details"><summary>{lang === "en" ? "How your support makes an impact" : "了解贊助如何支持資訊教育"}</summary><Cycle t={cycleText} lang={lang} /></details>
 </section>
 
 <script>
@@ -214,165 +212,297 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	});
 
 	window.addEventListener("itemsChange", updateButtonStates);
-	document.addEventListener("interested-items-changed", updateButtonStates);
 </script>
 
 <style>
 	section#opendream {
-		background-color: var(--items-bg);
-		padding: 5rem 2rem;
+		padding-bottom: 2rem;
+		background-color: var(--white);
+		color: var(--black);
+	}
+
+	/* ---------- Screen 1: hero band ---------- */
+	.od-hero {
+		position: relative;
+		isolation: isolate;
+		overflow: clip;
+		background-color: #000;
+		color: var(--white);
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
+		min-height: clamp(26rem, 70svh, 44rem);
+		padding: clamp(5rem, 9svh, 6.5rem) 2rem clamp(3rem, 6svh, 4.5rem);
 	}
 
-	h2 span {
-		display: block;
-		font-size: 1.25rem;
-		color: var(--gray);
-		margin-bottom: 0.5rem;
+	.backdrop {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
 	}
 
-	.container {
-		max-width: min(1200px, 100%);
+	.backdrop img {
 		width: 100%;
-		border-radius: 2rem;
-		background-color: var(--white);
-		margin: 0 auto;
-		padding: 3rem;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 40%;
+		opacity: 0;
+		scale: 1.04;
+		transition:
+			opacity 1.2s ease-out,
+			scale 2s cubic-bezier(0.2, 0.7, 0.2, 1);
 	}
 
-	.description {
-		max-width: 50rem;
-		margin: 0 auto 3rem;
+	.backdrop::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.72) 55%, rgba(0, 0, 0, 0.88));
+	}
+
+	.od-hero:is(.appeared, .over) .backdrop img {
+		opacity: 1;
+		scale: 1;
+	}
+
+	.od-hero-inner {
+		flex: 0 0 auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 100%;
+		max-width: 1200px;
+		min-height: min(42svh, 24rem);
+		margin: 0 auto;
+	}
+
+	.od-hero h2 {
+		text-align: left;
+		margin: 0;
+		text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+	}
+
+	.od-title {
+		display: block;
+		margin-bottom: 1rem;
+		font-size: clamp(3rem, 7.5vw, 6rem);
+		line-height: 1.05;
+		letter-spacing: -0.02em;
+	}
+
+	.od-slogan {
+		display: block;
+		max-width: 30ch;
+		font-size: clamp(1.35rem, 2.4vw, 2rem);
+		font-weight: 700;
+		line-height: 1.35;
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.od-stats {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.5rem;
+		margin: auto 0 0;
+		padding: 3.5rem 0 0;
+	}
+
+	.od-stat {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		min-width: 0;
+	}
+
+	.od-stat-number {
+		font-size: clamp(2rem, 4vw, 3.25rem);
+		font-weight: 700;
+		line-height: 1.05;
+		letter-spacing: -0.02em;
+		overflow-wrap: anywhere;
+	}
+
+	.od-stat-note {
+		font-size: 0.95rem;
+		line-height: 1.5;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.od-title,
+	.od-slogan,
+	.od-stats {
+		opacity: 0;
+		translate: 0 1rem;
+		transition:
+			opacity 0.9s ease-out,
+			translate 0.9s ease-out;
+	}
+
+	.od-slogan {
+		transition-delay: 0.25s;
+	}
+
+	.od-stats {
+		transition-delay: 0.5s;
+	}
+
+	.od-hero:is(.appeared, .over) :is(.od-title, .od-slogan, .od-stats) {
+		opacity: 1;
+		translate: 0 0;
+	}
+
+	/* ---------- Screen 2: plans ---------- */
+	.od-main {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 5rem 2rem;
+	}
+
+	.od-head {
+		max-width: 46rem;
+		margin: 0 auto 2.5rem;
 		text-align: center;
-		font-size: 1.15rem;
+	}
+
+	.od-main h3 {
+		text-align: center;
+		margin: 0 0 1rem;
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.25;
+	}
+
+	.od-lead {
+		margin: 0;
+		font-size: 1.1rem;
 		line-height: 1.8;
 	}
 
-	.plans {
+	.od-tiers {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 2rem;
-		max-width: 40rem;
-		margin: 0 auto 3rem;
+		gap: 1.5rem;
+		max-width: 46rem;
+		margin: 0 auto;
 	}
 
-	.tier-column {
-		text-align: center;
+	.od-tier {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 1.5rem;
-		border-radius: 1rem;
+		min-width: 0;
+		padding: 2rem 1.5rem;
+		text-align: center;
 		background-color: var(--container);
+		border-radius: 1rem;
 	}
 
-	.tier-name {
+	.od-tier-name {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--tier-color);
+	}
+
+	.od-tier :global(.sponsorship-price) {
 		font-size: 1.75rem;
 		font-weight: 700;
-		line-height: 1.2;
-		overflow-wrap: anywhere;
-	}
-
-	.tier-column :global(.sponsorship-price),
-	.impact-plan :global(.sponsorship-price) {
-		color: var(--black);
-		font-size: 1.5rem;
-		font-weight: 700;
 		line-height: 1.3;
-	}
-
-	h3 {
-		text-align: center;
-		font-size: 1.5rem;
-		margin-bottom: 1rem;
-	}
-
-	.benefits {
-		list-style: none;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 0.75rem 2rem;
-		margin-bottom: 2rem;
-	}
-
-	.benefits li {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		font-size: 1.1rem;
-	}
-
-	.benefits svg {
-		color: var(--items-green);
-	}
-
-	.note {
-		text-align: center;
-		color: var(--gray);
-		font-size: 0.95rem;
-		line-height: 1.6;
-	}
-
-	.spacer {
-		height: 2rem;
-	}
-
-	.popup-body {
-		padding: 0 3rem;
 		color: var(--black);
-		container-type: inline-size;
+	}
+
+	.od-tier :global(.tier-interest-button) {
+		margin-top: 0.75rem;
+	}
+
+	.od-benefits-label {
+		margin: 3rem 0 1rem;
+		font-size: 1.1rem;
+		font-weight: 700;
+		text-align: center;
+	}
+
+	/* One panel, five facets: hairlines between columns instead of five separate boxes. */
+	.od-benefits {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+		gap: 0;
+		margin: 0;
+		padding: 2rem 1rem;
+		background-color: var(--container);
+		border-radius: 1.5rem;
+	}
+
+	.od-benefits li {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.6rem;
+		min-width: 0;
+		padding: 0.25rem 1.5rem;
+		border-left: 1px solid var(--border-light);
+	}
+
+	.od-benefits li:first-child {
+		border-left: 0;
+	}
+
+	.od-benefit-icon {
+		display: block;
+		color: #0171e3;
+	}
+
+	.od-benefits h4 {
+		margin: 0;
+		font-size: 1rem;
+	}
+
+	.od-benefits p {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: var(--gray);
+	}
+
+	/* The Popup pill rides the bottom of the viewport from the hero to the end of the section (Popup.astro's sticky default) and never fades. */
+	section#opendream > :global(.detail-btn) {
+		opacity: 1;
+		transition: none;
+	}
+
+	/* ---------- Popup: the full story ---------- */
+	.popup-body {
+		padding: 1rem 3rem;
+		color: var(--black);
 	}
 
 	.dream-section {
-		padding: 1.5rem 0;
+		padding: 1.75rem 0;
 	}
 
-	.details-section {
+	.dream-section + .dream-section {
 		border-top: 1px solid var(--gray-container);
-		margin-top: 1rem;
-	}
-
-	.dream-section.purpose-section {
-		padding-top: 3.5rem;
-	}
-
-	.purpose-section p {
-		max-width: none;
-		font-size: 1.125rem;
 	}
 
 	.dream-section h3 {
 		text-align: left;
-		font-size: 1.8rem;
-		line-height: 1.3;
 		margin: 0 0 1rem;
+		font-size: 1.6rem;
+		line-height: 1.3;
 	}
 
-	.purpose-section h3 {
-		max-width: none;
-		font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-		letter-spacing: -0.025em;
-	}
-
-	.purpose-section-en h3,
-	.purpose-section-en p {
-		max-width: none;
-	}
-
-	.dream-section h4,
-	.benefit-grid dt {
+	.dream-section h4 {
+		margin: 0 0 0.5rem;
 		font-size: 1.1rem;
 		font-weight: 700;
-		margin: 0 0 0.5rem;
 	}
 
 	.dream-section p,
-	.dream-section li,
-	.benefit-grid dd {
-		line-height: 1.6;
+	.dream-section li {
+		line-height: 1.7;
 	}
 
 	.dream-section p {
@@ -380,125 +510,67 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 	}
 
 	.dream-section .section-note {
-		font-size: 0.95rem;
-		color: var(--gray);
 		margin: 1rem 0 0;
+		font-size: 0.9rem;
+		color: var(--gray);
 	}
 
-	.impact-grid,
-	.comparison-grid {
+	.dream-perks {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 2rem;
-	}
-
-	.impact-grid {
-		background: var(--white);
-		border-radius: 1.5rem;
-		padding: 2rem 0;
-		gap: 0;
-	}
-
-	.impact-plan {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		padding-inline: 1rem;
-	}
-
-	.impact-plan + .impact-plan {
-		border-left: 1px solid var(--gray-container);
-	}
-
-	.impact-plan h4 {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-		color: var(--impact-color);
-		font-size: 1.1rem;
-		line-height: 1.4;
-		margin-bottom: 1rem;
-	}
-
-	.impact-count {
-		font-size: clamp(4rem, 10vw, 7rem);
-		font-weight: 700;
-		line-height: 1;
-		letter-spacing: -0.05em;
-	}
-
-	/* Keep each tier on one centered axis, with its student count in a single row. */
-	@container (min-width: 38rem) {
-		.impact-plan h4 {
-			flex-direction: row;
-			align-items: baseline;
-			justify-content: center;
-			gap: 0.5rem;
-			font-size: clamp(1.25rem, 2.2cqw, 1.5rem);
-		}
-
-		.impact-count {
-			font-size: clamp(3.5rem, 8cqw, 5.5rem);
-		}
-	}
-
-	.impact-plan :global(.tier-interest-button) {
-		margin-top: 1rem;
-	}
-
-	.benefit-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 1rem;
+		grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+		gap: 1.25rem 2rem;
 		margin: 1.5rem 0 0;
 	}
 
-	.benefit-card:last-child {
-		grid-column: 1 / -1;
+	.dream-perk {
+		min-width: 0;
 	}
 
-	/* Card radius and spacing follow Highlights; icons sit beside the copy. */
-	.benefit-card {
-		position: relative;
-		background: var(--white);
-		border-radius: 1rem;
-		padding: 1.5rem 1.5rem 1.5rem 4.25rem;
+	.dream-perk dt {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-weight: 700;
 	}
 
-	.benefit-card dt {
-		line-height: 1.4;
+	.dream-perk svg {
+		flex: none;
+		color: #0171e3;
 	}
 
-	.benefit-card svg {
-		position: absolute;
-		left: 1.5rem;
-		top: 1.5rem;
+	.dream-perk dd {
+		margin: 0.35rem 0 0 2rem;
+		font-size: 0.92rem;
+		line-height: 1.55;
 		color: var(--gray);
-	}
-
-	.benefit-grid dd {
-		margin: 0;
-		font-size: 0.95rem;
 	}
 
 	.review-steps,
 	.comparison-grid ul {
-		padding-left: 1.25rem;
 		margin: 1rem 0 0;
+		padding-left: 1.25rem;
 	}
 
 	.dream-section li + li {
 		margin-top: 0.5rem;
 	}
 
+	.comparison-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 2rem;
+	}
+
 	.popup-links {
 		list-style: none;
+		margin: 0;
 		padding: 0;
-		margin: 1rem 0 0;
 	}
 
 	.popup-links a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
 		color: #0171e3;
 		text-decoration: underline;
 		text-underline-offset: 3px;
@@ -510,103 +582,177 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		outline-offset: 3px;
 	}
 
-	@container (max-width: 20rem) {
-		.benefit-card {
-			padding: 1rem;
-		}
-
-		.benefit-card dt {
-			display: flex;
-			align-items: center;
-			gap: 0.75rem;
-		}
-
-		.benefit-card svg {
-			position: static;
-			flex-shrink: 0;
-		}
-	}
-
-	.dream-section > p:last-child:not(.section-note) {
-		margin-bottom: 0;
-	}
-
-	@media screen and (max-width: 65rem) {
-		.benefit-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-
+	/* ---------- Responsive ---------- */
 	@media screen and (max-width: 45rem) {
-		.container {
-			padding: 2rem 1.5rem;
+		.od-hero {
+			min-height: clamp(22rem, 62svh, 34rem);
+			padding: clamp(4rem, 8svh, 5rem) 1.25rem 2.5rem;
 		}
 
-		.plans,
-		.benefit-grid,
-		.comparison-grid {
+		.od-hero-inner {
+			min-height: min(38svh, 20rem);
+		}
+
+		.od-hero h2 br {
+			display: none;
+		}
+
+		.od-stats {
+			gap: 1rem;
+			padding-top: 2.5rem;
+		}
+
+		.od-stat-note {
+			font-size: 0.8rem;
+		}
+
+		.od-main {
+			padding: 3.5rem 1.25rem;
+		}
+
+		.od-tiers {
+			gap: 1rem;
+		}
+
+		.od-tier {
+			padding: 1.5rem 0.75rem;
+		}
+
+		.od-tier :global(.sponsorship-price) {
+			font-size: 1.5rem;
+		}
+
+		.od-benefits {
 			grid-template-columns: minmax(0, 1fr);
+			padding: 0.5rem 1.25rem;
+			border-radius: 1rem;
+		}
+
+		.od-benefits li {
+			padding: 1rem 0;
+			border-left: 0;
+			border-top: 1px solid var(--border-light);
+		}
+
+		.od-benefits li:first-child {
+			border-top: 0;
 		}
 
 		.popup-body {
 			padding-inline: 1.5rem;
 		}
 
-		.dream-section.purpose-section {
-			padding-top: 2.5rem;
-		}
-
-		.impact-grid {
-			padding-block: 1.75rem;
-		}
-
-		.impact-plan {
-			padding-inline: 0.5rem;
-		}
-
-		.impact-plan :global(.tier-interest-button) {
-			padding-inline: 0.75rem;
+		.comparison-grid {
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.dream-section h3 {
-			font-size: 1.5rem;
-		}
-
-		.purpose-section h3 {
-			font-size: 1.875rem;
+			font-size: 1.4rem;
 		}
 	}
 
-	@media screen and (max-width: 30rem) {
-		.impact-grid {
-			grid-template-columns: 1fr;
-			gap: 1.75rem;
+	@media screen and (max-width: 36rem) {
+		.od-title {
+			font-size: 2.5rem;
 		}
 
-		.impact-plan + .impact-plan {
-			border-left: 0;
-			border-top: 1px solid var(--gray-container);
-			padding-top: 1.75rem;
+		/* Three columns are too narrow for the numbers on a phone: stack them as number + note rows. */
+		.od-stats {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0.75rem;
+		}
+
+		.od-stat {
+			flex-direction: row;
+			align-items: baseline;
+			gap: 0.75rem;
+		}
+
+		.od-stat-number {
+			flex: none;
+			font-size: 1.75rem;
+		}
+
+		.od-tiers {
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 
+	@media (prefers-reduced-motion: reduce) {
+		.backdrop img {
+			scale: 1;
+			transition: opacity 0.6s ease-out;
+		}
+
+		.od-title,
+		.od-slogan,
+		.od-stats {
+			translate: 0 0;
+			transition: opacity 0.6s ease-out;
+			transition-delay: 0s;
+		}
+	}
+
+	/* ---------- Print ---------- */
 	@media print {
-		section#opendream {
-			padding: 2rem;
+		.od-hero {
+			min-height: auto;
+			padding: 0 0 1rem;
+			background: none;
+			color: var(--black);
+			overflow: visible;
+		}
+
+		.backdrop {
+			display: none;
+		}
+
+		.od-hero-inner {
+			display: block;
+		}
+
+		.od-hero h2 {
+			color: var(--black);
+			text-shadow: none;
+		}
+
+		.od-title {
+			font-size: 24pt;
+		}
+
+		.od-slogan {
+			font-size: 14pt;
+			color: var(--gray);
+		}
+
+		.od-stat-note {
+			color: var(--gray);
+		}
+
+		.od-title,
+		.od-slogan,
+		.od-stats {
+			opacity: 1;
+			translate: 0 0;
+			transition: none;
+		}
+
+		.od-main {
+			padding: 1rem 0 0;
+			break-inside: avoid;
+		}
+
+		.od-tier,
+		.od-benefits {
+			border: 1px solid var(--border-light);
+		}
+
+		.dream-section {
 			break-inside: avoid;
 		}
 
 		:global(.tier-interest-button) {
 			display: none;
 		}
-	}
-	.impact-details {
-		max-width: 70rem;
-		margin: 2rem auto;
-	}
-	summary {
-		cursor: pointer;
-		padding: 1rem;
-		text-align: center;
 	}
 </style>

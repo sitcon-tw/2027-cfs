@@ -277,6 +277,8 @@
 	"opendream": {
 		"title": "Open Dream Program",
 		"subtitle": "Distance should never stand between students and SITCON",
+		"subtitle1": "Distance should never stand",
+		"subtitle2": "between students and SITCON",
 		"description": "Every year some students cannot attend because of travel and lodging costs. The Open Dream Program is funded by sponsors and provides a ticket plus round-trip transportation (bus, train or HSR) and lodging the night before the event, so more students can join SITCON. Estimated at about NT$3,000 per student.",
 		"plans": [
 			{
@@ -291,7 +293,7 @@
 			}
 		],
 		"interested": "Interested",
-		"benefits_title": "Sponsor-exclusive benefits",
+		"benefits_title": "Open Dream Program sponsor-exclusive benefits",
 		"benefits": ["SITCONTIX ticketing system exposure", "Press release", "Social media posts", "Website exposure", "Post-event report"],
 		"exclusive_note": "These benefits are exclusive to Open Dream Program sponsors and are not part of other sponsorship plans.",
 		"price_note": "Program details and pricing are still being finalized; the official announcement prevails.",
@@ -361,7 +363,6 @@
 				]
 			},
 			"links_title": "Official program documents",
-			"links_description": "The official student application documents contain eligibility, subsidy details and dates.",
 			"links": [
 				{
 					"name": "SITCON 2027 Open Dream student application rules",
@@ -377,6 +378,22 @@
 				"description": "Save a plan you are interested in to discuss it with SITCON alongside your other selections.",
 				"selected": "Saved"
 			}
+		},
+		"hero": {
+			"stats": [
+				{
+					"number": "58.8%",
+					"note": "first-time attendees"
+				},
+				{
+					"number": "35%",
+					"note": "from outside northern Taiwan"
+				},
+				{
+					"number": "≈ NT$3,000",
+					"note": "cost per student"
+				}
+			]
 		}
 	},
 	"global": {
