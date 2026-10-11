@@ -494,15 +494,15 @@
 		"title": "in East Asia for 14 years",
 		"stats": [
 			{
-				"number": "14000",
+				"number": "15000",
 				"label": "participants"
 			},
 			{
-				"number": "500",
+				"number": "520",
 				"label": "student speakers"
 			},
 			{
-				"number": "500",
+				"number": "530",
 				"label": "meetups and talks"
 			},
 			{
@@ -510,7 +510,7 @@
 				"label": "summer camps"
 			},
 			{
-				"number": "1400",
+				"number": "1500",
 				"label": "passionate volunteers"
 			}
 		],
@@ -524,7 +524,7 @@
 				},
 				{
 					"label": "",
-					"number": "23",
+					"number": "25",
 					"note": "company & community booths"
 				},
 				{
