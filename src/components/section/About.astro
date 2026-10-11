@@ -15,7 +15,7 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 
 <section id="about" class="about-section">
 	<h2><span>{t.subtitle}</span>{t.title}</h2>
-	<div class="stats-cards">
+	<div class="stats-cards wrap">
 		{
 			[
 				{
@@ -48,7 +48,7 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 			))
 		}
 	</div>
-	<div class="rewind aos">
+	<div class="rewind aos wrap">
 		<h3 class="review-title aos aos-fadeIn">{t.review.title}</h3>
 		{
 			t.review.stats.map((stat: { label: string; number: string; note: string }) => (
@@ -166,7 +166,7 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 
 <style>
 	#about {
-		padding: 8rem 2rem 4rem;
+		padding: 8rem 0 4rem;
 	}
 
 	.rewind {

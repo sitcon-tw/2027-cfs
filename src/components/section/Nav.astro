@@ -4,7 +4,7 @@ import Button from "../Button.astro";
 ---
 
 <nav aria-label="Main Navigation" class="navbar">
-	<div class="nav-container">
+	<div class="nav-container wrap">
 		<a href="#"><h1 class="nav-title">{t.title}</h1></a>
 		<Button class="hamburger" size="icon" color="transparent" hoverColor="transparent" textColor="var(--black)" aria-label="Toggle menu" aria-expanded="false">
 			<span class="hamburger-line"></span>
@@ -47,12 +47,10 @@ import Button from "../Button.astro";
 	}
 
 	.nav-container {
-		padding: 1rem 2rem;
+		padding-block: 1rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: auto;
-		max-width: 1200px;
 	}
 
 	.nav-title {
@@ -152,7 +150,6 @@ import Button from "../Button.astro";
 		}
 		.nav-container {
 			gap: 0.75rem;
-			padding: 1rem 1.25rem;
 		}
 		.nav-container > a {
 			min-width: 0;

@@ -6,7 +6,7 @@ const en = lang === "en";
 
 <section id="form" data-contact-lang={lang}>
 	<h2 class="title"><span>{t.titleLine1}</span> <span>{t.titleLine2}</span></h2>
-	<div class="columns">
+	<div class="columns wrap wrap--narrow">
 		<div class="corporate">
 			<h3>{t.corporateTitle}</h3>
 			<p class="intro">{en ? "Leave a way to reach you and we'll discuss a suitable partnership together." : "留下方便聯絡您的方式，我們會與您一起討論適合的合作方式。"}</p>
@@ -100,7 +100,7 @@ const en = lang === "en";
 <style>
 	section {
 		--form-accent: #0171e3;
-		padding: 4rem 1.5rem;
+		padding: 4rem 0;
 		background: var(--white);
 	}
 	.title {
@@ -118,8 +118,6 @@ const en = lang === "en";
 		display: grid;
 		grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
 		column-gap: 3rem;
-		max-width: 64rem;
-		margin: 0 auto;
 	}
 	h3 {
 		font-size: clamp(1.4rem, 3vw, 1.75rem);

@@ -429,6 +429,11 @@ const defaultSchema = {
 				--items-progress-bg: #e2e2e2;
 				--border-light: #d2d2d7;
 				--button-dark: #303030;
+				/* Layout: one content width and one side gutter shared by every section (see .wrap). */
+				--page-max: 1136px;
+				--page-gutter: 2rem;
+				--narrow-max: 64rem;
+				--prose-max: 46rem;
 			}
 
 			* {
@@ -492,6 +497,22 @@ const defaultSchema = {
 				position: relative;
 			}
 
+			/* Shared content column. Backgrounds stay on the section (full-bleed); only this box is constrained.
+			   width: min() instead of max-width + padding so border-box cannot eat the gutter.
+			   Elements carrying .wrap must not keep their own inline padding or margin. */
+			.wrap {
+				width: min(var(--page-max), 100% - 2 * var(--page-gutter));
+				margin-inline: auto;
+			}
+
+			.wrap--narrow {
+				width: min(var(--narrow-max), 100% - 2 * var(--page-gutter));
+			}
+
+			.wrap--prose {
+				width: min(var(--prose-max), 100% - 2 * var(--page-gutter));
+			}
+
 			.description {
 				font-size: 0.75rem;
 				color: #97979b;
@@ -528,6 +549,10 @@ const defaultSchema = {
 			}
 
 			@media screen and (max-width: 45rem) {
+				:root {
+					--page-gutter: 1.25rem;
+				}
+
 				h2 {
 					font-size: 2.5rem;
 					margin-bottom: 1.5rem;

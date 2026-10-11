@@ -16,7 +16,7 @@ const mobileCycle = lang === "zh-Hant" ? mobileCycleZH : mobileCycleEN;
 
 <section id="cycle">
 	<h2 class="aos aos-fadeIn"><span>{t.title}</span>{t.title2}</h2>
-	<details class="cycle-details" id="cycle-details">
+	<details class="cycle-details wrap" id="cycle-details">
 		<summary class="cycle-toggle">
 			<span>{t.toggle}</span>
 			<span class="plus" aria-hidden="true"><Plus stroke-width={3} /></span>
@@ -110,7 +110,7 @@ const mobileCycle = lang === "zh-Hant" ? mobileCycleZH : mobileCycleEN;
 
 <style define:vars={{ arrowURL: `url(${Arrow.src})` }}>
 	section {
-		padding: 4rem 2rem 2rem;
+		padding: 4rem 0 2rem;
 	}
 
 	/* Collapsed by default; the toggle reuses the Popup pill look (Popup.astro .detail-btn). */

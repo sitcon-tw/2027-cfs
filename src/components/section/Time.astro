@@ -26,7 +26,7 @@ interface TeamItem {
 ---
 
 <section id="time">
-	<div class="time-container">
+	<div class="time-container wrap">
 		<div>
 			<h2>{t.title1}<br />{t.title2}</h2>
 			<p>{t.date}</p>
@@ -103,15 +103,12 @@ interface TeamItem {
 		min-height: 100svh;
 		background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), var(--backgroundUrl);
 		background-size: cover;
-		padding: 20svh 2rem 2rem;
+		padding: 20svh 0 2rem;
 		display: flex;
 		flex-direction: column;
 	}
 
 	.time-container {
-		width: 100%;
-		max-width: 60rem;
-		margin: 0 auto;
 		color: #fff;
 	}
 

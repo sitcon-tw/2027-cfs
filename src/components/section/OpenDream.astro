@@ -38,7 +38,7 @@ const tierColors = ["#47762e", "#426bd1"];
 		<div class="backdrop" aria-hidden="true">
 			<img src={backdrop.src} srcset={`${backdropSm.src} 960w, ${backdrop.src} 1920w`} sizes="100vw" width={backdrop.width} height={backdrop.height} alt="" loading="lazy" decoding="async" />
 		</div>
-		<div class="od-hero-inner">
+		<div class="od-hero-inner wrap">
 			<h2 id="opendream-title"><span class="od-title">{t.title}</span><span class="od-slogan">{t.subtitle1}{lang === "en" ? " " : ""}<br />{t.subtitle2}</span></h2>
 			<ul class="od-stats" role="list">
 				{
@@ -54,7 +54,7 @@ const tierColors = ["#47762e", "#426bd1"];
 	</header>
 
 	<!-- Screen 2: plans and sponsor benefits. Everything else lives in the popup. -->
-	<div class="od-main" id="opendream-plans">
+	<div class="od-main wrap" id="opendream-plans">
 		<div class="od-head aos">
 			<h3 id="od-plans-title">{t.popup.impact.title}</h3>
 			<p class="od-lead">{t.description}</p>
@@ -232,7 +232,7 @@ const tierColors = ["#47762e", "#426bd1"];
 		flex-direction: column;
 		justify-content: center;
 		min-height: clamp(26rem, 70svh, 44rem);
-		padding: clamp(5rem, 9svh, 6.5rem) 2rem clamp(3rem, 6svh, 4.5rem);
+		padding: clamp(5rem, 9svh, 6.5rem) 0 clamp(3rem, 6svh, 4.5rem);
 	}
 
 	.backdrop {
@@ -271,10 +271,7 @@ const tierColors = ["#47762e", "#426bd1"];
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		width: 100%;
-		max-width: 1200px;
 		min-height: min(42svh, 24rem);
-		margin: 0 auto;
 	}
 
 	.od-hero h2 {
@@ -355,13 +352,11 @@ const tierColors = ["#47762e", "#426bd1"];
 
 	/* ---------- Screen 2: plans ---------- */
 	.od-main {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 5rem 2rem;
+		padding-block: 5rem;
 	}
 
 	.od-head {
-		max-width: 46rem;
+		max-width: var(--prose-max);
 		margin: 0 auto 2.5rem;
 		text-align: center;
 	}
@@ -383,7 +378,7 @@ const tierColors = ["#47762e", "#426bd1"];
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1.5rem;
-		max-width: 46rem;
+		max-width: var(--prose-max);
 		margin: 0 auto;
 	}
 
@@ -586,7 +581,7 @@ const tierColors = ["#47762e", "#426bd1"];
 	@media screen and (max-width: 45rem) {
 		.od-hero {
 			min-height: clamp(22rem, 62svh, 34rem);
-			padding: clamp(4rem, 8svh, 5rem) 1.25rem 2.5rem;
+			padding: clamp(4rem, 8svh, 5rem) 0 2.5rem;
 		}
 
 		.od-hero-inner {
@@ -607,7 +602,7 @@ const tierColors = ["#47762e", "#426bd1"];
 		}
 
 		.od-main {
-			padding: 3.5rem 1.25rem;
+			padding-block: 3.5rem;
 		}
 
 		.od-tiers {

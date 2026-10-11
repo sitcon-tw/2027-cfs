@@ -39,7 +39,7 @@ const groups = [
 ---
 
 <section id="items">
-	<div class="container">
+	<div class="container wrap">
 		<h2>{t.title}</h2>
 
 		<div class="filters">
@@ -164,12 +164,6 @@ const groups = [
 		background-color: var(--items-bg);
 		padding: 4rem 0;
 		min-height: 100svh;
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 2rem;
 	}
 
 	.filters {
@@ -475,10 +469,6 @@ const groups = [
 	@media screen and (max-width: 768px) {
 		.cards-grid {
 			grid-template-columns: minmax(0, 25rem);
-		}
-
-		.container {
-			padding: 0 1rem;
 		}
 
 		:global(.site-button.interest-button) {

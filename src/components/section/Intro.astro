@@ -6,7 +6,7 @@ import IntroImg from "@assets/img/intro.webp";
 <section id="intro">
 	<div class="anchor aos"></div>
 	<div class="anchor2 aos"></div>
-	<h2>{t.sentence1}<span class="line2">{t.sentence2}</span></h2>
+	<h2 class="wrap">{t.sentence1}<span class="line2">{t.sentence2}</span></h2>
 </section>
 
 <style define:vars={{ backgroundUrl: `url(${IntroImg.src})` }}>
@@ -37,11 +37,9 @@ import IntroImg from "@assets/img/intro.webp";
 	}
 
 	h2 {
-		max-width: 1200px;
-		padding: 2rem;
+		padding-block: 2rem;
 		position: relative;
 		z-index: 1;
-		margin: auto;
 		transition-delay: 0.5s;
 	}
 

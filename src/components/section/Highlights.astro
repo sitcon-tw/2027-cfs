@@ -15,7 +15,7 @@ interface HighlightCard {
 <section id="highlights">
 	<h2>{t.title}</h2>
 	{t.subtitle && <p class="subtitle">{t.subtitle}</p>}
-	<div class="cards">
+	<div class="cards wrap">
 		{
 			t.cards.map((card: HighlightCard) => (
 				<a class="card" href={card.link} data-item-category={card.category}>
@@ -36,7 +36,7 @@ interface HighlightCard {
 
 <style>
 	section {
-		padding: 5rem 2rem;
+		padding: 5rem 0;
 		background-color: var(--white);
 	}
 
@@ -53,8 +53,6 @@ interface HighlightCard {
 	}
 
 	.cards {
-		max-width: 1200px;
-		margin: 0 auto;
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
 		gap: 1.5rem;

@@ -79,7 +79,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 
 <section id="plans">
 	<h2 id="plans-title">{t.title}</h2>
-	<div class="plan-comparison">
+	<div class="plan-comparison wrap">
 		<div class="container" role="table" aria-labelledby="plans-title">
 			<div class="plans-heading" role="rowgroup">
 				<div class="plans-header-scroll">
@@ -361,7 +361,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 <style>
 	section {
 		background-color: var(--items-bg);
-		padding: 4rem 2rem;
+		padding: 4rem 0;
 		break-inside: avoid;
 	}
 	#plans-title {
@@ -371,8 +371,6 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	.container {
 		container-type: inline-size;
 		width: 100%;
-		max-width: 1200px;
-		margin: 0 auto;
 		background: var(--white);
 		border-radius: 1rem;
 		--label-width: clamp(10rem, 24cqw, 15rem);
@@ -443,8 +441,6 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	}
 	.header-label {
 		font-weight: 700;
-		align-items: flex-start;
-		padding-top: 1.25rem;
 	}
 	.tier-column {
 		display: flex;
@@ -522,7 +518,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	}
 	@media screen and (max-width: 900px) {
 		section {
-			padding: 3rem 1rem;
+			padding: 3rem 0;
 		}
 		.container {
 			--label-width: clamp(7rem, 38cqw, 11rem);
@@ -537,9 +533,6 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		:global(html[lang="en"]) .row-label {
 			font-size: 0.8125rem;
 			hyphens: auto;
-		}
-		.header-label {
-			padding-top: 1rem;
 		}
 		.tier-column {
 			padding: 0.875rem 0.375rem;
@@ -591,7 +584,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	}
 	@media print {
 		section {
-			padding: 2rem;
+			padding: 2rem 0;
 		}
 		.container {
 			--label-width: 24cqw;

@@ -6,7 +6,7 @@ import { marked } from "marked";
 
 <section id="faq">
 	<h2>FAQ</h2>
-	<div class="container">
+	<div class="container wrap">
 		<div class="faq-list">
 			{
 				t.questions.map((question: { question: string; answer: string }, index: number) => (
@@ -69,13 +69,11 @@ import { marked } from "marked";
 	}
 
 	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 2rem 1rem 3rem;
+		padding-block: 2rem 3rem;
 	}
 
 	.faq-list {
-		max-width: 800px;
+		max-width: var(--prose-max);
 		margin: 0 auto;
 	}
 
@@ -164,10 +162,6 @@ import { marked } from "marked";
 	}
 
 	@media screen and (max-width: 480px) {
-		.container {
-			padding: 0 16px;
-		}
-
 		.faq-question {
 			padding: 16px 0;
 			font-size: 1.5rem;

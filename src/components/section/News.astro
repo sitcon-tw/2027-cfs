@@ -65,7 +65,7 @@ const coverage: Coverage[] = [
 
 <section id="news">
 	<h2>{t.recognition_title}</h2>
-	<div class="news-content" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
+	<div class="news-content wrap" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
 		{
 			coverage.map((item, index) => (
 				<a class="news-card" target="_blank" rel="noopener noreferrer" href={item.href}>
@@ -110,9 +110,7 @@ const coverage: Coverage[] = [
 		padding: 3rem 0;
 	}
 	.news-content {
-		max-width: 1100px;
-		margin: auto;
-		padding: 1rem 2rem 3rem;
+		padding-block: 1rem 3rem;
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1.5rem;
@@ -190,7 +188,11 @@ const coverage: Coverage[] = [
 		.news-content {
 			display: flex;
 			overflow-x: auto;
-			padding: 1rem 1.5rem 2rem;
+			/* Undo .wrap: the track bleeds to the viewport edges, but the first and last card still start and end on the shared gutter. */
+			width: auto;
+			margin-inline: 0;
+			padding: 1rem var(--page-gutter) 2rem;
+			scroll-padding-inline: var(--page-gutter);
 			gap: 1rem;
 		}
 		.news-card {
