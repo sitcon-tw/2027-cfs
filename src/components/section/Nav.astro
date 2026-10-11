@@ -4,7 +4,7 @@ import Button from "../Button.astro";
 ---
 
 <nav aria-label="Main Navigation" class="navbar">
-	<div class="nav-container">
+	<div class="nav-container wrap">
 		<a href="#"><h1 class="nav-title">{t.title}</h1></a>
 		<Button class="hamburger" size="icon" color="transparent" hoverColor="transparent" textColor="var(--black)" aria-label="Toggle menu" aria-expanded="false">
 			<span class="hamburger-line"></span>
@@ -16,9 +16,7 @@ import Button from "../Button.astro";
 			<a href="#time" class="nav-link">{t.info}</a>
 			<a href="#plans" class="nav-link">{t.plan}</a>
 			<a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/` + (t.langChange == "中文" ? "" : "en/")} class="nav-link lang-switch">{t.langChange}</a>
-			<Button href="mailto:contact@sitcon.org" size="compact" color="#74bf50" hoverColor="color-mix(in srgb, #74bf50 85%, black)" textColor="var(--black)" class="nav-link contact-btn"
-				>{t.contact}</Button
-			>
+			<Button href="mailto:contact@sitcon.org" size="compact" color="#0171e3" hoverColor="color-mix(in srgb, #0171e3 85%, black)" class="nav-link contact-btn">{t.contact}</Button>
 			<Button
 				color="#e8e8ed"
 				hoverColor="#d0d0d5"
@@ -47,12 +45,10 @@ import Button from "../Button.astro";
 	}
 
 	.nav-container {
-		padding: 1rem 2rem;
+		padding-block: 1rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: auto;
-		max-width: 1200px;
 	}
 
 	.nav-title {
@@ -152,7 +148,6 @@ import Button from "../Button.astro";
 		}
 		.nav-container {
 			gap: 0.75rem;
-			padding: 1rem 1.25rem;
 		}
 		.nav-container > a {
 			min-width: 0;

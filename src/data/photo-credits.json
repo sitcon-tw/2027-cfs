@@ -99,7 +99,7 @@
 			"raw_photographer_field": ""
 		},
 		{
-			"slot": "opendream_bg",
+			"slot": "opendream_popup_hero",
 			"photo_id": "55245974409",
 			"file": "src/assets/img/opendream-2026.webp",
 			"photo_url": "https://www.flickr.com/photos/sitcon/55245974409",
@@ -113,6 +113,23 @@
 			"curation_status": "ai_labeled",
 			"public_use_status": "",
 			"raw_photographer_field": "pU"
+		},
+		{
+			"slot": "opendream_band",
+			"photo_id": "55385955415",
+			"file": "src/assets/img/opendream-bg.webp",
+			"file_small": "src/assets/img/opendream-bg-sm.webp",
+			"photo_url": "https://www.flickr.com/photos/sitcon/55385955415",
+			"album": "SITCON Camp 2026",
+			"date_taken": "2026-07-09",
+			"photographer": "康喔",
+			"license": "CC BY 4.0",
+			"license_urls": ["https://creativecommons.org/licenses/by/4.0"],
+			"alt_zh": "SITCON Camp 2026 工作人員俯身協助坐在電腦前的學員看終端機畫面",
+			"alt_en": "A SITCON Camp 2026 staff member leans in to help a participant at a terminal",
+			"curation_status": "ai_labeled",
+			"public_use_status": "",
+			"raw_photographer_field": "康喔"
 		},
 		{
 			"slot": "news_groups",

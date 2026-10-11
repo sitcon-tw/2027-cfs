@@ -1,5 +1,5 @@
 ---
-import { X, Heart, Plus, Check, Circle, CircleDot } from "@lucide/astro";
+import { X, Heart, Plus, Check } from "@lucide/astro";
 import Button from "../Button.astro";
 import { loadItemsData, translateType } from "../../utils/items-loader";
 import { isInactive } from "../../utils/item-status";
@@ -39,7 +39,7 @@ const groups = [
 ---
 
 <section id="items">
-	<div class="container">
+	<div class="container wrap">
 		<h2>{t.title}</h2>
 
 		<div class="filters">
@@ -67,25 +67,14 @@ const groups = [
 									aria-pressed="false"
 									aria-controls="item-catalog"
 								>
-									{group.id === "purpose" ? (
-										<span class="filter-radio-indicator" aria-hidden="true">
-											<span class="filter-unselected-icon">
-												<Circle size={16} />
-											</span>
-											<span class="filter-selected-icon">
-												<CircleDot size={16} />
-											</span>
+									<span class="filter-multi-indicator" aria-hidden="true">
+										<span class="filter-unselected-icon">
+											<Plus size={16} />
 										</span>
-									) : (
-										<span class="filter-multi-indicator" aria-hidden="true">
-											<span class="filter-unselected-icon">
-												<Plus size={16} />
-											</span>
-											<span class="filter-selected-icon">
-												<Check size={16} />
-											</span>
+										<span class="filter-selected-icon">
+											<Check size={16} />
 										</span>
-									)}
+									</span>
 									<span>{option.label}</span>
 								</Button>
 							))}
@@ -117,17 +106,7 @@ const groups = [
 			<span class="arrow">▼</span>
 		</button>
 
-		<Button
-			variant="outlined"
-			color="var(--white)"
-			textColor="var(--black)"
-			borderColor="var(--items-green)"
-			size="icon"
-			class="interest-button"
-			id="interestButton"
-			type="button"
-			aria-label={t.interestedItems}
-		>
+		<Button variant="outlined" color="var(--white)" textColor="var(--black)" size="icon" class="interest-button" id="interestButton" type="button" aria-label={t.interestedItems}>
 			<span class="heart-icon"><Heart /></span>
 			<span class="interest-count">0</span>
 		</Button>
@@ -165,12 +144,6 @@ const groups = [
 		background-color: var(--items-bg);
 		padding: 4rem 0;
 		min-height: 100svh;
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 2rem;
 	}
 
 	.filters {
@@ -279,7 +252,7 @@ const groups = [
 	}
 
 	:global(.site-button.interest-button) {
-		border-width: 2px;
+		border: 0;
 		position: fixed;
 		bottom: 2rem;
 		right: 2rem;
@@ -476,10 +449,6 @@ const groups = [
 	@media screen and (max-width: 768px) {
 		.cards-grid {
 			grid-template-columns: minmax(0, 25rem);
-		}
-
-		.container {
-			padding: 0 1rem;
 		}
 
 		:global(.site-button.interest-button) {

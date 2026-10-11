@@ -14,7 +14,8 @@
 | stat_events | [55383480150](https://www.flickr.com/photos/sitcon/55383480150) | SITCON Camp 2026 | 2026-07-08 | 康喔 | CC BY 4.0 | `src/assets/img/stat/events-stat.webp` |
 | stat_volunteer | [54886326338](https://www.flickr.com/photos/sitcon/54886326338) | SITCON 2026 工人相見歡 | 2025-10-25 | 夏川 | CC BY 4.0 | `src/assets/img/stat/volunteer-stat.webp` |
 | about_popup_hero | [55244926657](https://www.flickr.com/photos/sitcon/55244926657) | SITCON 2026 | 2026-03-28 | 未標示 | CC BY 4.0 | `src/assets/img/about-popup-2026.webp` |
-| opendream_bg | [55245974409](https://www.flickr.com/photos/sitcon/55245974409) | SITCON 2026 | 2026-03-28 | pU | CC BY 4.0 | `src/assets/img/opendream-2026.webp` |
+| opendream_popup_hero | [55245974409](https://www.flickr.com/photos/sitcon/55245974409) | SITCON 2026 | 2026-03-28 | pU | CC BY 4.0 | `src/assets/img/opendream-2026.webp` |
+| opendream_band | [55385955415](https://www.flickr.com/photos/sitcon/55385955415) | SITCON Camp 2026 | 2026-07-09 | 康喔 | CC BY 4.0 | `src/assets/img/opendream-bg.webp`（960w 版本 `opendream-bg-sm.webp`） |
 | news_groups | [54847440924](https://www.flickr.com/photos/sitcon/54847440924) | SITCON 2026 負一籌＋BoF | 2025-08-09 | pU | CC BY 4.0 | `src/assets/img/groups.webp` |
 | news_edu | [54978168920](https://www.flickr.com/photos/sitcon/54978168920) | 2025 SITCON Hour of Code 桃園場 | 2025-12-06 | 康喔 | CC BY 4.0 | `src/assets/img/edu.webp` |
 | news_hackathon | [53897983352](https://www.flickr.com/photos/sitcon/53897983352) | SITCON Hackathon 2024 | 2024-07-06 | 小群 | CC BY-SA 2.0 | `src/assets/img/hackathon.webp` |

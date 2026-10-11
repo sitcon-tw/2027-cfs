@@ -1,5 +1,6 @@
 ---
 import Popup from "@components/Popup.astro";
+import { ArrowUpRight } from "@lucide/astro";
 import president2026 from "@assets/img/news/president2026.webp";
 import cna2026 from "@assets/img/news/cna2026.webp";
 import udn2026 from "@assets/img/news/udn2026.webp";
@@ -47,43 +48,39 @@ const news: News[] = [
 		description: t.things[4].description
 	}
 ];
+
+type Coverage = {
+	href: string;
+	img: ImageMetadata;
+};
+const coverage: Coverage[] = [
+	{ href: "https://www.president.gov.tw/News/39930", img: president2026 },
+	{ href: "https://www.cna.com.tw/news/aipl/202603280032.aspx", img: cna2026 },
+	{ href: "https://money.udn.com/money/story/7307/9408273", img: udn2026 },
+	{ href: "https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&s=44FFA988115FABF4", img: moe2026 },
+	{ href: "https://act.club.tw/act-taiwan-agile-awards-2026/#winners-agile-org", img: agileAwards2026 },
+	{ href: "https://www.youtube.com/watch?v=zplk0zALtOM", img: muchtv2026 }
+];
 ---
 
 <section id="news">
 	<h2>{t.recognition_title}</h2>
-	<div class="news-content" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
-		<a target="_blank" rel="noopener noreferrer" href="https://www.president.gov.tw/News/39930">
-			<span class="news-source">{t.coverage[0].source}</span><img
-				src={president2026.src}
-				width={president2026.width}
-				height={president2026.height}
-				alt={t.coverage[0].alt}
-				class="news-img"
-				loading="lazy"
-			/>
-		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://www.cna.com.tw/news/aipl/202603280032.aspx">
-			<span class="news-source">{t.coverage[1].source}</span><img src={cna2026.src} width={cna2026.width} height={cna2026.height} alt={t.coverage[1].alt} class="news-img" loading="lazy" />
-		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://money.udn.com/money/story/7307/9408273">
-			<span class="news-source">{t.coverage[2].source}</span><img src={udn2026.src} width={udn2026.width} height={udn2026.height} alt={t.coverage[2].alt} class="news-img" loading="lazy" />
-		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://www.edu.tw/News_Content.aspx?n=9E7AC85F1954DDA8&s=44FFA988115FABF4">
-			<span class="news-source">{t.coverage[3].source}</span><img src={moe2026.src} width={moe2026.width} height={moe2026.height} alt={t.coverage[3].alt} class="news-img" loading="lazy" />
-		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://act.club.tw/act-taiwan-agile-awards-2026/#winners-agile-org">
-			<span class="news-source">{t.coverage[4].source}</span><img
-				src={agileAwards2026.src}
-				width={agileAwards2026.width}
-				height={agileAwards2026.height}
-				alt={t.coverage[4].alt}
-				class="news-img"
-				loading="lazy"
-			/>
-		</a>
-		<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=zplk0zALtOM">
-			<span class="news-source">{t.coverage[5].source}</span><img src={muchtv2026.src} width={muchtv2026.width} height={muchtv2026.height} alt={t.coverage[5].alt} class="news-img" loading="lazy" />
-		</a>
+	<div class="news-content wrap" role="region" aria-label={t.coverage_title || "媒體報導"} tabindex="0">
+		{
+			coverage.map((item, index) => (
+				<a class="news-card" target="_blank" rel="noopener noreferrer" href={item.href}>
+					<div class="news-media">
+						<img src={item.img.src} width={item.img.width} height={item.img.height} alt={t.coverage[index].alt} class="news-img" loading="lazy" />
+					</div>
+					<div class="news-meta">
+						<span class="news-source">
+							{t.coverage[index].source}
+							<ArrowUpRight size={16} aria-hidden="true" />
+						</span>
+					</div>
+				</a>
+			))
+		}
 	</div>
 	<Popup title={t.title} background={community.src} btnText={t.btn} id="news-popup" lang={lang}>
 		<div class="things-container">
@@ -113,36 +110,76 @@ const news: News[] = [
 		padding: 3rem 0;
 	}
 	.news-content {
-		max-width: 1100px;
-		margin: auto;
-		padding: 1rem 2rem 3rem;
+		padding-block: 1rem 3rem;
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1.5rem;
-		align-items: start;
 	}
-	.news-content a {
-		display: block;
+	/* Same card language as the highlight cards: soft container, 1rem radius. */
+	.news-card {
+		display: flex;
+		flex-direction: column;
 		min-width: 0;
+		background-color: var(--container);
+		border-radius: 1rem;
+		overflow: hidden;
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 0.25s ease;
 	}
-	.news-content a:nth-child(3n + 2) {
-		transform: translateY(1rem);
-	}
-	.news-source {
-		display: block;
-		margin-bottom: 0.5rem;
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: #333;
+	.news-media {
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		background-color: var(--gray-container);
 	}
 	.news-img {
 		display: block;
 		width: 100%;
-		height: auto;
+		height: 100%;
 		object-fit: cover;
 		object-position: top;
-		box-shadow: 0 5px 20px #0002;
-		border-radius: 0.4rem;
+		transition: transform 0.45s ease;
+	}
+	/* Hover stays inside the card: the photo creeps in and the arrow points the way, nothing lifts. */
+	@media (hover: hover) {
+		.news-card:hover {
+			background-color: var(--gray-container);
+		}
+		.news-card:hover .news-img {
+			transform: scale(1.04);
+		}
+		.news-card:hover .news-source svg {
+			transform: translate(2px, -2px);
+			color: var(--black);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.news-img,
+		.news-source svg {
+			transition: none;
+		}
+		.news-card:hover .news-img {
+			transform: none;
+		}
+	}
+	.news-meta {
+		padding: 1rem 1.25rem 1.25rem;
+	}
+	.news-source {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.3rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+	.news-source svg {
+		flex-shrink: 0;
+		margin-top: 0.2em;
+		color: var(--gray);
+		transition:
+			transform 0.25s ease,
+			color 0.25s ease;
 	}
 	#news :global(.detail-btn) {
 		position: static;
@@ -151,17 +188,15 @@ const news: News[] = [
 		.news-content {
 			display: flex;
 			overflow-x: auto;
-			padding: 1rem 1.5rem 2rem;
+			/* Undo .wrap: the track bleeds to the viewport edges, but the first and last card still start and end on the shared gutter. */
+			width: auto;
+			margin-inline: 0;
+			padding: 1rem var(--page-gutter) 2rem;
+			scroll-padding-inline: var(--page-gutter);
 			gap: 1rem;
 		}
-		.news-content a {
-			flex: 0 0 min(85vw, 28rem);
-		}
-		.news-content a:nth-child(3n + 2) {
-			transform: none;
-		}
-		.news-img {
-			height: 22rem;
+		.news-card {
+			flex: 0 0 min(78vw, 22rem);
 		}
 	}
 

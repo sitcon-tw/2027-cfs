@@ -11,7 +11,7 @@ const { t } = Astro.props;
 ---
 
 <footer class="footer">
-	<div class="footer-container">
+	<div class="footer-container wrap">
 		<div class="collaboration-section">
 			<div>
 				<h2 class="collaboration-title">{t.collaboration}</h2>
@@ -116,9 +116,7 @@ const { t } = Astro.props;
 	}
 
 	.footer-container {
-		max-width: 1200px;
-		margin: auto;
-		padding: 4rem 2rem 3rem;
+		padding-block: 4rem 3rem;
 	}
 
 	.collaboration-section {

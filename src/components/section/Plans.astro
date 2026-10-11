@@ -26,28 +26,28 @@ const tiers = [
 		id: "navigator",
 		name: lang === "en" ? planData.navigator.name_en : planData.navigator.name_zh,
 		price: planData.navigator.price,
-		textColor: "#ad443d",
+		textColor: "#FF928A",
 		deadline: getEarliestDeadline(planData.navigator.benefits)
 	},
 	{
 		id: "deep_cultivation",
 		name: lang === "en" ? planData.deep_cultivation.name_en : planData.deep_cultivation.name_zh,
 		price: planData.deep_cultivation.price,
-		textColor: "#426bd1",
+		textColor: "#537FF1",
 		deadline: getEarliestDeadline(planData.deep_cultivation.benefits)
 	},
 	{
 		id: "visionary",
 		name: lang === "en" ? planData.visionary.name_en : planData.visionary.name_zh,
 		price: planData.visionary.price,
-		textColor: "#47762e",
+		textColor: "#6FD195",
 		deadline: getEarliestDeadline(planData.visionary.benefits)
 	},
 	{
 		id: "new_sprout",
 		name: lang === "en" ? planData.new_sprout.name_en : planData.new_sprout.name_zh,
 		price: planData.new_sprout.price,
-		textColor: "#47762e",
+		textColor: "#77B55A",
 		deadline: getEarliestDeadline(planData.new_sprout.benefits)
 	}
 ];
@@ -79,7 +79,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 
 <section id="plans">
 	<h2 id="plans-title">{t.title}</h2>
-	<div class="plan-comparison">
+	<div class="plan-comparison wrap">
 		<div class="container" role="table" aria-labelledby="plans-title">
 			<div class="plans-heading" role="rowgroup">
 				<div class="plans-header-scroll">
@@ -100,6 +100,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 						}
 					</div>
 				</div>
+				<div class="plans-scroll-indicator" aria-hidden="true"><span></span></div>
 			</div>
 			<div class="plans-table" role="region" aria-labelledby="plans-title" tabindex="0">
 				<div class="plans-content" role="rowgroup">
@@ -171,6 +172,22 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	const benefitScroll = plans?.querySelector<HTMLElement>(".plans-table");
 	if (headerScroll && benefitScroll) {
 		// Keep both horizontal viewports aligned, without changing vertical page scrolling.
+		// Only the viewport the user is actually scrolling may drive the other one. The echo
+		// scroll event that write causes on the follower is ignored; otherwise the follower
+		// writes a stale position back mid-flick and keeps interrupting momentum scrolling.
+		const indicator = plans?.querySelector<HTMLElement>(".plans-scroll-indicator");
+		const updateIndicator = () => {
+			if (!indicator) return;
+			const range = benefitScroll.scrollWidth - benefitScroll.clientWidth;
+			indicator.style.display = range < 1 ? "none" : "";
+			if (range < 1) return;
+			const size = benefitScroll.clientWidth / benefitScroll.scrollWidth;
+			indicator.style.setProperty("--thumb-size", `${size}`);
+			indicator.style.setProperty("--thumb-offset", `${(benefitScroll.scrollLeft / range) * (1 - size)}`);
+		};
+		updateIndicator();
+		let driver: HTMLElement | null = null;
+		let releaseDriver = 0;
 		for (const [source, target] of [
 			[headerScroll, benefitScroll],
 			[benefitScroll, headerScroll]
@@ -178,7 +195,12 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 			source.addEventListener(
 				"scroll",
 				() => {
+					if (driver && driver !== source) return;
+					driver = source;
+					clearTimeout(releaseDriver);
+					releaseDriver = window.setTimeout(() => (driver = null), 150);
 					if (Math.abs(target.scrollLeft - source.scrollLeft) > 0.5) target.scrollLeft = source.scrollLeft;
+					updateIndicator();
 				},
 				{ passive: true }
 			);
@@ -196,6 +218,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 				headerScroll.scrollLeft = benefitScroll.scrollLeft;
 				previousWidth = benefitScroll.clientWidth;
 				previousTierWidth = tierWidth;
+				updateIndicator();
 			}).observe(container);
 		}
 	}
@@ -338,7 +361,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 <style>
 	section {
 		background-color: var(--items-bg);
-		padding: 4rem 2rem;
+		padding: 4rem 0;
 		break-inside: avoid;
 	}
 	#plans-title {
@@ -348,8 +371,6 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	.container {
 		container-type: inline-size;
 		width: 100%;
-		max-width: 1200px;
-		margin: 0 auto;
 		background: var(--white);
 		border-radius: 1rem;
 		--label-width: clamp(10rem, 24cqw, 15rem);
@@ -380,6 +401,11 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		display: none;
 	}
 
+	/* Native horizontal scrollbars are overlay and auto-hide on phones, so the sticky heading carries its
+	   own always-visible position indicator. The script sizes and hides it from the table's scroll metrics. */
+	.plans-scroll-indicator {
+		display: none;
+	}
 	.plans-table:focus-visible {
 		outline: 2px solid #74bf50;
 		outline-offset: 3px;
@@ -415,8 +441,6 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	}
 	.header-label {
 		font-weight: 700;
-		align-items: flex-start;
-		padding-top: 1.25rem;
 	}
 	.tier-column {
 		display: flex;
@@ -487,29 +511,28 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	}
 	.plan-row[data-popup-item-id]:hover,
 	.plan-row[data-popup-item-id]:hover .row-label {
-		background: #eff6ee;
+		background: var(--container);
 	}
 	.plan-row[data-popup-item-id] {
 		cursor: pointer;
 	}
 	@media screen and (max-width: 900px) {
 		section {
-			padding: 3rem 1rem;
+			padding: 3rem 0;
 		}
 		.container {
-			--label-width: clamp(6.25rem, 30cqw, 8rem);
-			--tier-width: calc((100cqw - var(--label-width)) / 2);
+			--label-width: clamp(7rem, 38cqw, 11rem);
+			/* Two plans plus enough of the third to show its price, so it is obvious the table scrolls sideways. */
+			--tier-width: calc((100cqw - var(--label-width)) / 2.5);
 		}
 		.row-label {
 			font-size: 0.875rem;
-			padding: 0.75rem 0.625rem 0.75rem 0.875rem;
+			padding: 0.375rem 0.625rem 0.375rem 0.875rem;
+			line-height: 1.35;
 		}
 		:global(html[lang="en"]) .row-label {
 			font-size: 0.8125rem;
 			hyphens: auto;
-		}
-		.header-label {
-			padding-top: 1rem;
 		}
 		.tier-column {
 			padding: 0.875rem 0.375rem;
@@ -521,20 +544,47 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		.tier-price {
 			font-size: 0.8125rem;
 		}
-		:global(.tier-interest-button) {
+		.plans-scroll-indicator {
+			display: block;
+			position: relative;
+			height: 0.25rem;
+			margin: 0 1rem 0.625rem;
+			border-radius: 999px;
+			background: var(--gray-container);
+			overflow: hidden;
+		}
+		.plans-scroll-indicator span {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: calc(var(--thumb-offset, 0) * 100%);
+			width: calc(var(--thumb-size, 0.5) * 100%);
+			border-radius: inherit;
+			background: var(--gray);
+		}
+		#plans :global(.site-button.tier-interest-button) {
+			--site-button-height: 2rem;
 			font-size: 0.8125rem;
 			padding: 0.25rem 0.625rem;
+			white-space: nowrap;
 		}
 		.plan-cell {
-			padding: 0.75rem 0.375rem;
+			padding: 0.375rem 0.375rem;
+			min-height: 2.25rem;
 		}
 		.cell-text {
 			font-size: 0.9375rem;
 		}
 	}
+	@media screen and (max-width: 480px) {
+		.container {
+			/* Two plans only just fit on a phone, so the third can only peek by a sliver. */
+			--tier-width: calc((100cqw - var(--label-width)) / 2.2);
+		}
+	}
 	@media print {
 		section {
-			padding: 2rem;
+			padding: 2rem 0;
 		}
 		.container {
 			--label-width: 24cqw;
