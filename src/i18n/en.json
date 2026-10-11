@@ -52,7 +52,7 @@
 			{
 				"badge": "New in 2027",
 				"title": "Education Support",
-				"description": "Open Dream Program: help students in need attend the conference, with exposure reserved exclusively for program sponsors.",
+				"description": "Open Dream Program: help more students make it to the conference, with exposure reserved exclusively for program sponsors.",
 				"link": "#opendream",
 				"cta": "About the Open Dream Program"
 			}
@@ -275,8 +275,8 @@
 	},
 	"opendream": {
 		"title": "Open Dream Program",
-		"subtitle": "Bring students in need to SITCON",
-		"description": "Every year some students cannot attend because of travel and lodging costs. The Open Dream Program is funded by sponsors and provides a ticket plus round-trip transportation (bus, train or HSR) and lodging the night before the event, so students with financial need can join SITCON. Estimated at about NT$3,000 per student.",
+		"subtitle": "Distance should never stand between students and SITCON",
+		"description": "Every year some students cannot attend because of travel and lodging costs. The Open Dream Program is funded by sponsors and provides a ticket plus round-trip transportation (bus, train or HSR) and lodging the night before the event, so more students can join SITCON. Estimated at about NT$3,000 per student.",
 		"plans": [
 			{
 				"id": "opendream-5",
@@ -298,8 +298,8 @@
 		"popup": {
 			"title": "Open Dream Program Details",
 			"hero": {
-				"headline": "Help students with financial need attend SITCON",
-				"description": "SITCON is free to attend, but travel and lodging can still be barriers. Your support helps students with financial need join the conference and meet the information technology community."
+				"headline": "Help every student who wants to come make it to SITCON",
+				"description": "SITCON is free to attend, but travel and lodging can still be barriers. Your support helps more students join the conference and meet the information technology community."
 			},
 			"impact": {
 				"title": "Students supported and plan pricing",
@@ -338,9 +338,9 @@
 			},
 			"eligibility": {
 				"title": "How students apply for support",
-				"description": "Enrolled students with financial need can apply for travel and lodging support through the following steps.",
+				"description": "Enrolled students who need help with travel and lodging can apply for travel and lodging support through the following steps.",
 				"steps": [
-					"Students submit an application with proof of enrollment and financial need.",
+					"Students submit an application with proof of enrollment and supporting documents.",
 					"SITCON reviews eligibility and documents, then sends invitation codes to approved applicants.",
 					"Students complete registration with the code to gain admission."
 				],
@@ -355,7 +355,7 @@
 					},
 					{
 						"title": "Open Dream Program",
-						"points": ["Enrollment and financial need are eligibility conditions", "Admission after review", "May apply for travel and lodging the night before the event"]
+						"points": ["Open to all enrolled students", "Admission after review", "May apply for travel and lodging the night before the event"]
 					}
 				]
 			},
