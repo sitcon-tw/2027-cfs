@@ -1,6 +1,7 @@
 ---
 import Page from "../index.astro";
 import { loadItemsData } from "../../utils/items-loader";
+import { createItemSchema } from "../../utils/item-schema";
 
 export const getStaticPaths = async () => {
 	const lang = "zh-Hant";
@@ -22,29 +23,7 @@ const t = await import(`../../i18n/${lang}.json`).then(m => m.default);
 const title = `${item.name} - ${t.meta.title}`;
 const description = item.global_description || t.meta.description;
 
-// Generate Product Schema for SEO
-const productSchema = {
-	"@context": "https://schema.org",
-	"@type": "Product",
-	name: item.name,
-	description: description,
-	image: item.image ? new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${item.image}`, Astro.site).href : undefined,
-	brand: {
-		"@type": "Organization",
-		name: "SITCON"
-	},
-	offers: {
-		"@type": "Offer",
-		price: item.price ? parseFloat(item.price.toString().replace(/[^0-9.]/g, "")) : 0,
-		priceCurrency: "TWD",
-		availability: item.remaining && parseInt(item.remaining) > 0 ? "https://schema.org/InStock" : item.quantity === "不限" ? "https://schema.org/InStock" : "https://schema.org/LimitedAvailability",
-		priceValidUntil: item.deadline || undefined,
-		seller: {
-			"@type": "Organization",
-			name: "SITCON"
-		}
-	}
-};
+const productSchema = createItemSchema(item, description, new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/`, Astro.site));
 ---
 
 <Page lang={lang} title={title} description={description}>
