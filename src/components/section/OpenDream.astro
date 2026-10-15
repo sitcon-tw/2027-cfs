@@ -247,6 +247,10 @@ const cycleText = (await import(`../../i18n/${lang}.json`)).default.cycle;
 		text-align: center;
 		font-size: 1.15rem;
 		line-height: 1.8;
+		/* Reset the global .description line clamp so the full text is shown */
+		display: block;
+		-webkit-line-clamp: unset;
+		overflow: visible;
 	}
 
 	.plans {
