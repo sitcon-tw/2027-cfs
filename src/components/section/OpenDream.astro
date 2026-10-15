@@ -372,6 +372,10 @@ const tierColors = ["#47762e", "#426bd1"];
 		margin: 0;
 		font-size: 1.1rem;
 		line-height: 1.8;
+		/* Reset the global .description line clamp so the full text is shown */
+		display: block;
+		-webkit-line-clamp: unset;
+		overflow: visible;
 	}
 
 	.od-tiers {
