@@ -1,5 +1,11 @@
 name: Build CFS site
 
+# Builds the site for sitcon.org/2027/cfs/ and publishes it to the `build`
+# branch, then triggers sitcon-tw/2027's "Deploy website" workflow, which
+# copies that branch into its GitHub Pages output. The trigger needs the
+# DEPLOY_DISPATCH_TOKEN secret: a fine-grained token with Actions read and
+# write on sitcon-tw/2027 (the default GITHUB_TOKEN can't reach other repos).
+
 on:
   push:
     branches: [main]
@@ -48,5 +54,9 @@ jobs:
           publish_branch: build
           publish_dir: ./dist
 
-      - name: Record source revision
-        run: echo "Built CFS source $GITHUB_SHA. Run the sitcon-tw/2027 deployment to publish this output." >> "$GITHUB_STEP_SUMMARY"
+      - name: Trigger sitcon-tw/2027 deploy
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_DISPATCH_TOKEN }}
+        run: |
+          gh workflow run deploy.yml --repo sitcon-tw/2027 --ref main
+          echo "Built CFS source $GITHUB_SHA and triggered the sitcon-tw/2027 \"Deploy website\" workflow to publish it." >> "$GITHUB_STEP_SUMMARY"

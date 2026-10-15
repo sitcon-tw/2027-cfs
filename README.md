@@ -52,14 +52,11 @@ pnpm fetch-data
 
 ## 正式站發布
 
-推送至 `main` 或手動執行 [Build CFS site](.github/workflows/gh-pages.yml)，會下載試算表資料與圖片、檢查專案，並將建置結果發布至 `build` 分支。建置失敗時會保留上次成功的結果。
+推送至 `main` 或手動執行 [Build CFS site](.github/workflows/gh-pages.yml)，會下載試算表資料與圖片、檢查專案，並將建置結果發布至 `build` 分支，接著觸發 `sitcon-tw/2027` 的 **Deploy website**。建置失敗時會保留上次成功的結果，也不會觸發主網站部署。
 
-資料不會回寫至 `main`，也不會定時更新。此流程沒有其他儲存庫的寫入權限。
+資料不會回寫至 `main`，也不會定時更新。只修改試算表時，在本儲存庫的 `main` 手動執行 **Build CFS site** 即可。
 
-只修改試算表時，請依序手動發布：
-
-1. 在本儲存庫的 `main` 執行 **Build CFS site**，等待成功。
-2. 在 `sitcon-tw/2027` 的 `main` 執行 **Deploy website**。
+觸發主網站部署需要 `DEPLOY_DISPATCH_TOKEN` secret：對 `sitcon-tw/2027` 具 Actions 讀寫權限的 fine-grained token（預設的 `GITHUB_TOKEN` 無法存取其他儲存庫）。
 
 主網站每次部署都會下載 `build` 分支至 `dist/cfs/`，一併發布。本儲存庫不單獨發布正式 GitHub Pages。
 
