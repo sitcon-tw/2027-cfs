@@ -16,9 +16,9 @@ body:
   - type: checkboxes
     id: issue-scope
     attributes:
-      label: Issue 範圍確認
+      label: 任務範圍確認
       options:
-        - label: "這是和`dev` branch 相關的 Issue，並非現行主站"
+        - label: "已在任務描述中註明站點或分支及頁面網址"
 
   - type: textarea
     id: task
@@ -35,10 +35,11 @@ body:
       multiple: true
       options:
         - 首頁
-        - 活動資訊
-        - 議程表
-        - 會場地圖
-        - 團隊成員
+        - 贊助方案
+        - 贊助品項
+        - 合作洽詢
+        - 贊助總覽 PDF
+        - 報價單
         - 其他
 
   - type: checkboxes

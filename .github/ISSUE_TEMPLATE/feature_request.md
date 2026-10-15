@@ -7,9 +7,10 @@ projects: ["sitcon-tw/13"]
 assignees: ""
 ---
 
-## Issue 範圍確認
+## 適用版本
 
-- [ ] 這是和`dev` branch 相關的 Issue，並非現行主站
+- 站點或分支：
+- 頁面網址：
 
 ## 功能描述
 

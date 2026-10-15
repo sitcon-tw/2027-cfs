@@ -1,6 +1,6 @@
 {
 	"source": "SITCON Flickr via sitcon-tw/flickr-photo-finder photos sheet, exported 2026-09-23",
-	"note": "Photographer is taken from the finder index only when it is a name; file-name prefixes are not treated as credits. All index entries are ai_labeled (not human-reviewed). Second pass 2026-09-23: substitutions that were not exact 2026 matches were reverted to the original imagery; the news collage, the annual-moment section imagery and venue photos are the originals from commit 0dbbf3e.",
+	"note": "Photographer is taken from the finder index only when it is a name; file-name prefixes are not treated as credits. All index entries are ai_labeled (not human-reviewed). Slots record the intended use when catalogued; current usage is determined by component references and item.json.",
 	"photos": [
 		{
 			"slot": "hero_intro",
