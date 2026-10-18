@@ -1,0 +1,1 @@
+function e(e){let t=e?.trim();if(!t)return null;let n=t.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);if(n){let[,e,t,r]=n.map(Number),i=new Date(e,t-1,r);return i.getFullYear()===e&&i.getMonth()===t-1&&i.getDate()===r?i:null}let r=new Date(t);return Number.isNaN(r.getTime())?null:r}export{e as t};

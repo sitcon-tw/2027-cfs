@@ -1,0 +1,1 @@
+import{t as e}from"./venue-linkify.CPHYzMMJ.js";document.querySelectorAll(`.venue-detail-action`).forEach(t=>t.addEventListener(`click`,()=>e(`R0`)));
