@@ -589,7 +589,9 @@
 					"Proficient": "Can evaluate trade-offs among multiple solutions",
 					"Advanced": "Has rich experience and can advise others effectively"
 				},
-				"schools_text_title": "2025 Attendee School Distribution (historical reference)",
+				"schools_text_title": "2026 Attendee School Distribution",
+				"schools_text_note": "Source: SITCON 2026 registrant school data. Larger names appear more frequently. This school data uses a different snapshot from the charts above.",
+				"schools_text_alt": "Word cloud of schools reported by SITCON 2026 registrants, with larger names including Feng Chia University, National Central University, National Tsing Hua University, and National Yang Ming Chiao Tung University",
 				"social_media": {
 					"title": "Social Media Statistics",
 					"facebook": {
@@ -651,7 +653,7 @@
 				"source_note": "Source: SITCON 2026 registration data, snapshot after the second ticket wave on 2026/03/03, n=1,315."
 			},
 			"school_stats": {
-				"title": "SITCON 2025 Attendee School Statistics"
+				"title": "SITCON 2026 Attendee School Statistics"
 			}
 		},
 		"stats_alt": [

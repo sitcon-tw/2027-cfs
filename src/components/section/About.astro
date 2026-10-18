@@ -3,7 +3,7 @@ import DistributionChart from "@components/DistributionChart.astro";
 const { t, lang } = Astro.props;
 import Popup from "@components/Popup.astro";
 import Volunteer from "@assets/img/about-popup-2026.webp";
-import SchoolsText from "@assets/img/schools-text-2025.svg";
+import SchoolsText from "@assets/img/schools-text-2026.png";
 import AttendeeImg from "@assets/img/stat/attendee-stat.webp";
 import SpeakerImg from "@assets/img/stat/speaker-stat.webp";
 import EventsImg from "@assets/img/stat/events-stat.webp";
@@ -90,8 +90,8 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 			</div>
 			<section id="schools-text-container" aria-labelledby="schools-title">
 				<h3 id="schools-title">{t.popup.chart.schools_text_title}</h3>
-
-				<img src={SchoolsText.src} alt="Schools" id="schools-text" />
+				<p class="data-note">{t.popup.chart.schools_text_note}</p>
+				<img src={SchoolsText.src} alt={t.popup.chart.schools_text_alt} id="schools-text" width={SchoolsText.width} height={SchoolsText.height} loading="lazy" />
 			</section>
 			<section class="social-media-section" aria-labelledby="social-media-title">
 				<h3 id="social-media-title">{t.popup.chart.social_media.title}</h3>
@@ -192,8 +192,9 @@ const socialMediaColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"
 	}
 
 	#schools-text {
-		max-width: 40rem;
+		max-width: 60rem;
 		width: 100%;
+		height: auto;
 		margin: auto;
 		display: block;
 	}

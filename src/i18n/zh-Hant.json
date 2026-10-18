@@ -584,7 +584,9 @@
 					"熟練": "能評估多個解決方法間的優劣",
 					"進階": "擁有豐富的經驗可以給予他人適當建議"
 				},
-				"schools_text_title": "2025 與會者學校分佈（歷史參考）",
+				"schools_text_title": "2026 與會者學校分佈",
+				"schools_text_note": "資料來源：SITCON 2026 報名者學校資料；詞雲字體大小反映學校出現頻率。學校資料與上方圖表的統計快照不同。",
+				"schools_text_alt": "SITCON 2026 報名者學校詞雲，較大的名稱包括逢甲大學、中央大學、清華大學與陽明交大",
 				"social_media": {
 					"title": "社群媒體統計",
 					"facebook": {
@@ -646,7 +648,7 @@
 				"source_note": "資料來源：SITCON 2026 報名資料，2026/03/03 第二波索票後統計，n=1,315。"
 			},
 			"school_stats": {
-				"title": "SITCON 2025 與會者學校統計"
+				"title": "SITCON 2026 與會者學校統計"
 			}
 		},
 		"stats_alt": [
