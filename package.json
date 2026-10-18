@@ -14,10 +14,10 @@
 		"build:preview": "node scripts/build-preview.js"
 	},
 	"dependencies": {
-		"@astrojs/check": "^0.9.4",
-		"@astrojs/sitemap": "^3.6.0",
+		"@astrojs/check": "^0.9.10",
+		"@astrojs/sitemap": "^3.7.4",
 		"@lucide/astro": "^0.543.0",
-		"astro": "^5.13.7",
+		"astro": "^7.4.0",
 		"csv-parse": "^6.1.0",
 		"echarts": "^6.0.0",
 		"lenis": "^1.3.11",
