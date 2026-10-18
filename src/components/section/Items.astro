@@ -3,7 +3,7 @@ import { X, Heart, Plus, Check, Circle, CircleDot } from "@lucide/astro";
 import Button from "../Button.astro";
 import { loadItemsData, translateType } from "../../utils/items-loader";
 import { isInactive } from "../../utils/item-status";
-import { purposes } from "../../utils/item-filters";
+import { formatRank, purposes } from "../../utils/item-filters";
 import "../../assets/item-filters.css";
 import ItemCard from "@components/items/ItemCard.astro";
 
@@ -24,14 +24,7 @@ const items = itemsUnsorted.sort((a, b) => {
 	const orderB = b.order || 0;
 	return orderA - orderB;
 });
-const formatOrder = ["現場實體曝光", "數位媒體曝光", "紀念品配件曝光", "獨家議程", "更多曝光方式"];
-const formats = [...new Set(items.map(item => item.format))].sort((a, b) => {
-	const rank = (format: string) => {
-		const index = formatOrder.indexOf(format);
-		return index === -1 ? formatOrder.length : index;
-	};
-	return rank(a) - rank(b);
-});
+const formats = [...new Set(items.map(item => item.format))].sort((a, b) => formatRank(a) - formatRank(b));
 const groups = [
 	{ id: "purpose", label: t.filters.purpose, options: purposes.map(id => ({ id, label: t.item_categories[id] })) },
 	{ id: "format", label: t.filters.format, options: formats.map(id => ({ id, label: translateType(id, lang).replaceAll("曝光", "") })) }
