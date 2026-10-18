@@ -6,15 +6,44 @@ import photo from "@assets/img/about-popup-2026.webp";
 import planData from "@data/plan.json";
 import { getItemOptions, loadItemsData } from "../utils/items-loader";
 import { formatDeadline } from "../utils/deadline";
+import { formatRank } from "../utils/item-filters";
 import { getBenefitLocalizedName, isItemInAnyPlan } from "../utils/plan-helper";
 const { lang = "zh-Hant" } = Astro.props;
 const en = lang === "en";
 const t = (await import(`../i18n/${lang}.json`)).default;
 const items = await loadItemsData(lang);
 const plans = Object.values(planData).sort((a, b) => a.order - b.order);
-const extras = [...items].sort((a, b) => a.order - b.order);
+const extras = [...items].sort((a, b) => formatRank(a.format) - formatRank(b.format) || a.order - b.order);
 const itemsPerPage = en ? 6 : 7;
-const groups = Array.from({ length: Math.ceil(extras.length / itemsPerPage) }, (_, i) => extras.slice(i * itemsPerPage, (i + 1) * itemsPerPage));
+// Group items by the website's exposure formats; each section heading takes about half an item row.
+// Split long formats evenly across pages so no page carries a lone leftover item.
+const groups: { type: string; continued: boolean; items: typeof extras }[][] = [];
+let room = 0;
+const place = (sectionItems: typeof extras, continued: boolean) => {
+	groups.at(-1)!.push({ type: sectionItems[0].type, continued, items: sectionItems });
+	room -= sectionItems.length + 0.5;
+};
+for (const format of [...new Set(extras.map(item => item.format))]) {
+	let rest = extras.filter(item => item.format === format);
+	if (rest.length + 0.5 <= room) {
+		place(rest, false);
+		continue;
+	}
+	const head = Math.min(Math.floor(room - 0.5), rest.length - 2);
+	if (head >= 2) {
+		place(rest.slice(0, head), false);
+		rest = rest.slice(head);
+	}
+	const continued = rest.length < extras.filter(item => item.format === format).length;
+	const pages = Math.ceil(rest.length / Math.floor(itemsPerPage - 0.5));
+	for (let i = 0; i < pages; i++) {
+		const size = Math.ceil(rest.length / (pages - i));
+		groups.push([]);
+		room = itemsPerPage;
+		place(rest.slice(0, size), continued || i > 0);
+		rest = rest.slice(size);
+	}
+}
 const hero = await getImage({ src: photo, width: 1000, quality: 65, format: "jpeg" });
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const site = `${Astro.site?.origin || "https://sitcon.org"}${base}/${en ? "en/" : ""}`;
@@ -181,30 +210,38 @@ const emptyPrice = (item: (typeof items)[number]) => (isItemInAnyPlan(item.id) ?
 								"Reference prices per item or option. Confirm deadlines and availability with our team; see item pages for details."
 							)}
 						</p>
-						<div class="catalog-list">
-							{group.map(item => (
-								<article>
-									<div>
-										<h3>
-											<a href={`${site}item/${item.id}/`}>{item.name}</a>
-										</h3>
-										{itemTerms(item).length > 0 && <p class="terms">{itemTerms(item).join(" · ")}</p>}
-										<p>{excerpt(item.global_description)}</p>
-									</div>
-									<div class="pricing">
-										{getItemOptions(item).map(option => (
-											<p>
-												<span class="option-name">{item.sub.length ? option.name : ""}</span>
-												<span class="price-status">
-													{item.sub.length > 0 && option.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
-													<strong>{option.price || emptyPrice(item)}</strong>
-												</span>
-											</p>
-										))}
-									</div>
-								</article>
-							))}
-						</div>
+						{group.map(section => (
+							<section class="catalog-section">
+								<h3 class="catalog-format">
+									{section.type}
+									{section.continued && label("（續）", " (cont.)")}
+								</h3>
+								<div class="catalog-list">
+									{section.items.map(item => (
+										<article>
+											<div>
+												<h3>
+													<a href={`${site}item/${item.id}/`}>{item.name}</a>
+												</h3>
+												{itemTerms(item).length > 0 && <p class="terms">{itemTerms(item).join(" · ")}</p>}
+												<p>{excerpt(item.global_description)}</p>
+											</div>
+											<div class="pricing">
+												{getItemOptions(item).map(option => (
+													<p>
+														<span class="option-name">{item.sub.length ? option.name : ""}</span>
+														<span class="price-status">
+															{item.sub.length > 0 && option.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
+															<strong>{option.price || emptyPrice(item)}</strong>
+														</span>
+													</p>
+												))}
+											</div>
+										</article>
+									))}
+								</div>
+							</section>
+						))}
 						<footer>
 							<>
 								<span>{label("幣別：新臺幣 NT$", "Currency: NT$")} · contact@sitcon.org</span>
@@ -467,6 +504,13 @@ const emptyPrice = (item: (typeof items)[number]) => (isItemInAnyPlan(item.id) ?
 	}
 	.catalog h2 {
 		font-size: 18pt;
+	}
+	.catalog-format {
+		margin: 4mm 0 0;
+		padding: 1.5mm 3mm;
+		background: #eff5ee;
+		border-left: 3px solid #74bf50;
+		font-size: 10.5pt;
 	}
 	.catalog-list article {
 		display: grid;
