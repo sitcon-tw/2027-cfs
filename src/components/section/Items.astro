@@ -1,5 +1,5 @@
 ---
-import { X, Heart, Plus, Check } from "@lucide/astro";
+import { X, Heart, Plus, Check, Circle, CircleDot } from "@lucide/astro";
 import Button from "../Button.astro";
 import { loadItemsData, translateType } from "../../utils/items-loader";
 import { isInactive } from "../../utils/item-status";
@@ -67,14 +67,25 @@ const groups = [
 									aria-pressed="false"
 									aria-controls="item-catalog"
 								>
-									<span class="filter-multi-indicator" aria-hidden="true">
-										<span class="filter-unselected-icon">
-											<Plus size={16} />
+									{group.id === "purpose" ? (
+										<span class="filter-radio-indicator" aria-hidden="true">
+											<span class="filter-unselected-icon">
+												<Circle size={16} />
+											</span>
+											<span class="filter-selected-icon">
+												<CircleDot size={16} />
+											</span>
 										</span>
-										<span class="filter-selected-icon">
-											<Check size={16} />
+									) : (
+										<span class="filter-multi-indicator" aria-hidden="true">
+											<span class="filter-unselected-icon">
+												<Plus size={16} />
+											</span>
+											<span class="filter-selected-icon">
+												<Check size={16} />
+											</span>
 										</span>
-									</span>
+									)}
 									<span>{option.label}</span>
 								</Button>
 							))}

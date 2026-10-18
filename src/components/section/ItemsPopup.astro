@@ -76,24 +76,22 @@ const items = itemsUnsorted.sort((a, b) => {
 	const getVisibleCards = (cards: HTMLElement[]): HTMLElement[] => cards.filter(card => !card.hidden);
 
 	const cards = Array.from(document.querySelectorAll<HTMLElement>("#item-catalog [data-card-id]"));
-	// Several purposes can be selected at once; the most recently chosen one drives the card descriptions.
-	let selectedPurposes: string[] = [];
+	let selectedPurpose = "all";
 	const selectedFormats = new Set<string>();
 	const filterButtons = document.querySelectorAll<HTMLButtonElement>("[data-filter-group]");
 	const applyFilters = () => {
 		cards.forEach(card => {
 			card.hidden = selectedFormats.size > 0 && !selectedFormats.has(card.dataset.format || "");
-			updateCardDescription(card, selectedPurposes);
+			updateCardDescription(card, selectedPurpose);
 		});
+		const orderAttribute = selectedPurpose === "all" ? "data-order" : `data-${selectedPurpose.replaceAll("_", "-")}-order`;
 		const inactive = (card: HTMLElement) => card.dataset.isSoldOut === "true" || isDeadlinePassed(card.dataset.deadline || "");
-		const orderFor = (card: HTMLElement, purpose: string) => Number(card.getAttribute(`data-${purpose.replaceAll("_", "-")}-order`) || "999999");
-		// With several purposes selected, an item ranks by the best position it holds in any of them.
-		const rank = (card: HTMLElement) => (selectedPurposes.length ? Math.min(...selectedPurposes.map(purpose => orderFor(card, purpose))) : Number(card.getAttribute("data-order") || "0"));
+		const rank = (card: HTMLElement) => Number(card.getAttribute(orderAttribute) || (selectedPurpose === "all" ? "0" : "999999"));
 		cards.sort((a, b) => Number(inactive(a)) - Number(inactive(b)) || rank(a) - rank(b));
 		const grid = document.querySelector("#item-catalog .cards-grid");
 		cards.forEach(card => grid?.appendChild(card));
 		filterButtons.forEach(button => {
-			const selected = button.dataset.filterGroup === "purpose" ? selectedPurposes.includes(button.dataset.filterValue!) : selectedFormats.has(button.dataset.filterValue!);
+			const selected = button.dataset.filterGroup === "purpose" ? selectedPurpose === button.dataset.filterValue : selectedFormats.has(button.dataset.filterValue!);
 			button.setAttribute("aria-pressed", String(selected));
 		});
 		const visibleCount = getVisibleCards(cards).length;
@@ -107,15 +105,13 @@ const items = itemsUnsorted.sort((a, b) => {
 		updateExpandButtonVisibility(visibleCount);
 	};
 
-	const updateCardDescription = (card: HTMLElement, purposes: string[]) => {
+	const updateCardDescription = (card: HTMLElement, purpose: string) => {
 		const description = card.querySelector<HTMLElement>(".description");
 		const descriptionData = card.dataset.descriptions;
 		if (!description || !descriptionData) return;
 		try {
 			const descriptions = JSON.parse(descriptionData);
-			// Prefer the most recently selected purpose that has its own wording, then fall back to the default text.
-			const preferred = [...purposes].reverse().find(purpose => descriptions[purpose]);
-			description.textContent = (preferred && descriptions[preferred]) || descriptions.all || "";
+			description.textContent = descriptions[purpose] || descriptions.all || "";
 		} catch {
 			// Keep the rendered description if stored data is invalid.
 		}
@@ -152,7 +148,7 @@ const items = itemsUnsorted.sort((a, b) => {
 	filterButtons.forEach(button => {
 		button.addEventListener("click", () => {
 			const value = button.dataset.filterValue!;
-			if (button.dataset.filterGroup === "purpose") selectedPurposes = selectedPurposes.includes(value) ? selectedPurposes.filter(purpose => purpose !== value) : [...selectedPurposes, value];
+			if (button.dataset.filterGroup === "purpose") selectedPurpose = selectedPurpose === value ? "all" : value;
 			else if (selectedFormats.has(value)) selectedFormats.delete(value);
 			else selectedFormats.add(value);
 			applyFilters();
@@ -166,7 +162,7 @@ const items = itemsUnsorted.sort((a, b) => {
 	document.querySelectorAll<HTMLAnchorElement>("[data-item-category]").forEach(link => {
 		link.addEventListener("click", () => {
 			selectedFormats.clear();
-			selectedPurposes = link.dataset.itemCategory ? [link.dataset.itemCategory] : [];
+			if (link.dataset.itemCategory) selectedPurpose = link.dataset.itemCategory;
 			applyFilters();
 		});
 	});
