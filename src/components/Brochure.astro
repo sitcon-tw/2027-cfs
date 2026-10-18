@@ -5,13 +5,14 @@ import Button from "./Button.astro";
 import photo from "@assets/img/about-popup-2026.webp";
 import planData from "@data/plan.json";
 import { getItemOptions, loadItemsData } from "../utils/items-loader";
-import { getBenefitLocalizedName } from "../utils/plan-helper";
+import { formatDeadline } from "../utils/deadline";
+import { getBenefitLocalizedName, isItemInAnyPlan } from "../utils/plan-helper";
 const { lang = "zh-Hant" } = Astro.props;
 const en = lang === "en";
 const t = (await import(`../i18n/${lang}.json`)).default;
 const items = await loadItemsData(lang);
 const plans = Object.values(planData).sort((a, b) => a.order - b.order);
-const extras = items.filter(item => item.type !== "打包專屬").sort((a, b) => a.order - b.order);
+const extras = [...items].sort((a, b) => a.order - b.order);
 const itemsPerPage = en ? 6 : 7;
 const groups = Array.from({ length: Math.ceil(extras.length / itemsPerPage) }, (_, i) => extras.slice(i * itemsPerPage, (i + 1) * itemsPerPage));
 const hero = await getImage({ src: photo, width: 1000, quality: 65, format: "jpeg" });
@@ -34,6 +35,22 @@ const pageCount = groups.length + 4;
 const audienceTotal = Object.values(t.about.popup.chart.attender_role as NumericData).reduce((sum, value) => sum + value, 0);
 const date = new Date().toLocaleDateString(en ? "en-CA" : "zh-TW", { timeZone: "Asia/Taipei" });
 const label = (zh: string, english: string) => (en ? english : zh);
+// Mirror the availability and deadline shown on the website's item cards.
+const itemTerms = (item: (typeof items)[number]) => {
+	const options = getItemOptions(item);
+	const totalRemaining = options.reduce((sum, option) => sum + (parseInt(option.remaining, 10) || 0), 0);
+	const isSoldOut = item.remaining === "0" || options.every(option => option.remaining === "0");
+	const unit = t.global.unit[item.unit] || item.unit;
+	const deadline = formatDeadline(item.deadline);
+	return [
+		isSoldOut && t.global.sold_out,
+		!isSoldOut && item.quantity === "獨家" && t.global.exclusive,
+		!isSoldOut && item.quantity === "打包專屬" && t.global.package_exclusive,
+		!isSoldOut && !["獨家", "打包專屬", "不限"].includes(item.quantity) && totalRemaining > 0 && `${t.global.remaining} ${totalRemaining} ${unit}`,
+		deadline && `${deadline} ${t.global.deadline}`
+	].filter(Boolean) as string[];
+};
+const emptyPrice = (item: (typeof items)[number]) => (isItemInAnyPlan(item.id) ? label("方案包含項目", "Plan Included Item") : label("洽詢", "Contact us"));
 ---
 
 <!doctype html>
@@ -171,6 +188,7 @@ const label = (zh: string, english: string) => (en ? english : zh);
 										<h3>
 											<a href={`${site}item/${item.id}/`}>{item.name}</a>
 										</h3>
+										{itemTerms(item).length > 0 && <p class="terms">{itemTerms(item).join(" · ")}</p>}
 										<p>{excerpt(item.global_description)}</p>
 									</div>
 									<div class="pricing">
@@ -178,8 +196,8 @@ const label = (zh: string, english: string) => (en ? english : zh);
 											<p>
 												<span class="option-name">{item.sub.length ? option.name : ""}</span>
 												<span class="price-status">
-													{(item.remaining === "0" || option.remaining === "0") && <small>{label("已額滿", "Sold out")}</small>}
-													<strong>{option.price || label("洽詢", "Contact us")}</strong>
+													{item.sub.length > 0 && option.remaining === "0" && <small>{label("已額滿", "Sold out")}</small>}
+													<strong>{option.price || emptyPrice(item)}</strong>
 												</span>
 											</p>
 										))}
@@ -466,6 +484,10 @@ const label = (zh: string, english: string) => (en ? english : zh);
 		font-size: 9pt;
 		margin: 0;
 		line-height: 1.5;
+	}
+	.catalog-list .terms {
+		color: #526657;
+		margin-bottom: 0.5mm;
 	}
 	.catalog-list h3 a {
 		text-decoration: none;
