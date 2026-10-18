@@ -11,7 +11,7 @@
 
 ## 開發
 
-使用 [Node.js](https://nodejs.org/) 22（見 [.node-version](.node-version)）與 [package.json](package.json) 的 `packageManager` 指定的 [pnpm](https://pnpm.io/installation) 版本：
+使用 [Node.js](https://nodejs.org/) 24（見 [.node-version](.node-version)）與 [package.json](package.json) 的 `packageManager` 指定的 [pnpm](https://pnpm.io/installation) 版本：
 
 ```bash
 pnpm install --frozen-lockfile
