@@ -88,7 +88,9 @@ interface TeamItem {
 								</strong>
 								{item.school}
 								{item.school && item.major && <br />}
-								{item.major}
+								{item.major &&
+									// 切成不可拆的段落，避免「一年」「級」被拆到兩行
+									item.major.split(item.major.includes(",") ? /(?<=,)\s+/ : /\s+/).map((segment, i) => [i > 0 && " ", <span class="segment">{segment}</span>])}
 							</div>
 						))}
 					</div>
@@ -275,6 +277,10 @@ interface TeamItem {
 		text-align: center;
 		width: min(100%, 50rem);
 		line-height: 2;
+	}
+
+	.segment {
+		display: inline-block;
 	}
 
 	strong {
