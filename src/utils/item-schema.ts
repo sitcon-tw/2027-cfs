@@ -3,13 +3,13 @@ import { getItemOptions, type ItemData } from "./items-loader.js";
 import { isDeadlinePassed } from "./local-storage.js";
 import { parseExactPrice } from "./item-price.js";
 
-export function createItemSchema(item: ItemData, description: string, itemsUrl: URL) {
+export function createItemOffers(item: ItemData) {
 	// Only TV screen rotation (27) can be sponsored without a tiered package.
-	if (item.id !== "27" || isDeadlinePassed(item.deadline)) return null;
+	if (item.id !== "27" || isDeadlinePassed(item.deadline)) return [];
 
 	const deadline = parseDeadline(item.deadline);
 	const priceValidUntil = deadline ? `${deadline.getFullYear()}-${String(deadline.getMonth() + 1).padStart(2, "0")}-${String(deadline.getDate()).padStart(2, "0")}` : undefined;
-	const offers = getItemOptions(item).flatMap(option => {
+	return getItemOptions(item).flatMap(option => {
 		// Missing prices, plan benefits and starting prices are not exact offers.
 		const price = parseExactPrice(option.price);
 		if (price === null) return [];
@@ -28,7 +28,10 @@ export function createItemSchema(item: ItemData, description: string, itemsUrl: 
 			}
 		];
 	});
+}
 
+export function createItemSchema(item: ItemData, description: string, itemsUrl: URL) {
+	const offers = createItemOffers(item);
 	// Product rich results require an offer when there are no reviews or ratings.
 	if (!offers.length) return null;
 

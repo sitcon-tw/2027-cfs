@@ -3,6 +3,12 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 const ts = require(require.resolve("typescript", { paths: [fs.realpathSync("node_modules/@astrojs/check")] }));
 
+class TestDate extends Date {
+	constructor(...args) {
+		super(...(args.length ? args : [new Date(2027, 1, 16, 12).getTime()]));
+	}
+}
+
 function loadUtility(path, dependencies = {}) {
 	const module = { exports: {} };
 	const javascript = ts.transpileModule(fs.readFileSync(path, "utf8"), {
@@ -12,6 +18,7 @@ function loadUtility(path, dependencies = {}) {
 		module,
 		exports: module.exports,
 		URL,
+		Date: TestDate,
 		require: name => {
 			assert.ok(name in dependencies, `Unexpected dependency: ${name}`);
 			return dependencies[name];
@@ -65,7 +72,12 @@ const items = {
 };
 const translations = {
 	"zh-Hant": {
+		meta: { title: "贊助測試" },
+		plans: { plan_comparison: "方案比較", availability_note: "仍可洽談，逾期權益另議。" },
 		opendream: {
+			title: "開源築夢",
+			description: "支持學生參加年會。",
+			independent_note: "可獨立贊助。",
 			plans: [
 				{ id: "opendream-5", name: "支持 5 位學生", price: "NT$30,000" },
 				{ id: "opendream-10", name: "支持 10 位學生", price: "NT$50,000" }
@@ -73,7 +85,12 @@ const translations = {
 		}
 	},
 	en: {
+		meta: { title: "Sponsorship test" },
+		plans: { plan_comparison: "Plan comparison", availability_note: "Open for discussion; expired benefits are negotiated separately." },
 		opendream: {
+			title: "Open Dream",
+			description: "Support student attendance.",
+			independent_note: "Available independently.",
 			plans: [
 				{ id: "opendream-5", name: "Support 5 students", price: "NT$30,000" },
 				{ id: "opendream-10", name: "Support 10 students", price: "NT$50,000" }
@@ -82,6 +99,10 @@ const translations = {
 	}
 };
 const itemPrice = loadUtility("src/utils/item-price.ts");
+const deadline = loadUtility("src/utils/deadline.ts");
+const itemsLoader = loadUtility("src/utils/items-loader.ts", { "./item-price.js": itemPrice });
+const localStorage = loadUtility("src/utils/local-storage.ts", { "./deadline.js": deadline });
+const itemSchema = loadUtility("src/utils/item-schema.ts", { "./deadline.js": deadline, "./items-loader.js": itemsLoader, "./local-storage.js": localStorage, "./item-price.js": itemPrice });
 const helper = loadUtility("src/utils/plan-helper.ts", {
 	"./item-price.js": itemPrice,
 	"@data/plan.json": plans,
@@ -125,9 +146,64 @@ helper.localizeInterestedItems(original);
 assert.equal(JSON.stringify(original), saved, "Rendering must not mutate saved selections");
 assert.equal(helper.getItemDisplayPrice("unknown", "$70,000 起", "en"), "From $70,000");
 
+const { createSponsorshipCatalog } = loadUtility("src/utils/sponsorship-schema.ts", {
+	"@data/plan.json": plans,
+	"@i18n/zh-Hant.json": translations["zh-Hant"],
+	"@i18n/en.json": translations.en,
+	"./item-price.js": itemPrice,
+	"./item-schema.js": itemSchema
+});
+for (const lang of ["zh-Hant", "en"]) {
+	const home = new URL(`https://sitcon.org/2027/cfs/${lang === "en" ? "en/" : ""}`);
+	const television = {
+		id: "27",
+		name: lang === "en" ? items[27].name_en : items[27].name_zh,
+		price: items[27].price,
+		remaining: "",
+		deadline: "",
+		global_description: lang === "en" ? "Show your brand on venue screens." : "於會場電視輪播品牌內容。",
+		sub: []
+	};
+	const catalog = JSON.parse(JSON.stringify(createSponsorshipCatalog(lang, home, [television, { ...television, id: "19" }])));
+	const offers = catalog.itemListElement.flatMap(entry => entry.itemListElement || [entry]);
+	assert.equal(offers.length, 7, "The four tiers, two Open Dream plans and standalone TV must all be discoverable");
+	assert.deepEqual(
+		offers.map(offer => offer.price),
+		[179000, 109000, 79000, 35000, 30000, 50000, 4000]
+	);
+	assert.deepEqual(
+		offers.map(offer => offer.itemOffered.name),
+		[...Object.values(plans).map(plan => (lang === "en" ? plan.name_en : plan.name_zh)), ...translations[lang].opendream.plans.map(plan => plan.name), television.name],
+		"Offer names must match the displayed names without catalog-heading prefixes"
+	);
+	for (const offer of offers) {
+		assert.equal(offer.itemOffered["@type"], "Service");
+		assert.equal(offer.priceCurrency, "TWD");
+		assert.equal(offer.availability, "https://schema.org/InStock");
+		assert.ok(offer.url.startsWith(home.href));
+		assert.equal(offer.itemOffered.url, offer.url);
+		assert.ok(offer.itemOffered.description);
+		assert.ok(!("priceValidUntil" in offer), "Benefit deadlines must not become whole-plan expiry dates");
+	}
+	assert.ok(offers.slice(0, 6).every(offer => offer.url.startsWith(`${home.href}#`)));
+	assert.equal(offers[6].url, `${home.href}item/27/`, "Standalone TV links to its localized item page");
+	assert.ok(!JSON.stringify(catalog).includes('"Product"'), "The comparison page is not one product with a cheapest advertised price");
+	for (const change of [{ price: "$4,500" }, { remaining: "0" }, { deadline: "2027/2/16" }, { deadline: "2027/2/15" }, { price: "洽詢" }, { price: "$4,000 起" }, { id: "19" }]) {
+		const item = { ...television, ...change };
+		const catalog = JSON.parse(JSON.stringify(createSponsorshipCatalog(lang, home, [item])));
+		const standaloneOffers = catalog.itemListElement.filter(entry => entry["@type"] === "Offer");
+		const product = itemSchema.createItemSchema(item, item.global_description, new URL("https://sitcon.org/2027/cfs/items/"));
+		const productOffers = JSON.parse(JSON.stringify(product?.offers || []));
+		const terms = offer => [offer.price, offer.availability, offer.priceValidUntil];
+		assert.deepEqual(standaloneOffers.map(terms), productOffers.map(terms), "Catalog and item-page offers must agree on price, stock and deadlines");
+	}
+}
 const previousPrice = plans.new_sprout.price;
 plans.new_sprout.price = "NT$36,000";
 assert.equal(prices(["tier-new_sprout"], "zh-Hant")[0], "NT$36,000", "Selection prices follow updated input data");
+assert.equal(createSponsorshipCatalog("en", new URL("https://sitcon.org/2027/cfs/en/"), []).itemListElement[0].itemListElement[3].price, 36000, "Schema prices follow updated input data");
+plans.new_sprout.price = "洽詢";
+assert.equal(createSponsorshipCatalog("zh-Hant", new URL("https://sitcon.org/2027/cfs/"), []).itemListElement[0].itemListElement.length, 3, "Unknown prices must not produce a zero-price offer");
 plans.new_sprout.price = previousPrice;
 
-console.log("PASS: actual tier benefits, standalone TV and conditional pricing agree in both languages");
+console.log("PASS: actual tier benefits, conditional pricing and seven sponsorship offers agree in both languages");

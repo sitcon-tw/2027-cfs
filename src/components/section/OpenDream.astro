@@ -58,12 +58,13 @@ const tierColors = ["#47762e", "#426bd1"];
 		<div class="od-head aos">
 			<h3 id="od-plans-title">{t.popup.impact.title}</h3>
 			<p class="od-lead">{t.description}</p>
+			<p class="od-lead">{t.independent_note}</p>
 		</div>
 
 		<div class="od-tiers">
 			{
 				t.plans.map((plan: OpenDreamPlan, index: number) => (
-					<div class="od-tier" style={`--tier-color: ${tierColors[index % tierColors.length]}`}>
+					<div class="od-tier" id={plan.id} style={`--tier-color: ${tierColors[index % tierColors.length]}`}>
 						<h4 class="od-tier-name">{plan.name}</h4>
 						<ItemPrice price={plan.price} />
 						<Button

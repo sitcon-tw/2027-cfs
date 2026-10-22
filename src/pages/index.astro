@@ -17,6 +17,8 @@ import Footer from "@components/section/Footer.astro";
 import ogImageZH from "@assets/img/og.webp";
 import ogImageEN from "@assets/img/og-en.webp";
 import ItemsPopup from "@components/section/ItemsPopup.astro";
+import { createSponsorshipCatalog } from "../utils/sponsorship-schema";
+import { loadItemsData } from "../utils/items-loader";
 const { lang = "zh-Hant" } = Astro.props;
 const ogImage = lang === "zh-Hant" ? ogImageZH : ogImageEN;
 const t = await import(`../i18n/${lang}.json`).then(m => m.default);
@@ -32,12 +34,14 @@ const defaultSchema = {
 	"@graph": [
 		{
 			"@type": "Organization",
+			"@id": "https://sitcon.org/#organization",
 			name: siteName,
 			alternateName: "SITCON",
 			url: "https://sitcon.org",
 			logo: new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/SITCON.svg`, Astro.site).href,
 			description: description,
-			sameAs: ["https://www.facebook.com/SITCONtw", "https://twitter.com/sitcontw"]
+			sameAs: ["https://www.facebook.com/SITCONtw", "https://twitter.com/sitcontw"],
+			hasOfferCatalog: createSponsorshipCatalog(lang, canonicalUrl, await loadItemsData(lang))
 		},
 		{
 			"@type": "WebSite",
