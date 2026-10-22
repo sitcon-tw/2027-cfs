@@ -230,6 +230,7 @@
 		]
 	},
 	"plans": {
+		"availability_note": "All four tiers remain open for discussion. Benefits whose deadlines have passed will be negotiated separately.",
 		"title": "Choose the Plan That Fits You",
 		"plan_comparison": "Plan Comparison",
 		"interested": "Interested",
@@ -275,6 +276,7 @@
 		"subtotal": "Subtotal"
 	},
 	"opendream": {
+		"independent_note": "Open Dream can be sponsored independently, without a tiered package.",
 		"title": "Open Dream Program",
 		"subtitle": "Distance should never stand between students and SITCON",
 		"subtitle1": "Distance should never stand",

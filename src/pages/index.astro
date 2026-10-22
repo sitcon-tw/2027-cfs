@@ -17,12 +17,16 @@ import Footer from "@components/section/Footer.astro";
 import ogImageZH from "@assets/img/og.webp";
 import ogImageEN from "@assets/img/og-en.webp";
 import ItemsPopup from "@components/section/ItemsPopup.astro";
+import { createSponsorshipCatalog } from "../utils/sponsorship-schema";
+import { loadItemsData } from "../utils/items-loader";
 const { lang = "zh-Hant" } = Astro.props;
 const ogImage = lang === "zh-Hant" ? ogImageZH : ogImageEN;
 const t = await import(`../i18n/${lang}.json`).then(m => m.default);
 const sections = [Nav, Hero, Intro, Time, Highlights, About, News, Plans, Items, OpenDream, Cycle, ItemsPopup, Form, Sponsors, FAQ, Footer];
 const { title = t.meta.title, description = t.meta.description } = Astro.props;
 const siteName = lang === "en" ? "SITCON Students' Information Technology Conference" : "SITCON 學生計算機年會";
+const canonicalUrl = new URL(`${Astro.url.pathname.replace(/\/$/, "")}/`, Astro.site);
+const ogImageUrl = new URL(ogImage.src, Astro.site).href;
 
 // Default schema for homepage (Organization + WebSite)
 const defaultSchema = {
@@ -30,12 +34,14 @@ const defaultSchema = {
 	"@graph": [
 		{
 			"@type": "Organization",
+			"@id": "https://sitcon.org/#organization",
 			name: siteName,
 			alternateName: "SITCON",
 			url: "https://sitcon.org",
 			logo: new URL(`${import.meta.env.BASE_URL.replace(/\/$/, "")}/SITCON.svg`, Astro.site).href,
 			description: description,
-			sameAs: ["https://www.facebook.com/SITCONtw", "https://twitter.com/sitcontw"]
+			sameAs: ["https://www.facebook.com/SITCONtw", "https://twitter.com/sitcontw"],
+			hasOfferCatalog: createSponsorshipCatalog(lang, canonicalUrl, await loadItemsData(lang))
 		},
 		{
 			"@type": "WebSite",
@@ -55,13 +61,15 @@ const defaultSchema = {
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalUrl.href} />
 		<meta property="og:title" content={title} />
+		<meta property="og:url" content={canonicalUrl.href} />
 		<meta property="og:type" content="website" />
-		<meta property="og:image" content={ogImage.src} />
+		<meta property="og:image" content={ogImageUrl} />
 		<meta property="og:description" content={description} />
 		<meta property="og:site_name" content={siteName} />
 		<meta name="twitter:title" content={title} />
-		<meta name="twitter:image" content={ogImage.src} />
+		<meta name="twitter:image" content={ogImageUrl} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<slot name="schema">
 			<script type="application/ld+json" set:html={JSON.stringify(defaultSchema)} is:inline />

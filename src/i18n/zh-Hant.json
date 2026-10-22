@@ -230,6 +230,7 @@
 		]
 	},
 	"plans": {
+		"availability_note": "四級方案仍開放洽談；部分權益截止後，逾期權益將另行議定。",
 		"title": "選擇適合你的方案",
 		"plan_comparison": "方案比較",
 		"interested": "感興趣",
@@ -275,6 +276,7 @@
 		"subtotal": "小計"
 	},
 	"opendream": {
+		"independent_note": "開源築夢計畫可獨立贊助，無須購買分級方案。",
 		"title": "開源築夢計畫",
 		"subtitle": "讓距離不再是走進 SITCON 的門檻",
 		"subtitle1": "讓距離不再是",

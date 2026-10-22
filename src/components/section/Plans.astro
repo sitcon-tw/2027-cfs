@@ -4,21 +4,11 @@ import { Container, Check } from "@lucide/astro";
 import Button from "../Button.astro";
 import planData from "@data/plan.json";
 import { loadItemsData } from "../../utils/items-loader";
-import { getBenefitLocalizedName, resolveBenefitItem } from "../../utils/plan-helper";
+import { getBenefitLocalizedName, isBenefitIncluded, resolveBenefitItem } from "../../utils/plan-helper";
 const itemsData = await loadItemsData(lang);
 
 // Create a lookup map for quick item access by ID
 const itemsMap = new Map(itemsData.map(item => [item.id, item]));
-
-// Helper function to get earliest deadline from plan benefits
-const getEarliestDeadline = (benefits: any[]) => {
-	const deadlines = benefits.map(b => resolveBenefitItem(b)?.itemData.deadline).filter((d): d is string => d !== null && d !== undefined && d !== "");
-
-	if (deadlines.length === 0) return "";
-
-	// Sort deadlines and return the earliest one
-	return deadlines.sort((a, b) => new Date(a).getTime() - new Date(b).getTime())[0];
-};
 
 // Transform plan.json data to match the table structure
 const tiers = [
@@ -26,29 +16,25 @@ const tiers = [
 		id: "navigator",
 		name: lang === "en" ? planData.navigator.name_en : planData.navigator.name_zh,
 		price: planData.navigator.price,
-		textColor: "#FF928A",
-		deadline: getEarliestDeadline(planData.navigator.benefits)
+		textColor: "#FF928A"
 	},
 	{
 		id: "deep_cultivation",
 		name: lang === "en" ? planData.deep_cultivation.name_en : planData.deep_cultivation.name_zh,
 		price: planData.deep_cultivation.price,
-		textColor: "#537FF1",
-		deadline: getEarliestDeadline(planData.deep_cultivation.benefits)
+		textColor: "#537FF1"
 	},
 	{
 		id: "visionary",
 		name: lang === "en" ? planData.visionary.name_en : planData.visionary.name_zh,
 		price: planData.visionary.price,
-		textColor: "#6FD195",
-		deadline: getEarliestDeadline(planData.visionary.benefits)
+		textColor: "#6FD195"
 	},
 	{
 		id: "new_sprout",
 		name: lang === "en" ? planData.new_sprout.name_en : planData.new_sprout.name_zh,
 		price: planData.new_sprout.price,
-		textColor: "#77B55A",
-		deadline: getEarliestDeadline(planData.new_sprout.benefits)
+		textColor: "#77B55A"
 	}
 ];
 
@@ -63,7 +49,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		return {
 			itemId,
 			popupItemId: itemId.split("-sub-")[0],
-			quantity: benefit?.quantity || "",
+			quantity: benefit && isBenefitIncluded(benefit) ? benefit.quantity.trim() : "",
 			name: benefit ? getBenefitLocalizedName(benefit, lang) : ""
 		};
 	});
@@ -80,6 +66,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 <section id="plans">
 	<h2 id="plans-title">{t.title}</h2>
 	<div class="plan-comparison wrap">
+		<p class="availability-note">{t.availability_note}</p>
 		<div class="container" role="table" aria-labelledby="plans-title">
 			<div class="plans-heading" role="rowgroup">
 				<div class="plans-header-scroll">
@@ -87,12 +74,12 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 						<div class="row-label header-label" role="columnheader">{lang === "en" ? "Benefits" : "贊助品項"}</div>
 						{
 							tiers.map((tier: any) => (
-								<div class="tier-column" role="columnheader">
+								<div class="tier-column" id={`plan-${tier.id}`} role="columnheader">
 									<div class="tier-name" style={`color: ${tier.textColor}`}>
 										{tier.name}
 									</div>
 									<div class="tier-price">{tier.price}</div>
-									<Button variant="outlined" class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price} data-tier-deadline={tier.deadline || ""}>
+									<Button variant="outlined" class="tier-interest-button" data-tier-name={tier.id} data-tier-title={tier.name} data-tier-price={tier.price}>
 										{t.interested}
 									</Button>
 								</div>
@@ -164,7 +151,7 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 </section>
 
 <script>
-	import { isItemInterested, addInterestedItem, removeInterestedItem, isDeadlinePassed, type InterestedItem } from "../../utils/local-storage.ts";
+	import { isItemInterested, addInterestedItem, removeInterestedItem, type InterestedItem } from "../../utils/local-storage.ts";
 	import { openVenueDetails } from "../../utils/venue-linkify.ts";
 
 	const plans = document.getElementById("plans");
@@ -276,16 +263,10 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		tierButtons.forEach(button => {
 			const tierName = button.getAttribute("data-tier-name");
 			const tierTitle = button.getAttribute("data-tier-title");
-			const tierDeadline = button.getAttribute("data-tier-deadline") || "";
 
 			if (tierName && tierTitle) {
 				button.addEventListener("click", function (e) {
 					e.stopPropagation();
-
-					// Check if deadline has passed
-					if (isDeadlinePassed(tierDeadline)) {
-						return; // Don't allow adding expired plans
-					}
 
 					const tierPrice = button.getAttribute("data-tier-price") || "";
 
@@ -317,17 +298,6 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 		const tierButtons = document.querySelectorAll("#plans .tier-interest-button");
 		tierButtons.forEach(button => {
 			const tierName = button.getAttribute("data-tier-name");
-			const tierDeadline = button.getAttribute("data-tier-deadline") || "";
-
-			// Check if deadline has passed
-			const expired = isDeadlinePassed(tierDeadline);
-			if (expired) {
-				button.setAttribute("disabled", "true");
-				button.classList.add("disabled");
-			} else {
-				button.removeAttribute("disabled");
-				button.classList.remove("disabled");
-			}
 
 			if (tierName) {
 				const tierId = `tier-${tierName}`;
@@ -367,6 +337,10 @@ const rows = Array.from({ length: maxBenefits }, (_, index) => {
 	#plans-title {
 		font-size: clamp(1.75rem, 4vw, 2.5rem);
 		margin-bottom: 1.5rem;
+	}
+	.availability-note {
+		margin-bottom: 1.5rem;
+		line-height: 1.6;
 	}
 	.container {
 		container-type: inline-size;

@@ -80,6 +80,11 @@ export function findItemByNameOrId(itemNameOrId: string): { itemId: string; item
 
 type PlanBenefit = Plan["benefits"][number];
 
+export function isBenefitIncluded(benefit: PlanBenefit): boolean {
+	const quantity = benefit.quantity.trim();
+	return quantity !== "" && quantity !== "0";
+}
+
 /** Resolve both main items and sub-items, including benefits without an ID. */
 export function resolveBenefitItem(benefit: PlanBenefit) {
 	return (benefit.item_id ? findItemByNameOrId(benefit.item_id) : null) || findItemByNameOrId(benefit.item_name);
@@ -92,6 +97,10 @@ export function getBenefitLocalizedName(benefit: PlanBenefit, lang: string = "zh
 	return item ? (lang === "en" ? item.name_en : item.name_zh) : benefit.item_name;
 }
 
+function planIncludesItem(plan: Plan, itemId: string): boolean {
+	return plan.benefits.some(benefit => isBenefitIncluded(benefit) && resolveBenefitItem(benefit)?.itemId === itemId);
+}
+
 /**
  * Find the minimal (cheapest) plan that includes a specific item
  * @param itemId The item ID to search for
@@ -99,7 +108,7 @@ export function getBenefitLocalizedName(benefit: PlanBenefit, lang: string = "zh
  */
 export function findMinimalPlanForItem(itemId: string): Plan | null {
 	// Filter plans that include this item
-	const plansWithItem = plans.filter(plan => plan.benefits.some(benefit => benefit.item_id === itemId));
+	const plansWithItem = plans.filter(plan => planIncludesItem(plan, itemId));
 
 	if (plansWithItem.length === 0) {
 		return null;
@@ -116,17 +125,13 @@ export function findMinimalPlanForItem(itemId: string): Plan | null {
 /**
  * Get the display price for an item
  * @param itemId The item ID (can be sub-item ID like "1-sub-0")
- * @param itemPrice The standalone item price (e.g., "$40,000")
+ * @param itemPrice The listed item price (e.g., "$40,000")
  * @param lang Language for display ("zh-Hant" or "en")
  * @returns Display string for price
  */
-export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: string = "zh-Hant"): string {
-	// Extract parent item ID if this is a sub-item (format: "parentId-sub-index")
-	const parentItemId = itemId.includes("-sub-") ? itemId.split("-sub-")[0] : itemId;
-
-	const minimalPlan = findMinimalPlanForItem(parentItemId);
-
-	if (minimalPlan) {
+export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: string = "zh-Hant", selectedPlanId?: string): string {
+	const selectedPlan = plans.find(plan => plan.id === selectedPlanId);
+	if ((selectedPlan && planIncludesItem(selectedPlan, itemId)) || (!itemPrice.trim() && isItemInAnyPlan(itemId))) {
 		return lang === "en" ? "Plan Included Item" : "方案包含項目";
 	}
 
@@ -141,7 +146,7 @@ export function getItemDisplayPrice(itemId: string, itemPrice: string, lang: str
  * @returns true if included in at least one plan
  */
 export function isItemInAnyPlan(itemId: string): boolean {
-	return plans.some(plan => plan.benefits.some(benefit => benefit.item_id === itemId));
+	return plans.some(plan => planIncludesItem(plan, itemId));
 }
 
 /**
@@ -152,12 +157,12 @@ export function isItemInAnyPlan(itemId: string): boolean {
  * @param lang Language for display ("zh-Hant" or "en")
  * @returns A copy of the item with localized title and price, plus the source deadline date for regular items (unchanged if the id is unknown)
  */
-export function localizeInterestedItem<T extends { id: string; title: string; price?: string; deadline?: string }>(item: T, lang: string = "zh-Hant"): T {
+function localizeInterestedItem<T extends { id: string; title: string; price?: string; deadline?: string }>(item: T, lang: string, selectedPlanId?: string): T {
 	const en = lang === "en";
 
 	if (item.id.startsWith("tier-")) {
 		const plan = (planData as Record<string, Plan>)[item.id.slice("tier-".length)];
-		return plan ? { ...item, title: en ? plan.name_en : plan.name_zh, price: plan.price } : item;
+		return plan ? { ...item, title: en ? plan.name_en : plan.name_zh, price: plan.price, deadline: "" } : item;
 	}
 
 	if (item.id.startsWith("opendream-")) {
@@ -172,8 +177,13 @@ export function localizeInterestedItem<T extends { id: string; title: string; pr
 	return {
 		...item,
 		title: en ? source.name_en : source.name_zh,
-		price: getItemDisplayPrice(item.id, source.price, lang),
+		price: getItemDisplayPrice(item.id, source.price, lang, selectedPlanId),
 		// The stored deadline is the localized card text (e.g. "3/9 截止"), so use the language-neutral source date instead
 		deadline: result.itemData.deadline
 	};
+}
+
+export function localizeInterestedItems<T extends { id: string; title: string; price?: string; deadline?: string }>(items: T[], lang: string = "zh-Hant"): T[] {
+	const selectedPlanId = items.find(item => item.id.startsWith("tier-"))?.id.slice("tier-".length);
+	return items.map(item => localizeInterestedItem(item, lang, selectedPlanId));
 }
