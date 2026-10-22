@@ -3,7 +3,7 @@ import Popup from "../Popup.astro";
 import Button from "../Button.astro";
 import ItemAddButton from "./ItemAddButton.astro";
 import ItemPrice from "./ItemPrice.astro";
-import { isItemInAnyPlan } from "../../utils/plan-helper";
+import { isBenefitIncluded, isItemInAnyPlan, resolveBenefitItem } from "../../utils/plan-helper";
 import { X, ChevronLeft, ChevronRight, Check } from "@lucide/astro";
 import planData from "@data/plan.json";
 import { marked } from "marked";
@@ -48,7 +48,7 @@ const tiers = [
 
 // Check if this item appears in any plan tier
 const tierBenefits = tiers.map(tier => {
-	const benefit = tier.data.benefits.find(b => b.item_id === item.id);
+	const benefit = tier.data.benefits.find(b => isBenefitIncluded(b) && resolveBenefitItem(b)?.itemId === item.id);
 	return {
 		tier: tier,
 		benefit: benefit,

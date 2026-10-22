@@ -51,7 +51,10 @@ export function handleAddButtonClick(button: HTMLElement, event: Event): void {
 			const userLang = document.documentElement.lang || navigator.language || "zh-Hant";
 
 			// Get display price (either actual price or plan inclusion info)
-			const displayPrice = getItemDisplayPrice(id, itemPrice, userLang);
+			const selectedPlanId = getInterestedItems()
+				.find(item => item.id.startsWith("tier-"))
+				?.id.slice("tier-".length);
+			const displayPrice = getItemDisplayPrice(id, itemPrice, userLang, selectedPlanId);
 
 			addInterestedItem({
 				id: id,

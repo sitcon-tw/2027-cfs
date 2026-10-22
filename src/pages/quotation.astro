@@ -285,7 +285,7 @@ const t = lang === "en" ? enQuotation : zhQuotation;
 		</div>
 
 		<script>
-			import { localizeInterestedItem } from "../utils/plan-helper.ts";
+			import { localizeInterestedItems } from "../utils/plan-helper.ts";
 			import { parseDeadline } from "../utils/deadline.ts";
 			import { quotation as zhQuotation } from "../i18n/zh-Hant.json";
 			import { quotation as enQuotation } from "../i18n/en.json";
@@ -335,7 +335,7 @@ const t = lang === "en" ? enQuotation : zhQuotation;
 
 			function generateQuotation() {
 				// Re-localize saved selections for the quotation's language, including older selections.
-				const items = getInterestedItems().map(item => localizeInterestedItem(item, lang));
+				const items = localizeInterestedItems(getInterestedItems(), lang);
 				const contentDiv = document.getElementById("content");
 
 				if (!contentDiv) return;

@@ -40,7 +40,7 @@ vm.runInNewContext(javascript, {
 	CustomEvent,
 	Element: class {},
 	getInterestedItems: () => items,
-	localizeInterestedItem: item => item,
+	localizeInterestedItems: items => items,
 	removeInterestedItem: () => {},
 	isItemInterested: () => false,
 	isDeadlinePassed: () => false,

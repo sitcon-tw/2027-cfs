@@ -42,7 +42,7 @@ const messagePlaceholder = en ? "For example: recruiting, brand exposure, budget
 </section>
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
-	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
+	import { localizeInterestedItems } from "../../utils/plan-helper.ts";
 
 	// SITCON 2027 贊助洽談表單 (https://forms.gle/TwFBtr83AJKmkfFQA)
 	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSd3qhkNzSvIAeUJtbDJAcVnK82kkLb2W8dl_i9TFtsJNd-QnA/formResponse";
@@ -52,8 +52,7 @@ const messagePlaceholder = en ? "For example: recruiting, brand exposure, budget
 	const selection = document.querySelector<HTMLElement>("#inquiry-selection");
 	const en = document.documentElement.lang === "en";
 	const selectionText = () =>
-		getInterestedItems()
-			.map(item => localizeInterestedItem(item, document.documentElement.lang))
+		localizeInterestedItems(getInterestedItems(), document.documentElement.lang)
 			.map(item => `• ${item.title}${item.price ? ` — ${item.price}` : ""}`)
 			.join("\n");
 	function updateSelection() {

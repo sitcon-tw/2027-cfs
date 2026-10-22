@@ -9,7 +9,7 @@
 		"astro": "astro",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"test": "astro check && node scripts/verify-item-schema.cjs",
+		"test": "astro check && node scripts/verify-item-schema.cjs && node scripts/verify-plan-pricing.cjs",
 		"fetch-data": "node ./scripts/fetch-and-merge.js",
 		"build:preview": "node scripts/build-preview.js"
 	},

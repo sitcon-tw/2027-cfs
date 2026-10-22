@@ -230,6 +230,7 @@
 		]
 	},
 	"plans": {
+		"availability_note": "All four tiers remain open for discussion. Benefits whose deadlines have passed will be negotiated separately.",
 		"title": "Choose the Plan That Fits You",
 		"plan_comparison": "Plan Comparison",
 		"interested": "Interested",
