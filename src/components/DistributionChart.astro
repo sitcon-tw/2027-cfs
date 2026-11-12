@@ -9,6 +9,8 @@ interface Props {
 const { id, title, data, colors, unit } = Astro.props;
 const total = Object.values(data).reduce((sum, value) => sum + value, 0);
 let offset = 0;
+// Tooltip punctuation follows the language of the chart title.
+const [colon, comma] = /[\u3400-\u9fff]/.test(title) ? ["：", "，"] : [": ", ", "];
 const circumference = 2 * Math.PI * 80;
 const entries = Object.entries(data).map(([label, value], index) => {
 	const fraction = total > 0 ? value / total : 0;
@@ -27,10 +29,13 @@ const entries = Object.entries(data).map(([label, value], index) => {
 
 <figure class="distribution-chart" id={id} aria-labelledby={`${id}-title`}>
 	<figcaption id={`${id}-title`}>{title}</figcaption>
-	<svg viewBox="0 0 240 240" aria-hidden="true" focusable="false">
+	<!-- Named by the caption and described by the legend below, which lists every value as text. -->
+	<svg viewBox="0 0 240 240" role="img" aria-labelledby={`${id}-title`} aria-describedby={`${id}-legend`}>
 		{
-			entries.map(entry => (
+			entries.map((entry, index) => (
 				<circle
+					class="chart-segment"
+					data-index={index}
 					cx="120"
 					cy="120"
 					r="80"
@@ -40,14 +45,16 @@ const entries = Object.entries(data).map(([label, value], index) => {
 					stroke-dasharray={`${entry.length} ${circumference - entry.length}`}
 					stroke-dashoffset={entry.offset}
 					transform="rotate(-90 120 120)"
-				/>
+				>
+					<title>{`${entry.label}${colon}${unit ? `${entry.value.toLocaleString("en-US")} ${unit}${comma}` : ""}${entry.percentage}`}</title>
+				</circle>
 			))
 		}
 	</svg>
-	<ul class="chart-legend">
+	<ul class="chart-legend" id={`${id}-legend`}>
 		{
-			entries.map(entry => (
-				<li>
+			entries.map((entry, index) => (
+				<li data-index={index}>
 					<span class="legend-color" style={{ backgroundColor: entry.color }} aria-hidden="true" />
 					<span class="legend-label">{entry.label}</span>
 					<span class="legend-value">
@@ -63,6 +70,21 @@ const entries = Object.entries(data).map(([label, value], index) => {
 		}
 	</ul>
 </figure>
+
+<script>
+	// Hovering a donut segment highlights its legend row, and vice versa.
+	document.querySelectorAll<HTMLElement>(".distribution-chart").forEach(chart => {
+		const parts = chart.querySelectorAll<HTMLElement | SVGElement>("[data-index]");
+		const highlight = (index?: string) => {
+			chart.classList.toggle("has-active", index !== undefined);
+			parts.forEach(part => part.classList.toggle("is-active", part.dataset.index === index));
+		};
+		parts.forEach(part => {
+			part.addEventListener("pointerenter", () => highlight(part.dataset.index));
+			part.addEventListener("pointerleave", () => highlight());
+		});
+	});
+</script>
 
 <style>
 	.distribution-chart {
@@ -89,6 +111,17 @@ const entries = Object.entries(data).map(([label, value], index) => {
 		width: min(100%, 17rem);
 		height: auto;
 		margin: 0 auto 0.5rem;
+	}
+	.chart-segment,
+	li {
+		transition: opacity 0.15s ease;
+	}
+	.distribution-chart.has-active .chart-segment,
+	.distribution-chart.has-active li {
+		opacity: 0.35;
+	}
+	.distribution-chart.has-active .is-active {
+		opacity: 1;
 	}
 	.chart-legend {
 		list-style: none;
