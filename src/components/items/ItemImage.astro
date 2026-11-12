@@ -1,0 +1,25 @@
+---
+import { Picture } from "astro:assets";
+import { getItemImage, itemImageUrl } from "../../utils/item-images";
+
+interface Props {
+	file: string;
+	alt: string;
+	/** Rendered widths in CSS px, used for srcset. */
+	widths: number[];
+	sizes: string;
+}
+
+const { file, alt, widths, sizes } = Astro.props;
+const image = getItemImage(file);
+// Never upscale past the source photo.
+const usableWidths = image ? [...new Set(widths.map(w => Math.min(w, image.width)))] : [];
+---
+
+{
+	image ? (
+		<Picture src={image} alt={alt} formats={["avif"]} fallbackFormat="webp" widths={usableWidths} sizes={sizes} loading="lazy" decoding="async" />
+	) : (
+		<img src={itemImageUrl(file)} alt={alt} loading="lazy" decoding="async" />
+	)
+}
