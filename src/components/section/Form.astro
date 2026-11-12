@@ -1,5 +1,6 @@
 ---
 import Button from "../Button.astro";
+import { contactForm } from "../../data/contact-form.ts";
 const { t, lang } = Astro.props;
 const en = lang === "en";
 ---
@@ -31,15 +32,14 @@ const en = lang === "en";
 		</div>
 		<p id="form-message" role="status" aria-live="polite"></p>
 	</form>
-	<p class="alternative">{en ? "You can also email us at" : "也歡迎直接來信"} <a href="mailto:contact@sitcon.org">contact@sitcon.org</a></p>
+	<p class="alternative">{en ? "You can also email us at" : "也歡迎直接來信"} <a href={`mailto:${contactForm.email}`}>{contactForm.email}</a></p>
 	<p class="personal">{t.personal.title} <a href="https://sitcon.org/donate" target="_blank" rel="noopener">{t.personal.cta} →</a></p>
 </section>
 <script>
 	import { getInterestedItems } from "../../utils/local-storage.ts";
 	import { localizeInterestedItem } from "../../utils/plan-helper.ts";
+	import { contactForm } from "../../data/contact-form.ts";
 
-	// Legacy endpoint: the development team must confirm the 2027 recipient/form before launch.
-	const apiUrl = "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse";
 	const form = document.querySelector<HTMLFormElement>("#sponsor-form");
 	const button = document.querySelector<HTMLButtonElement>("#submit");
 	const status = document.querySelector<HTMLElement>("#form-message");
@@ -55,6 +55,24 @@ const en = lang === "en";
 	}
 	updateSelection();
 	window.addEventListener("itemsChange", updateSelection);
+
+	/** mailto link to contactForm.email, optionally prefilled with the form answers. */
+	function mailLink(text: string, fields?: Record<string, string>) {
+		const link = document.createElement("a");
+		link.textContent = text;
+		link.href = `mailto:${contactForm.email}`;
+		if (fields) {
+			const subject = en ? `SITCON 2027 sponsorship inquiry: ${fields.organization}` : `SITCON 2027 贊助洽詢：${fields.organization}`;
+			const lines = en
+				? [`Organization: ${fields.organization}`, `Name: ${fields.name}`, `Contact: ${fields.contact}`, "", fields.message]
+				: [`單位名稱：${fields.organization}`, `如何稱呼您：${fields.name}`, `聯絡方式：${fields.contact}`, "", fields.message];
+			link.href += `?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n").trim())}`;
+		}
+		return link;
+	}
+	function showStatus(...parts: (string | Node)[]) {
+		status?.replaceChildren(...parts);
+	}
 	form?.addEventListener("submit", async event => {
 		event.preventDefault();
 		if (!button || !status || button.disabled) return;
@@ -66,21 +84,31 @@ const en = lang === "en";
 				return;
 			}
 		}
-		const body = new FormData();
-		const entries = { organization: "entry.1867519928", name: "entry.1660888396", contact: "entry.1209239304" };
-		for (const [name, entry] of Object.entries(entries)) body.set(entry, String(values.get(name) || "").trim());
 		const items = selectionText();
-		body.set("entry.65159086", [String(values.get("message") || "").trim(), items ? `${en ? "Plans / items of interest:" : "感興趣的方案／品項："}\n${items}` : ""].filter(Boolean).join("\n\n"));
+		const fields = {
+			organization: String(values.get("organization") || "").trim(),
+			name: String(values.get("name") || "").trim(),
+			contact: String(values.get("contact") || "").trim(),
+			message: [String(values.get("message") || "").trim(), items ? `${en ? "Plans / items of interest:" : "感興趣的方案／品項："}\n${items}` : ""].filter(Boolean).join("\n\n")
+		};
+		const body = new FormData();
+		for (const name of Object.keys(contactForm.entries) as (keyof typeof contactForm.entries)[]) body.set(contactForm.entries[name], fields[name]);
 		const label = button.textContent;
 		button.disabled = true;
 		button.textContent = en ? "Sending…" : "送出中…";
 		status.textContent = "";
 		try {
-			await fetch(apiUrl, { method: "POST", mode: "no-cors", body, signal: AbortSignal.timeout(20000) });
-			// An opaque response cannot confirm acceptance. Keep the entered data for follow-up.
-			status.textContent = en ? "Request sent. To confirm receipt, please contact contact@sitcon.org." : "已傳送請求；若需確認收件，歡迎聯絡 contact@sitcon.org。";
+			if (!navigator.onLine) throw new Error("offline");
+			await fetch(contactForm.endpoint, { method: "POST", mode: "no-cors", body, signal: AbortSignal.timeout(20000) });
+			// Google Forms returns an opaque response, so we only know the request left
+			// the browser. Keep the entered data and tell people how to follow up.
+			showStatus(en ? "Inquiry sent. Thank you! If you don't hear from us, please email " : "已送出洽詢，謝謝您！若之後沒有收到我們的聯繫，請來信 ", mailLink(contactForm.email), en ? "." : "。");
 		} catch {
-			status.textContent = form.dataset.error || "Please try again.";
+			showStatus(
+				`${form.dataset.error || "Please try again."}${en ? " You can also " : "，或"}`,
+				mailLink(en ? "send it by email instead" : "改用 Email 寄送（內容會自動帶入）", fields),
+				en ? " (your answers are filled in)." : "。"
+			);
 		} finally {
 			button.disabled = false;
 			button.textContent = label;
