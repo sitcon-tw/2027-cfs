@@ -11,6 +11,8 @@ const base = process.env.REVIEW_BASE_URL || "http://127.0.0.1:4322/2027-cfs/";
 	let fail = false;
 	// Never submit test leads to the real Google Form.
 	await context.route("https://docs.google.com/forms/**", async route => {
+		// Submissions must go to the SITCON 2027 form, never the 2026 one.
+		assert.equal(route.request().url(), "https://docs.google.com/forms/d/e/1FAIpQLSd3qhkNzSvIAeUJtbDJAcVnK82kkLb2W8dl_i9TFtsJNd-QnA/formResponse");
 		requests.push(route.request().postData());
 		if (fail) await route.abort("failed");
 		else {

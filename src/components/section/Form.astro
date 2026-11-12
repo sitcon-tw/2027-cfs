@@ -3,12 +3,6 @@ import Button from "../Button.astro";
 import { contactForm } from "../../data/contact-form.ts";
 const { t, lang } = Astro.props;
 const en = lang === "en";
-// Warn once per build (the form renders on every page that includes it).
-const warned = globalThis as { __contactFormWarned?: boolean };
-if (!contactForm.isConfirmedFor2027 && !warned.__contactFormWarned) {
-	warned.__contactFormWarned = true;
-	console.warn("[Form] The sponsor inquiry form still posts to the SITCON 2026 Google Form. Update src/data/contact-form.ts (#80).");
-}
 ---
 
 <section id="form" data-contact-lang={lang}>

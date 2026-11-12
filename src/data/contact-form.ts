@@ -1,14 +1,12 @@
 // Google Form that receives the sponsor inquiry form (#sponsor-form in
-// src/components/section/Form.astro).
+// src/components/section/Form.astro). See docs/contact-form.md.
 //
-// TODO(#80): these values still point to the "SITCON 2026 贊助洽談表單". The
-// 2027 team must provide the 2027 formResponse URL and its entry IDs. Replace
-// the values below and set `isConfirmedFor2027` to true. Until then the build
-// prints a warning.
+// SITCON 2027 贊助洽談表單 (https://forms.gle/TwFBtr83AJKmkfFQA). The 2027 form
+// was copied from the 2026 one, so the entry IDs are unchanged. When editing the
+// form's fields, update the IDs here (they are listed in the viewform page).
 export const contactForm = {
-	isConfirmedFor2027: false,
 	/** `https://docs.google.com/forms/d/e/<form id>/formResponse` */
-	endpoint: "https://docs.google.com/forms/d/e/1FAIpQLSftAam5nJJQU925yOzuMoome-XY3MEs7idtbd56eqMDRrPKGw/formResponse",
+	endpoint: "https://docs.google.com/forms/d/e/1FAIpQLSd3qhkNzSvIAeUJtbDJAcVnK82kkLb2W8dl_i9TFtsJNd-QnA/formResponse",
 	/** Google Form `entry.*` field IDs for each website field. */
 	entries: {
 		organization: "entry.1867519928",
