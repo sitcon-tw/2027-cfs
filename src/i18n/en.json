@@ -637,6 +637,7 @@
 		]
 	},
 	"sponsors": {
+		"logos_alt": ["Logos of past SITCON sponsors (row 1)", "Logos of past SITCON sponsors (row 2)"],
 		"inline": [
 			"We want to give passionate students the resources, stage, and inspiration they deserve.",
 			"Yet for students, this is not easy.",
