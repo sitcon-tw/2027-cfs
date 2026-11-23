@@ -11,6 +11,8 @@ const base = process.env.REVIEW_BASE_URL || "http://127.0.0.1:4322/2027-cfs/";
 	let fail = false;
 	// Never submit test leads to the real Google Form.
 	await context.route("https://docs.google.com/forms/**", async route => {
+		// Submissions must go to the SITCON 2027 form, never the 2026 one.
+		assert.equal(route.request().url(), "https://docs.google.com/forms/d/e/1FAIpQLSd3qhkNzSvIAeUJtbDJAcVnK82kkLb2W8dl_i9TFtsJNd-QnA/formResponse");
 		requests.push(route.request().postData());
 		if (fail) await route.abort("failed");
 		else {
@@ -50,6 +52,7 @@ const base = process.env.REVIEW_BASE_URL || "http://127.0.0.1:4322/2027-cfs/";
 				await page.locator("#submit").click();
 				await page.waitForFunction(() => document.querySelector("#form-message").textContent.length > 0);
 				const payload = requests.at(-1);
+				assert.ok(await page.locator('#form-message a[href="mailto:contact@sitcon.org"]').count(), "Success explains how to follow up");
 				assert.ok(payload.includes(contact));
 				assert.ok(payload.includes("entry.1209239304"));
 				assert.ok(payload.includes("179,000"));
@@ -61,6 +64,9 @@ const base = process.env.REVIEW_BASE_URL || "http://127.0.0.1:4322/2027-cfs/";
 			await page.locator("#submit").click();
 			await page.waitForFunction(() => document.querySelector("#form-message").textContent.length > 0);
 			assert.match(await page.locator("#form-message").innerText(), /發生錯誤|Something went wrong/);
+			const mailto = await page.locator("#form-message a").getAttribute("href");
+			assert.ok(mailto.startsWith("mailto:contact@sitcon.org?subject="), "Failure offers an email fallback");
+			assert.ok(decodeURIComponent(mailto).includes("測試單位"), "Email fallback carries the entered answers");
 			assert.equal(await page.locator("#contact-name").inputValue(), "測試稱呼");
 			fail = false;
 			console.log(`PASS ${lang || "zh/"} ${width}px: selection sync, arbitrary contact, required validation, mocked submit and retry`);

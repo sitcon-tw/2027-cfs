@@ -3,6 +3,7 @@ import Popup from "../Popup.astro";
 import Button from "../Button.astro";
 import ItemAddButton from "./ItemAddButton.astro";
 import ItemPrice from "./ItemPrice.astro";
+import ItemImage from "./ItemImage.astro";
 import { isItemInAnyPlan } from "../../utils/plan-helper";
 import { X, ChevronLeft, ChevronRight, Check } from "@lucide/astro";
 import planData from "@data/plan.json";
@@ -75,7 +76,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 								<div class="carousel-images">
 									{/* Main item image as first slide */}
 									<div class="carousel-slide active" data-slide-index={0} data-description={item.image_description || ""}>
-										<img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${item.image}`} alt={item.image_description || item.name} />
+										<ItemImage file={item.image} alt={item.image_description || item.name} widths={[600, 1080]} sizes="(max-width: 768px) 100vw, 40rem" />
 									</div>
 									{/* Sub-item images */}
 									{subItemsWithImages.map((subItem: SubItem, index: number) => {
@@ -84,7 +85,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 
 										return (
 											<div class="carousel-slide" data-slide-index={slideIndex} data-description={subImageDescription || ""}>
-												<img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${subItem.image}`} alt={subImageDescription || subItem.name} />
+												<ItemImage file={subItem.image} alt={subImageDescription || subItem.name} widths={[600, 1080]} sizes="(max-width: 768px) 100vw, 40rem" />
 											</div>
 										);
 									})}
@@ -100,7 +101,7 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 						);
 					} else {
 						// Show only main item image (no carousel needed)
-						return <img src={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/items/${item.image}`} alt={item.image_description || item.name} />;
+						return <ItemImage file={item.image} alt={item.image_description || item.name} widths={[600, 1080]} sizes="(max-width: 768px) 100vw, 40rem" />;
 					}
 				})()
 			}
@@ -358,6 +359,9 @@ const shouldShowPlanTiers = tierBenefits.some(tb => tb.benefit !== undefined);
 		overflow: hidden;
 		background-color: var(--gray-container);
 		border-radius: 25px 0 0 25px;
+	}
+	.item-image picture {
+		display: contents;
 	}
 	.item-image img {
 		width: 100%;

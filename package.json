@@ -11,7 +11,8 @@
 		"format:check": "prettier --check .",
 		"test": "astro check",
 		"fetch-data": "node ./scripts/fetch-and-merge.js",
-		"build:preview": "node scripts/build-preview.js"
+		"build:preview": "node scripts/build-preview.js",
+		"optimize:svg": "node ./scripts/optimize-svg.js"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",
@@ -28,6 +29,7 @@
 	"devDependencies": {
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
+		"svgo": "^4.1.0",
 		"wrangler": "4.143.0"
 	}
 }

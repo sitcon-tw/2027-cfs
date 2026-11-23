@@ -22,7 +22,7 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		{
 			hero && (
 				<div class="popup-hero">
-					{title && <h2>{title}</h2>}
+					{title && <h2>{Array.isArray(title) ? title.map((phrase: string) => <span class="title-phrase">{phrase}</span>) : title}</h2>}
 					<slot name="hero-message" />
 					{background && <img src={background} alt="Popup Background" />}
 				</div>
@@ -175,6 +175,10 @@ const { title, background, btnText, hero = true, id = Math.random().toString(36)
 		color: transparent;
 	}
 
+	/* A title given as phrases wraps between phrases, not inside a CJK word (#77). */
+	.popup-hero h2 .title-phrase {
+		display: inline-block;
+	}
 	.popup-hero h2 {
 		color: var(--white);
 		position: relative;
